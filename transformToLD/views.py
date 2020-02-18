@@ -1,6 +1,13 @@
 from django.shortcuts import render
-from .forms import TermForm
+from django.http import HttpResponse
+from .forms import *
+from .trait_files import trait_csv
 from .searchTerms import getTerm,getVocab
+import pandas as pd
+import csv
+import io
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 # Create your views here.
 def home(request):
     if request.method== "POST":
@@ -21,3 +28,19 @@ def home(request):
     else:
         form= TermForm()
         return render(request, 'transformToLd/home.html',{'form':form})
+
+def file_upload(request):
+    if request.method=="POST":
+        file=request.FILES['data_file']
+        fs= FileSystemStorage()
+        filename= fs.save(file.name,file)
+        upload_file= fs.url(filename)
+        type= file.content_type
+        form= FileForm()
+
+        if (type=='text/csv'):
+            results= trait_csv(upload_file)
+            return render(request,'transformToLd/file.html',{'form':form,'results':results})
+    else:
+        form= FileForm()
+        return render(request,'transformToLd/file.html',{'form':form})

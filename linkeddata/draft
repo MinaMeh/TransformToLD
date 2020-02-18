@@ -1,0 +1,11 @@
+{% for key,values in results%}
+
+            <div>
+                <label for=""> {{key}}</label>
+                <select name="vocab" id="{{key}}">
+                    {% for item in values%}
+                    <option value="{{item}}"> {{item.uri}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endfor %}
