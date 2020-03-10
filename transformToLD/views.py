@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import *
-from .trait_files import trait_csv
+from .trait_files import *
 from .searchTerms import getTerm,getVocab
 import pandas as pd
 import csv
@@ -39,8 +39,14 @@ def file_upload(request):
         form= FileForm()
 
         if (type=='text/csv'):
+            csvdf= pd.read_csv(upload_file)
             results= trait_csv(upload_file)
-            return render(request,'transformToLd/file.html',{'form':form,'results':results})
+            #return render(request,'transformToLd/file.html',{'form':form,'results':results})
+            return render(request,'transformToLd/CsvContent.html',{'csvdf':csvdf, 'results': results,'filename':filename,'type':type, 'cols': len(csvdf.columns),'rows': len(csvdf.index)})
+        elif (type=='text/html'):
+            results= trait_html(upload_file)
+            return render(request,'transformToLd/HtmlContent.html',{'form':form,'results':results, 'tables':0, "paragraphs":0, "type": type,'filename':filename})
+
     else:
         form= FileForm()
         return render(request,'transformToLd/file.html',{'form':form})

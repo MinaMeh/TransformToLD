@@ -1,9 +1,9 @@
 from xml.etree import ElementTree
 import requests
 from .classes import Vocabulary
-def getVocab(term, type="class"):
+def getVocab(term, term_type="class"):
     vocab_list=[]
-    URL = "https://lov.linkeddata.es/dataset/lov/api/v2/term/search?q=" + term + "&?type=" + type
+    URL = "https://lov.linkeddata.es/dataset/lov/api/v2/term/search?q=" + term + "&?type=" + term_type
     r = requests.get(URL)
     data = r.json()
     for element in data["results"]:
