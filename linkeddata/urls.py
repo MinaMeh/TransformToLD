@@ -1,8 +1,12 @@
-
-from django.contrib import admin
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 from transformToLD import views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path ('',views.file_upload,name="file_upload")
+    path('vocabs/', views.listVocabs),
+    path('preprocess/',views.properties),
+
+    path('explore/',views.properties)
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns)

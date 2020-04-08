@@ -1,4 +1,12 @@
+from googletrans import Translator
 import inflection
+def translate_word(word):
+    '''
+    translates a word to english
+    '''
+    translator = Translator()
+    return translator.translate(word).text
+
 
 def get_combinaisons(word):
     '''
@@ -30,11 +38,5 @@ def get_combinaisons(word):
                 pass
     return words_list
                 
-            
 def is_camel_case(s):
     return s != s.lower() and s != s.upper() and "_" not in s
-
-
-print(get_combinaisons("first name"))
-print(get_combinaisons("firstName"))
-print(get_combinaisons("first_name"))
