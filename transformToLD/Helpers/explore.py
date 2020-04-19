@@ -1,14 +1,7 @@
 from xml.etree import ElementTree
 import requests
-from transformToLD.Classes.classes import Vocabulary, Property, Entity
-import spacy
+from transformToLD.Classes.classes import Vocabulary, Property
 
-TYPE_MAPPING= {
-    "PER": "person",
-    "LOC": "location",
-    "ORG": "organisation",
-    "MISC": "misc"
-}
 
 
 def get_vocab(term, list_vocabs=None, term_type="property"):
@@ -59,20 +52,5 @@ def get_vocab_list():
         vocab_list.append(vocab)
     return vocab_list
 
-def get_class(entity, list_vocabs):
-    '''
-    get_class return all possible classes URIS of the entity "entity" in the vocabularies "list_vocabs"
-    '''
-    return get_vocab(TYPE_MAPPING[entity],list_vocabs=list_vocabs, term_type="class")
-
-def get_entities(paragraph, vocabs_list, model='xx_ent_wiki_sm'):
-    '''
-    extract the entities of the paragraph "paragraph" using the model "model" and map it to classes of the vocabularies 
-    present in the list "vocabs_list"
-    '''
-    nlp = spacy.load(model)
-    doc = nlp(paragraph)
-    entities = [Entity(X.text, get_class(X.label_,vocabs_list), get_term(X.text)).to_dict() for X in doc.ents]
-    return entities
     
     

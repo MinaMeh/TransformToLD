@@ -15,8 +15,8 @@
   </div>
 </template>
 <script>
-import CsvComponent from "./CsvComponent.vue";
-import HTMLComponent from "./HTMLComponent.vue";
+import CsvComponent from "./explore/CsvComponent.vue";
+import HTMLComponent from "./explore/HTMLComponent.vue";
 
 export default {
   components: { CsvComponent, HTMLComponent },

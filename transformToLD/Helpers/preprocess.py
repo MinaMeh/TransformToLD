@@ -1,5 +1,17 @@
 from googletrans import Translator
+from transformToLD.Classes.classes import Entity
+import spacy
+
 import inflection
+TYPE_MAPPING= {
+    "PER": "person",
+    "LOC": "location",
+    "ORG": "organisation",
+    "MISC": "misc"
+}
+
+
+
 def translate_word(word):
     '''
     translates a word to english
@@ -36,7 +48,25 @@ def get_combinaisons(word):
                 words_list.extend([underscore, attached, separated])
             else:
                 pass
-    return words_list
+    return list(set(words_list))
                 
 def is_camel_case(s):
     return s != s.lower() and s != s.upper() and "_" not in s
+
+
+def get_class(entity):
+    '''
+    get_class return all possible classes URIS of the entity "entity" in the vocabularies "list_vocabs"
+    '''
+    return TYPE_MAPPING[entity]
+
+
+def get_entities(paragraph, model='xx_ent_wiki_sm'):
+    '''
+    extract the entities of the paragraph "paragraph" using the model "model" and map it to classes of the vocabularies 
+    present in the list "vocabs_list"
+    '''
+    nlp = spacy.load(model)
+    doc = nlp(paragraph)
+    entities = [Entity(X.text, get_class(X.label_)).to_dict() for X in doc.ents]
+    return entities

@@ -29,14 +29,12 @@ class Vocabulary(object):
         }
 
 class Entity(object):
-    def __init__(self,name, entity_type, uri):
+    def __init__(self,name, entity_type):
         self.name = name
         self.entity_type = entity_type
-        self.uri= uri
 
     def to_dict(self):
         return {
             "name": self.name,
-            "entity_type": self.entity_type,
-            "uri": self.uri
+            "entity_type": self.entity_type
      }

@@ -28,4 +28,6 @@ def read_csv(csv_file):
         header['combinaison'] = combinaison
         headers.append(header)
     content = file.values.tolist()
-    return {"headers": headers, 'content':content}
+    lines=file.shape[0]
+    columns= file.shape[1]
+    return {"headers": headers, 'content':content, 'columns': columns, "lines":lines}

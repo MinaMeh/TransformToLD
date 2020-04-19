@@ -111,14 +111,14 @@ export default {
         formData.append("file", this.$store.state.file_uploaded);
         formData.append("vocabs", this.$store.state.vocabs);
         axios
-          .post("http://localhost:8000/explore/", formData, {
+          .post("http://localhost:8000/preprocess/", formData, {
             headers: {
               "Content-Type": "multipart/form-data"
             }
           })
           .then(response => {
-            this.$store.state.properties = response.data;
-            console.log(response);
+            this.$store.state.file_content = response.data;
+            console.log(response.data);
           })
           .catch(error => console.log(error));
       }

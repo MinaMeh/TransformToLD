@@ -8,7 +8,7 @@ export default new Vuex.Store({
     properties: [],
     vocabs: [],
     file_uploaded: "",
-    file_content: {},
+    file_content: [],
   },
   getters: {},
   mutations: {

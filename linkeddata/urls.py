@@ -4,9 +4,11 @@ from transformToLD import views
 
 urlpatterns = [
     path('vocabs/', views.listVocabs),
-    path('preprocess/',views.properties),
+    path('preprocess/',views.preprocess),
 
-    path('explore/',views.properties)
+    path('explore/',views.properties),
+    path('test/',views.test)
+
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
