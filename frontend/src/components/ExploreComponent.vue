@@ -10,7 +10,7 @@
       striped
     ></v-progress-linear>
 
-    <CsvComponent v-if="csv"></CsvComponent>
+    <CsvComponent v-if="csv" :terms="results"></CsvComponent>
     <HTMLComponent v-if="html"></HTMLComponent>
   </div>
 </template>
@@ -25,20 +25,22 @@ export default {
     return {
       csv: false,
       html: false,
-      progress: true
+      progress: true,
+      results: []
     };
   },
   computed: {
-    count() {
-      return this.$store.state.properties.length;
+    type() {
+      return this.$store.state.file_content.type;
+    },
+    terms() {
+      return this.$store.state.csv.terms;
     }
   },
-
   watch: {
-    count(newCount, oldCount) {
+    type(newCount, oldCount) {
       console.log("old " + oldCount + " new count " + newCount);
-      this.progress = false;
-      var type = this.$store.state.properties.type;
+      var type = this.$store.state.file_content.type;
       switch (type) {
         case "csv":
           this.csv = true;
@@ -47,6 +49,12 @@ export default {
           this.html = true;
           break;
       }
+    },
+    terms(newTerms, oldTerms) {
+      this.progress = false;
+
+      console.log("old terms " + oldTerms + "new terms " + newTerms);
+      this.results = this.$store.state.csv.terms;
     },
 
     $v: {
@@ -61,7 +69,15 @@ export default {
     }
   },
   mounted() {
-    this.csv = this.$store.state.type;
+    var type = this.$store.state.file_content.type;
+    switch (type) {
+      case "csv":
+        this.csv = true;
+        break;
+      case "html":
+        this.html = true;
+        break;
+    }
     if (!this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

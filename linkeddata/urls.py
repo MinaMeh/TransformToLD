@@ -4,10 +4,10 @@ from transformToLD import views
 
 urlpatterns = [
     path('vocabs/', views.listVocabs),
-    path('preprocess/',views.preprocess),
+    path('preprocess/', views.preprocess),
 
-    path('explore/',views.properties),
-    path('test/',views.test)
+    path('explore/', views.explore),
+    path('test/', views.test)
 
 ]
 

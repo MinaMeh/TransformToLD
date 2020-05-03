@@ -1,54 +1,14 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title>
-            <h2>Text</h2>
-          </v-card-title>
-          <v-card-text>
-            <v-row>
-              <v-col cols="12" class="mb-5">
-                <text-highlight
-                  :queries="queries"
-                  highlightStyle="background-color: #1E88E5; color:white"
-                >{{results.text}}</text-highlight>
-              </v-col>
-              <v-col cols="12">
-                <v-card>
-                  <v-card-text>
-                    <h4 class="text-center">Entities</h4>
-                    <v-data-table
-                      dense
-                      :headers="headers"
-                      :items="results.entities"
-                      show-select
-                      item-key="name"
-                      v-model="selected"
-                    >
-                      <template v-slot:item.Entity="item">{{item.item.name}}</template>
-                      <template v-slot:item.Class="item">
-                        <v-chip color="primary">{{item.item.entity_type}}</v-chip>
-                      </template>
-                    </v-data-table>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <Paragraphs :sentences="results"></Paragraphs>
 </template>
 <script>
+import Paragraphs from "@/Subcomponents/Paragraphs";
 export default {
+  components: {
+    Paragraphs
+  },
   data() {
     return {
-      headers: [
-        { text: "Entity", value: "Entity" },
-        { text: "Class", value: "Class" }
-      ],
       results: null,
       queries: ["text"]
     };

@@ -1,12 +1,11 @@
-from transformToLD.Helpers.preprocess import get_entities
+from transformToLD.Helpers.preprocess import get_entities, get_sentences, tagging_sentence
 
 
 def read_text(file_uploaded):
-    results={}
+    results = []
     with open(file_uploaded, "r") as f:
-        content= f.read()
-        results['text']= content
-        results['entities'] = get_entities(content)
+        content = f.read()
+        results = explore_paragraph(content)
         return results
 
 
@@ -14,12 +13,24 @@ def explore_text(paragraphs):
     '''
     explores paragraphs and returns mapping between entities and LOV classes
     '''
-    paragraph_results=[]
+    tags = []
+    results = []
+    paragraph_results = []
     for paragraph in paragraphs:
-        paragraph_entities = {}
-        paragraph_entities['paragraph']=paragraph
-        paragraph_entities['entities'] = get_entities(paragraph)
-        paragraph_results.append(paragraph_entities)
+        result = explore_paragraph(paragraph)
+        paragraph_results.append(result)
     return paragraph_results
 
 
+def explore_paragraph(paragraph):
+    """
+    explore a paragraph and returns list of words with their tags
+    """
+    results = []
+    sentences = get_sentences(paragraph)
+    for sentence in sentences:
+        result = dict()
+        result["sentence"] = sentence
+        result['tags'] = tagging_sentence(sentence)
+        results.append(result)
+    return results

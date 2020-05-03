@@ -122,6 +122,21 @@ export default {
           })
           .catch(error => console.log(error));
       }
+      if (currentStep.name == "second") {
+        console.log("columns" + typeof this.$store.state.csv.columns);
+        let formData = new FormData();
+        formData.append("columns", this.$store.state.csv.columns);
+        formData.append("list_vocabs", this.$store.state.vocabs);
+        formData.append("file_type", "csv");
+
+        axios
+          .post("http://localhost:8000/explore/", formData)
+          .then(response => {
+            console.log(response.data);
+            this.$store.state.csv.terms = response.data.results;
+          })
+          .catch();
+      }
       next();
     },
     alert() {

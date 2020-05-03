@@ -62,10 +62,6 @@
                 </v-col>
               </v-row>
             </v-card-title>
-            <v-sheet v-if="loading" color="grey lighten-4" class="px-3 pt-3 pb-3">
-              <v-skeleton-loader class="mx-auto" type="table-tbody"></v-skeleton-loader>
-            </v-sheet>
-
             <v-data-table :headers="headers" :items="vocabs" :search="search">
               <template v-slot:item="row">
                 <tr>
@@ -87,6 +83,9 @@
                 </tr>
               </template>
             </v-data-table>
+            <v-sheet v-if="loading" color="grey lighten-4" class="px-3 pt-3 pb-3">
+              <v-skeleton-loader class="mx-auto" type="table-tbody"></v-skeleton-loader>
+            </v-sheet>
           </v-card>
         </v-col>
       </v-row>

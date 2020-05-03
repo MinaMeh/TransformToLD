@@ -82,43 +82,26 @@
         </v-col>
       </v-tab-item>
       <v-tab-item>
-        <v-col cols="12">
-          <v-card v-for="(paragraph,index) in content.results.paragraphs" :key="index" class="mt-3">
-            <v-card-title>
-              <h2>Paragraph #{{index}}</h2>
-            </v-card-title>
-            <v-card-text>
-              <v-row>
-                <v-col cols="6" align-self="center">
-                  <h3>Nombre d'entités extraites: {{paragraph.entities.length}}</h3>
-                  {{paragraph.paragraph}}
-                </v-col>
-                <v-col cols="6">
-                  <v-data-table
-                    dense
-                    :headers="headers"
-                    :items="paragraph.entities"
-                    show-select
-                    item-key="name"
-                    v-model="selected"
-                  >
-                    <template v-slot:item.Entity="item">{{item.item.name}}</template>
-                    <template v-slot:item.Class="item">
-                      <v-chip color="primary">{{item.item.entity_type}}</v-chip>
-                    </template>
-                  </v-data-table>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
+        <v-col
+          cols="12"
+          v-for="(paragraph,index) in content.results.paragraphs"
+          :key="index"
+          class="mt-3"
+        >
+          <Paragraphs :sentences="paragraph" :id="index"></Paragraphs>
         </v-col>
       </v-tab-item>
     </v-tabs-items>
   </v-container>
 </template>
 <script>
+import Paragraphs from "@/Subcomponents/Paragraphs";
+
 export default {
   name: "HTMLComponent",
+  components: {
+    Paragraphs
+  },
   data() {
     return {
       tab: null,

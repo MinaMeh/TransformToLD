@@ -1,7 +1,7 @@
 <template>
   <v-container class="mt-10">
     <v-row>
-      <v-col cols="6" v-for="prop in properties.results" :key="prop.uri">
+      <v-col cols="6" v-for="prop in terms" :key="prop.uri">
         <v-card>
           <v-card-text>
             <v-row align="center" justify="center">
@@ -13,7 +13,7 @@
                   label="Select a term"
                   :items="prop.result"
                   item-value="uri"
-                  :item-text="item => item.prefixedName +' - (score = '+ item.score+' )'"
+                  :item-text="item => item.prefixedName +' - (score = '+ item.score+' )' +' - (term = '+ item.term+' )'"
                   return-object
                 ></v-select>
               </v-col>
@@ -29,6 +29,9 @@
 <script>
 export default {
   name: "CsvComponent",
+  props: {
+    terms: Array
+  },
   data() {
     return {
       continue: true,
@@ -54,11 +57,10 @@ export default {
   },
   computed: {
     count() {
-      return this.$store.state.properties.length;
+      return this.$store.state.csv.terms.length;
     }
   },
   mounted() {
-    this.properties = this.$store.state.properties;
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

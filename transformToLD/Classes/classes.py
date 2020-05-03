@@ -1,13 +1,15 @@
 class Property():
-    def __init__(self,prefixedName, vocabPrefix,uri,type,score):
+    def __init__(self, term, prefixedName, vocabPrefix, uri, type, score):
         self.prefixedName = prefixedName
         self.vocabprefix = vocabPrefix
         self.uri = uri
         self.type = type
         self.score = score
+        self.term = term
 
     def to_dict(self):
         return {
+            "term": self.term,
             "prefixedName": self.prefixedName,
             "vocabPrefix": self.vocabprefix,
             "uri": self.uri,
@@ -15,8 +17,9 @@ class Property():
             "score": self.score
         }
 
+
 class Vocabulary(object):
-    def __init__(self,prefix, uri,title):
+    def __init__(self, prefix, uri, title):
         self.prefix = prefix
         self.uri = uri
         self.title = title
@@ -28,13 +31,14 @@ class Vocabulary(object):
             "title": self.title
         }
 
-class Entity(object):
-    def __init__(self,name, entity_type):
-        self.name = name
-        self.entity_type = entity_type
+
+class Tag(object):
+    def __init__(self, word, tag):
+        self.word = word
+        self.tag = tag
 
     def to_dict(self):
         return {
-            "name": self.name,
-            "entity_type": self.entity_type
-     }
+            "word": self.word,
+            "tag": self.tag
+        }

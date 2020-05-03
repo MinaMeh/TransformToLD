@@ -33,13 +33,19 @@
               <v-simple-table>
                 <thead>
                   <tr>
+                    <th></th>
                     <th>Column</th>
                     <th>Translation</th>
                     <th>Possible values</th>
                   </tr>
                 </thead>
                 <tbody>
+                  <tr></tr>
                   <tr v-for="header in content.results.headers" :key="header.header">
+                    <td>
+                      <v-checkbox v-model="columns_selected" :id="header.name" :value="header.name"></v-checkbox>
+                    </td>
+
                     <td>{{header.name}}</td>
                     <td>{{header.translated}}</td>
                     <td>
@@ -57,28 +63,6 @@
           </v-card-title>
         </v-card>
       </v-col>
-
-      <v-col cols="12" class="mt-5">
-        <v-card>
-          <v-card-title>
-            <h2>Table content</h2>
-          </v-card-title>
-          <v-card-text>
-            <v-simple-table dense>
-              <thead>
-                <tr>
-                  <th v-for="header in content.results.headers" :key="header.header">{{header.name}}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(line,index) in content.results.content" :key="index">
-                  <td v-for="col in line" :key="col">{{col}}</td>
-                </tr>
-              </tbody>
-            </v-simple-table>
-          </v-card-text>
-        </v-card>
-      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -88,13 +72,19 @@ export default {
   data() {
     return {
       continue: true,
-      content: null
+      content: null,
+      columns_selected: []
     };
   },
   watch: {
     count(newCount, oldCount) {
       console.log("old " + oldCount + " new count " + newCount);
       this.content = this.$store.state.file_content;
+    },
+    columns(newCols, oldCols) {
+      console.log("old " + oldCols + " new  " + newCols[0]);
+      this.$store.state.csv.columns = this.columns_selected;
+      console.log("store " + typeof Array(this.columns_selected));
     },
 
     $v: {
@@ -111,6 +101,9 @@ export default {
   computed: {
     count() {
       return this.$store.state.file_content.length;
+    },
+    columns() {
+      return this.columns_selected;
     }
   },
   mounted() {

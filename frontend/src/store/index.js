@@ -9,6 +9,10 @@ export default new Vuex.Store({
     vocabs: [],
     file_uploaded: "",
     file_content: [],
+    csv: {
+      columns: [],
+      terms: [],
+    },
   },
   getters: {},
   mutations: {
