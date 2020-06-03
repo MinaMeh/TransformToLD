@@ -10,6 +10,20 @@ TYPE_MAPPING = {
 }
 
 
+def preprocess_columns(columns):
+    headers = []
+    for col in columns:
+        header = dict()
+        header["name"] = col
+        translated = translate_word(col)
+        header['translated'] = translated
+        combinaison = get_combinaisons(translated)
+        header['combinaison'] = combinaison
+        headers.append(header)
+   # content = file.values.tolist()
+    return headers
+
+
 def translate_word(word):
     '''
     translates a word to english

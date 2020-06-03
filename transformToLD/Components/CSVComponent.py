@@ -1,6 +1,6 @@
 import pandas as pd
 from transformToLD.Helpers.explore import get_vocab
-from transformToLD.Helpers.preprocess import translate_word, get_combinaisons
+from transformToLD.Helpers.preprocess import preprocess_columns
 import toolz
 
 
