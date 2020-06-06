@@ -57,3 +57,4 @@ def get_vocab_list():
             element["prefix"], element['uri'], element['titles'][0]['value']).to_dict()
         vocab_list.append(vocab)
     return vocab_list
+    

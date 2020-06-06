@@ -7,32 +7,14 @@
             <h2>Paragraph #{{id}}</h2>
           </v-card-title>
           <v-card-text>
+            <v-row>{{paragraph}}</v-row>
             <v-row>
               <v-col cols="12">
                 <h4 class="text-center">Sentences</h4>
                 <v-expansion-panels>
                   <v-expansion-panel v-for="(sentence,i) in sentences" :key="i">
-                    <v-expansion-panel-header>
-                      <text-highlight
-                        :queries="getTagsNames(sentence.tags)"
-                        highlightStyle="background-color: #1E88E5; color:white"
-                      >{{sentence.sentence}}</text-highlight>
-                    </v-expansion-panel-header>
-                    <v-expansion-panel-content>
-                      <v-data-table
-                        dense
-                        :headers="headers"
-                        :items="sentence.tags"
-                        show-select
-                        item-key="name"
-                        v-model="selected"
-                      >
-                        <template v-slot:item.Entity="item">{{item.item.word}}</template>
-                        <template v-slot:item.Class="item">
-                          <v-chip color="primary">{{item.item.tag}}</v-chip>
-                        </template>
-                      </v-data-table>
-                    </v-expansion-panel-content>
+                    <v-expansion-panel-header>{{sentence}}</v-expansion-panel-header>
+                    <v-expansion-panel-content></v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
               </v-col>
@@ -48,7 +30,8 @@ export default {
   props: {
     sentences: Array,
     tags: Array,
-    id: Number
+    id: Number,
+    paragraph: String
   },
   data() {
     return {

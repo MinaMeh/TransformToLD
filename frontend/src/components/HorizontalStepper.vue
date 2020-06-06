@@ -19,13 +19,13 @@ import HorizontalStepper from "vue-stepper";
 import axios from "axios";
 
 // This components will have the content for each stepper step.
-import CollectComponent from "./CollectComponent.vue";
+import CreateComponent from "./CreateComponent";
 import PreprocessComponent from "./PreprocessComponent";
 
 import ConvertComponent from "./ConvertComponent.vue";
 import ExploreComponent from "./ExploreComponent.vue";
 import DocumentComponent from "./DocumentComponent.vue";
-import LinkComponent from "./LinkComponent";
+import ExtractComponent from "./ExtractComponent";
 export default {
   components: {
     HorizontalStepper
@@ -34,25 +34,41 @@ export default {
     return {
       demoSteps: [
         {
-          icon: "get_app",
+          icon: "folder",
           name: "first",
-          title: "Collect",
-          subtitle: "Data Collection and selecting vocabularies",
-          component: CollectComponent,
+          title: "Create",
+          subtitle: "Project Creation",
+          component: CreateComponent,
           completed: false
         },
 
         {
-          icon: "perm_data_setting",
+          icon: "data_usage",
           name: "second",
+          title: "Extract",
+          subtitle: "Data Extraction",
+          component: ExtractComponent,
+          completed: false
+        },
+        {
+          icon: "perm_data_setting",
+          name: "third",
           title: "Preprocess",
           subtitle: "Data Preprocessing",
           component: PreprocessComponent,
           completed: false
         },
         {
+          icon: "find_in_page",
+          name: "fourth",
+          title: "Select",
+          subtitle: "Vocabularies Selection",
+          component: ExploreComponent,
+          completed: false
+        },
+        {
           icon: "explore",
-          name: "third",
+          name: "fifth",
           title: "Explore",
           subtitle: "Data Exploration and mapping",
           component: ExploreComponent,
@@ -60,7 +76,7 @@ export default {
         },
         {
           icon: "transform",
-          name: "fourth",
+          name: "sixth",
           title: "Convert",
           subtitle: "Data Conversion to RDF",
           component: ConvertComponent,
@@ -68,16 +84,8 @@ export default {
         },
 
         {
-          icon: "link",
-          name: "fifth",
-          title: "Link",
-          subtitle: "Data Linking",
-          component: LinkComponent,
-          completed: false
-        },
-        {
           icon: "info",
-          name: "sixth",
+          name: "seventh",
           title: "Document",
           subtitle: "Data Documentation",
           component: DocumentComponent,
@@ -109,31 +117,84 @@ export default {
       if (currentStep.name == "first") {
         let formData = new FormData();
         formData.append("file", this.$store.state.file_uploaded);
-        formData.append("vocabs", this.$store.state.vocabs);
+        formData.append("project_name", this.$store.state.project_name);
+        formData.append("separator", this.$store.state.csv.separator);
+        formData.append("tables", this.$store.state.html.extract_tables);
+        formData.append(
+          "paragraphs",
+          this.$store.state.html.extract_paragraphs
+        );
+
         axios
-          .post("http://localhost:8000/preprocess/", formData, {
+          .post("http://localhost:8000/extract/", formData, {
             headers: {
               "Content-Type": "multipart/form-data"
             }
           })
           .then(response => {
-            this.$store.state.file_content = response.data;
             console.log(response.data);
+            this.$store.state.filename = response.data.filename;
+            this.$store.state.file_type = response.data.type;
+            this.$store.state.size = response.data.size;
+
+            if (response.data.type == "csv") {
+              this.$store.state.csv.headers = response.data.results.headers;
+              this.$store.state.csv.columns = response.data.results.columns;
+              this.$store.state.csv.lines = response.data.results.lines;
+            }
+            if (response.data.type == "html") {
+              this.$store.state.html.tables = response.data.results.tables;
+              this.$store.state.html.paragraphs =
+                response.data.results.paragraphs;
+              this.$store.state.html.num_paragraphs =
+                response.data.results.num_paragraphs;
+              this.$store.state.html.num_tables =
+                response.data.results.num_tables;
+            }
+            if (response.data.type == "text") {
+              this.$store.state.text.paragraph =
+                response.data.results.paragraph;
+              this.$store.state.text.sentences =
+                response.data.results.sentences;
+            }
+
+            this.$store.state.progress = false;
           })
           .catch(error => console.log(error));
       }
       if (currentStep.name == "second") {
-        console.log("columns" + typeof this.$store.state.csv.columns);
-        let formData = new FormData();
-        formData.append("columns", this.$store.state.csv.columns);
-        formData.append("list_vocabs", this.$store.state.vocabs);
-        formData.append("file_type", "csv");
+        let formData_2 = new FormData();
+
+        console.log("columns" + typeof this.$store.state.csv.columns_selected);
+        formData_2.append("file_type", this.$store.state.file_type);
+
+        if (this.$store.state.file_type == "csv") {
+          formData_2.append(
+            "columns",
+            JSON.stringify(this.$store.state.csv.columns_selected)
+          );
+        }
+
+        if (this.$store.state.file_type == "html") {
+          formData_2.append(
+            "tables",
+            JSON.stringify(this.$store.state.html.tables_selected)
+          );
+          formData_2.append(
+            "paragraphs",
+            JSON.stringify(this.$store.state.html.paragraphs_selected)
+          );
+        }
 
         axios
-          .post("http://localhost:8000/explore/", formData)
+          .post("http://localhost:8000/preprocess/", formData_2)
           .then(response => {
             console.log(response.data);
-            this.$store.state.csv.terms = response.data.results;
+            if (this.$store.state.file_type == "csv") {
+              this.$store.state.csv.columns_preprocessed =
+                response.data.headers;
+            }
+            this.$store.state.progress = false;
           })
           .catch();
       }

@@ -1,12 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from transformToLD.Components.CSVComponent import trait_csv, read_csv, explore_csv
-from transformToLD.Components.HTMLComponent import trait_html, read_html
-from transformToLD.Components.TexteComponent import read_text
-
+from transformToLD.Helpers.extract import extract_text_data, extract_csv_data, extract_html_data
 from transformToLD.Helpers.explore import get_vocab_list
+from transformToLD.Helpers.preprocess import preprocess_columns
 import pandas as pd
 import csv
+import json
 import io
 from rest_framework import viewsets, static
 from rest_framework.response import Response
@@ -15,13 +14,19 @@ from .Serializers import VocabularySerializer, ProjectSerializer
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from transformToLD.models import Project
+from rest_framework import serializers
 
 # Create your views here.
+
+
 @api_view(['GET'])
 def test(request):
-    test = Project.objects.get(project_name="test2")
-    pr = ProjectSerializer(test).data
-    return Response(pr)
+    # Project.objects.all().delete()
+    #test = Project(project_name="test5", file_path="test/test").save()
+    test2 = Project.objects.all()
+    #pr = ProjectSerializer(test2).data
+    ser = ProjectSerializer(test2, many=True).data
+    return Response(ser)
 
 
 @api_view(['GET'])
@@ -32,7 +37,56 @@ def listVocabs(request):
 
 
 @api_view(['POST'])
+def extract(request):
+    file = request.FILES['file']
+    project_name = request.POST.get('project_name')
+    separator = request.POST.get('separator')
+    tables = True if request.POST.get('tables') == 'true' else False
+    paragraphs = True if request.POST.get('paragraphs') == 'true' else False
+    fs = FileSystemStorage()
+    filename = fs.save(file.name, file)
+    upload_file = fs.url(filename)
+    file_type = file.content_type
+    #Project(project_name=project_name, file_path=upload_file).save()
+    if file_type == 'text/csv':
+        results = extract_csv_data(upload_file, separator)
+        resp = {'results': results, 'filename': filename,
+                'type': 'csv', 'size': file.size}
+    elif file_type == "text/html":
+        results = extract_html_data(
+            upload_file, extract_tables=tables, extract_paragraphs=paragraphs)
+        resp = {'results': results, 'filename': filename,
+                'type': 'html', 'size': file.size, "extract_tables": tables, "extract_paragraphs": paragraphs}
+    elif file_type == "text/plain":
+        results = extract_text_data(upload_file)
+        resp = {'results': results, 'filename': filename,
+                'type': 'text', 'size': file.size}
+    else:
+        pass
+
+    return Response(resp)
+
+
+@api_view(['POST'])
 def preprocess(request):
+    file_type = request.POST.get('file_type')
+    if file_type == "csv":
+        columns_selected = json.loads(request.POST.get('columns', 'nthg'))
+        headers = preprocess_columns(columns_selected)
+        resp = {'columns_selected': columns_selected, "headers": headers}
+    elif file_type == 'html':
+        tables_selected = json.loads(request.POST.get('tables', 'nthg'))
+        paragrahps_selected = json.loads(
+            request.POST.get('paragraphs', 'nthg'))
+        resp = {'tables_selected': tables_selected,
+                'paragraphs_selected': paragrahps_selected}
+    else:
+        resp = {'file_type': request}
+    return Response(resp)
+
+
+@api_view(['POST'])
+def preprocess_v0(request):
     file = request.FILES['file']
     fs = FileSystemStorage()
     filename = fs.save(file.name, file)

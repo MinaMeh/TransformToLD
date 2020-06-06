@@ -19,30 +19,48 @@
   </v-container>
 </template>
 <script>
-import CsvComponent from "./preprocess/CsvComponent";
-import HTMLComponent from "./preprocess/HTMLComponent";
-import TexteComponent from "./preprocess/TexteComponent";
+import CsvComponent from "./extract/CsvComponent";
+import HTMLComponent from "./extract/HTMLComponent";
+import TexteComponent from "./extract/TexteComponent";
 
 export default {
   components: { CsvComponent, HTMLComponent, TexteComponent },
+
   props: ["clickedNext", "currentStep"],
   data() {
-    return {};
+    return {
+      progress: true,
+      continue: true
+    };
+  },
+  computed: {
+    filename() {
+      return this.$store.state.filename;
+    }
   },
   watch: {
+    filename(oldName, newName) {
+      console.log("oldname" + oldName + "," + "newname" + newName);
+      this.progress = false;
+    },
     $v: {
-      handler: function() {
-        if (this.continue) {
+      handler: function(val) {
+        if (!val.$invalid) {
           this.$emit("can-continue", { value: true });
         } else {
           this.$emit("can-continue", { value: false });
         }
       },
       deep: true
+    },
+    clickedNext(val) {
+      if (val === true) {
+        this.$v.form.$touch();
+      }
     }
   },
   mounted() {
-    if (!this.continue) {
+    if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
       this.$emit("can-continue", { value: false });
