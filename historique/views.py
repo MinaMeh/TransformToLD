@@ -111,3 +111,12 @@ def project_details(request, pk):
     elif request.method == 'DELETE':
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+def project_list_updated(request):
+    projects = Project.objects.filter(updated=True)
+
+    if request.method == 'GET':
+        projects_serializer = ProjectSerializer(projects, many=True)
+        return JsonResponse(projects_serializer.data, safe=False)
