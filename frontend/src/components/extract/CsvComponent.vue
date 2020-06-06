@@ -39,17 +39,13 @@
                 </thead>
                 <tbody>
                   <tr></tr>
-                  <tr v-for="header in $store.state.csv.headers" :key="header">
+                  <tr v-for="(header,index) in $store.state.csv.headers" :key="index">
                     <td>
-                      <v-checkbox
-                        v-model="$store.state.csv.columns_selected"
-                        :id="header"
-                        :value="header"
-                      ></v-checkbox>
+                      <v-checkbox v-model="header.selected" :id="header" :value="header.selected"></v-checkbox>
                     </td>
 
                     <td>
-                      <div class="mt-4 headline">{{header}}</div>
+                      <div class="mt-4 headline">{{header.name}}</div>
                     </td>
                   </tr>
                 </tbody>
@@ -65,17 +61,10 @@
 export default {
   data() {
     return {
-      continue: true,
-      columns_selected: []
+      continue: true
     };
   },
   watch: {
-    columns(newCols, oldCols) {
-      console.log("old " + oldCols + " new  " + newCols[0]);
-      this.$store.state.csv.headers = this.columns_selected;
-      console.log("store " + typeof Array(this.columns_selected));
-    },
-
     $v: {
       handler: function() {
         if (this.continue) {
@@ -87,11 +76,7 @@ export default {
       deep: true
     }
   },
-  computed: {
-    columns() {
-      return this.columns_selected;
-    }
-  },
+  computed: {},
   mounted() {
     this.content = this.$store.state.file_content;
     if (this.continue) {

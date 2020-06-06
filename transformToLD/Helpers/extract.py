@@ -20,7 +20,13 @@ def extract_csv_data(csv_file, separator=";"):
         stores the content in the database
     '''
     file = pd.read_csv(csv_file, delimiter=separator)
-    headers = file.columns
+    cols = file.columns
+    headers = []
+    for col in cols:
+        head = {}
+        head['name'] = col
+        head['selected'] = False
+        headers.append(head)
     lines = file.shape[0]
     columns = file.shape[1]
     return {"headers": headers, 'columns': columns, "lines": lines}
