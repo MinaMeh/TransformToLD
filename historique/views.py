@@ -5,37 +5,10 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from historique.models import Project, inputOpenData
-from historique.serializers import ProjectSerializer, inputOpenDataSerializer
+from historique.models import Project
+from historique.serializers import ProjectSerializer
 
 from rest_framework.decorators import api_view
-
-
-@api_view(['GET', 'POST', 'DELETE'])
-def inputOpenDataList(request):
-    # GET list of inputOpenData, POST a new source file, DELETE all inputs
-    if request.method == 'GET':
-        inputFiles = inputOpenData.objects.all()
-
-        nameFile = request.GET.get('name', None)
-        if nameFile is not None:
-            inputFiles = inputFiles.filter(title__icontains=nameFile)
-
-        inputFiles_serializer = InputOpenDataSerializer(inputFiles, many=True)
-        return JsonResponse(inputFiles_serializer.data, safe=False)
-        # 'safe=False' for objects serialization
-
-    elif request.method == 'POST':
-        inputFile_data = JSONParser().parse(request)
-        inputFile_serializer = InputOpenDataSerializer(data=inputFile_data)
-        if inputFile_serializer.is_valid():
-            inputFile_serializer.save()
-            return JsonResponse(inputFile_serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(inputFile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        count = inputOpenData.objects.all().delete()
-        return JsonResponse({'message': '{} Datasets were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'POST', 'DELETE'])
@@ -63,30 +36,6 @@ def projects_list(request):
         count = Project.objects.all().delete()
         return JsonResponse({'message': '{} Projects were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
 
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def inputOpenData_details(request, pk):
-    try:
-        inputFile = inputOpenData.objects.get(pk=pk)
-    except inputOpenData.DoesNotExist:
-        return JsonResponse({'message': 'The input open data does not exist'}, status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        inputFile_serializer = InputOpenDataSerializer(inputFile)
-        return JsonResponse(inputFile_serializer.data)
-
-    elif request.method == 'PUT':
-        inputFile_data = JSONParser().parse(request)
-        inputFile_serializer = InputOpenDataSerializer(
-            inputFile, data=inputFile_data)
-        if inputFile_serializer.is_valid():
-            inputFile_serializer.save()
-            return JsonResponse(inputFile_serializer.data)
-        return JsonResponse(inputFile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        inputFile.delete()
-        return JsonResponse({'message': 'input open data was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])

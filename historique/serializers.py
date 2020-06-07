@@ -1,18 +1,19 @@
 from rest_framework import serializers
-from historique.models import Project, inputOpenData
-
-
-class inputOpenDataSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = inputOpenData
-        fields = '__all__'
+from historique.models import Project
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-
-    #inputOpenDataFile = inputOpenDataSerializer(required=True)
+    
+    file_path = serializers.URLField()
 
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = [
+            'project_name',
+            'description',
+            'licence',
+            'author',
+            'updated',
+            'creation_date',
+            'file_path'
+        ]

@@ -1,21 +1,24 @@
 <template>
   <v-app>
     <v-content>
-    <Navbar/>
-    <HorizontalStepper />
+      <Navbar />
+      <Home />
+      <!--<HorizontalStepper />-->
     </v-content>
   </v-app>
 </template>
 
 <script>
-import HorizontalStepper from "./components/HorizontalStepper";
+//import HorizontalStepper from "./components/HorizontalStepper";
 import Navbar from "./components/Navbar";
+import Home from "./components/Home";
 export default {
   name: "App",
 
   components: {
-    HorizontalStepper,
-    Navbar
+    //HorizontalStepper,
+    Navbar,
+    Home
   },
 
   data: () => ({
