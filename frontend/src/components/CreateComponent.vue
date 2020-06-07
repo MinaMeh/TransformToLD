@@ -46,7 +46,7 @@
                 prepend-icon="mdi-file-document"
               ></v-text-field>
             </v-col>
-            <v-col cols="6" v-if="type == 'text/csv'">
+            <v-col cols="6" v-if="type == 'text/csv' || type =='application/vnd.ms-excel'">
               <v-text-field
                 outlined
                 label="Separator"
