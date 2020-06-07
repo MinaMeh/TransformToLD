@@ -5,8 +5,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view
 
-from historique.models import Project
-from historique.serializers import ProjectSerializer
+from historique.models import Project, Author
+from historique.serializers import ProjectSerializer, AuthorSerializer
 
 from rest_framework.decorators import api_view
 
@@ -15,7 +15,6 @@ from rest_framework.decorators import api_view
 def projects_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
-
         project_name = request.GET.get('project_name', None)
         if project_name is not None:
             projects = projects.filter(project_name__icontains=project_name)
@@ -35,7 +34,6 @@ def projects_list(request):
     elif request.method == 'DELETE':
         count = Project.objects.all().delete()
         return JsonResponse({'message': '{} Projects were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
-
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -61,7 +59,7 @@ def project_details(request, pk):
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
-
+'''
 @api_view(['GET'])
 def project_list_updated(request):
     projects = Project.objects.filter(updated=True)
@@ -69,3 +67,4 @@ def project_list_updated(request):
     if request.method == 'GET':
         projects_serializer = ProjectSerializer(projects, many=True)
         return JsonResponse(projects_serializer.data, safe=False)
+'''
