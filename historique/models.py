@@ -2,14 +2,12 @@ from djongo import models
 from django import forms
 
 class inputOpenData(models.Model):
-    name = models.CharField(max_length=50, blank=False, default='')
     file = models.FileField()
     link = models.URLField(max_length=200, blank=False, default='')
-    description = models.TextField()
     addition_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "%s" % (self.name)
+        return "%d" % (self.pk)
 
     class Meta:
         abstract = True
@@ -19,8 +17,9 @@ class inputOpenDataForm(forms.ModelForm):
     class Meta:
         model = inputOpenData
         fields = [
-            'name', 'file', 'link', 'description'
+            'file', 'link'
         ]
+
 
 class Project(models.Model):
     project_name = models.CharField(max_length=70, blank=False, default='')
