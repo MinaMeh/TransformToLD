@@ -14,8 +14,7 @@ class AuthorSerializer(serializers.ModelSerializer):
         return Author.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
-        def update(self, instance, validated_data):
-            author = Author.objects.update(**validated_data)
+        author = Author.objects.update(**validated_data)
         return author
 
 
@@ -27,6 +26,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = (
+            'id',
             'project_name',
             'description',
             'licence',
@@ -42,3 +42,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             author = Author.objects.get_or_create(**author_data)[0]
             validated_data['author'] = author
         return Project.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        project = Project.objects.update(**validated_data)
+        return project

@@ -2,13 +2,19 @@ from djongo import models
 from django import forms
 
 
+class EmbeddedField(models.EmbeddedField):
+
+    def db_type(self, connection):
+        return "faketype"
+        
 class Author(models.Model):
     name = models.CharField(max_length=70)
     email = models.EmailField()
     password = models.CharField(max_length=20)
-    
+
     def __str__(self):
         return "%s" % (self.name)
+
     def create(self, validated_data):
         """
         Create and return a new `Author` instance, given the validated data.
@@ -23,6 +29,7 @@ class AuthorForm(forms.ModelForm):
             'name', 'email', 'password'
         )
 
+
 class Project(models.Model):
     project_name = models.CharField(max_length=70, blank=False, default='')
     description = models.TextField()
@@ -34,8 +41,7 @@ class Project(models.Model):
     )
     file_path = models.TextField(default='')
     updated = models.BooleanField(default=False)
-    creation_date = models.DateTimeField(auto_now_add=True) 
+    creation_date = models.DateTimeField(auto_now_add=True)
     objects = models.DjongoManager()
 
-    def __str__(self):
-        return "%d,%s" % (self.pk, self.project_name)
+ 
