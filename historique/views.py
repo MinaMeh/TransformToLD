@@ -59,6 +59,7 @@ def project_details(request, pk):
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
+
 '''
 @api_view(['GET'])
 def project_list_updated(request):
