@@ -2,23 +2,23 @@
   <v-app>
     <v-content>
       <Navbar />
-      <Home />
-      <!--<HorizontalStepper />-->
+      <!-- <Home />-->
+      <HorizontalStepper />
     </v-content>
   </v-app>
 </template>
 
 <script>
-//import HorizontalStepper from "./components/HorizontalStepper";
+import HorizontalStepper from "./components/HorizontalStepper";
 import Navbar from "./components/Navbar";
-import Home from "./components/Home";
+//import Home from "./components/Home";
 export default {
   name: "App",
 
   components: {
-    //HorizontalStepper,
-    Navbar,
-    Home
+    HorizontalStepper,
+    Navbar
+    // Home
   },
 
   data: () => ({
