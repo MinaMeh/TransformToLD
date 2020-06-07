@@ -5,15 +5,22 @@ from django import forms
 class Author(models.Model):
     name = models.CharField(max_length=70)
     email = models.EmailField()
+    password = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return "%s" % (self.name)
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return Author.objects.create(**validated_data)
 
-    class Meta:
-        abstract = True
 
 class AuthorForm(forms.ModelForm):
     class Meta:
         model = Author
         fields = (
-            'name', 'email'
+            'name', 'email', 'password'
         )
 
 class Project(models.Model):
@@ -25,10 +32,10 @@ class Project(models.Model):
         model_form_class=AuthorForm,
         null=False
     )
+    file_path = models.TextField(default='')
     updated = models.BooleanField(default=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
-    file_path = models.TextField()
+    creation_date = models.DateTimeField(auto_now_add=True) 
     objects = models.DjongoManager()
 
     def __str__(self):
-        return "%s" % (self.project_name)
+        return "%d,%s" % (self.pk, self.project_name)
