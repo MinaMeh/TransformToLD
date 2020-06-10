@@ -1,11 +1,5 @@
 <template>
   <nav>
-    <v-snackbar v-model="snackbar" :timeout="4000" top color="success">
-      <span>a new project has been created</span>
-      <v-btn text color="white" @click="snackbar = false">Close</v-btn>
-      <v-icon class="white--text">mdi-close-thick</v-icon>
-    </v-snackbar>
-
     <v-app-bar app flat color="#3493b3ff">
       <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu" class="white--text"></v-app-bar-nav-icon>
       <v-toolbar-title class="white--text">Data Linked</v-toolbar-title>
@@ -32,15 +26,15 @@
         </v-list-item>
       </v-layout>
       <v-list-item>
-        <v-list-item-icon>
+        <v-list-item-avatar>
           <v-icon>mdi-account-outline</v-icon>
-        </v-list-item-icon>
+        </v-list-item-avatar>
         <v-list-item-content class="text-truncate">User name</v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
       <v-list>
         <v-list-item-group color="#3493b3ff">
-          <v-list-item v-for="item in items" :key="item.title" link :to="item.href">
+          <v-list-item v-for="item in items" :key="item.title" router :to="item.route">
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -60,10 +54,9 @@ export default {
     return {
       sidebarMenu: true,
       toggleMini: false,
-      snackbar: false,
       items: [
-        { title: "Home", href: "", icon: "mdi-home-outline" },
-        { title: "Historical", href: "", icon: "mdi-palette-swatch" }
+        { title: "Home", route: "/", icon: "mdi-home-outline" },
+        { title: "Historical", route: "/projects-list", icon: "mdi-palette-swatch" }
       ]
     };
   },

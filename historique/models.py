@@ -2,11 +2,6 @@ from djongo import models
 from django import forms
 
 
-class EmbeddedField(models.EmbeddedField):
-
-    def db_type(self, connection):
-        return "faketype"
-        
 class Author(models.Model):
     name = models.CharField(max_length=70)
     email = models.EmailField()
@@ -40,8 +35,5 @@ class Project(models.Model):
         null=False
     )
     file_path = models.TextField(default='')
-    updated = models.BooleanField(default=False)
     creation_date = models.DateTimeField(auto_now_add=True)
     objects = models.DjongoManager()
-
- 

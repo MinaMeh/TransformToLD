@@ -16,6 +16,7 @@
     "sass-loader": "^8.0.2",
     "scss-loader": "0.0.1",
     "vue": "^2.6.11",
+    "vue-router": "^3.3.2",
     "vue-stepper": "^1.4.2",
     "vue-text-highlight": "^2.0.10",
     "vuelidate": "^0.7.5",
