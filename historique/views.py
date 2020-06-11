@@ -1,9 +1,10 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+'''
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.http import HttpResponse
 import json
 from rest_framework.authtoken.models import Token
-
+'''
 
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
@@ -64,9 +65,10 @@ def project_details(request, pk):
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
-
+'''
 @csrf_exempt
 @api_view(['POST'])
 def check_token(request, format=None):
     token = Token.objects.filter(key=request.data['token']).exists()
     return JsonResponse({"status": token})
+'''

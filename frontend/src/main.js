@@ -10,7 +10,7 @@ import vuetify from "./plugins/vuetify";
 
 import store from "./store";
 
-import VueAuthenticate from 'vue-authenticate'
+//import VueAuthenticate from 'vue-authenticate'
 import VueAxios from 'vue-axios'
 import axios from 'axios';
 import {
@@ -19,15 +19,15 @@ import {
 
 Vue.use(VueRouter);
 Vue.use(VueAxios, axios)
-Vue.use(VueAuthenticate, {
-    providers: {
-        google: {
-            clientId: '265982645018-0qvdbb07ltu6uou8j4pbdelk76l1evef.apps.googleusercontent.com',
-            redirectUri: 'http://localhost:8080/',
-            url: 'http://localhost:8000/api/login/social/token_user/google/',
+    /*Vue.use(VueAuthenticate, {
+        providers: {
+            google: {
+                clientId: '265982645018-0qvdbb07ltu6uou8j4pbdelk76l1evef.apps.googleusercontent.com',
+                redirectUri: 'http://localhost:8080/',
+                url: 'http://localhost:8000/api/login/social/token_user/google/',
+            }
         }
-    }
-});
+    });*/
 const router = new VueRouter({
     mode: 'history',
     routes,

@@ -1,7 +1,8 @@
 //import VueAxios from 'vue-axios'
-import axios from 'axios';
+
+//import axios from 'axios';
 //import Vue from 'vue'
-export const authMixin = {
+/*export const authMixin = {
     methods: {
         checkToken: function(provider, redirect) {
             axios.post("http://localhost:8000/api/check/", {
@@ -17,13 +18,13 @@ export const authMixin = {
             this.$auth.authenticate('google', {
                 provider: "google-oauth2"
             }).then(function(response) {
-                /* if (response.data.email === "") {
+                if (response.data.email === "") {
                     window.location = "/home";
-                }*/
+                }
                 console.log("Works!");
             }).catch(function(error) {
                 console.log(error);
             });
         }
     }
-}
+} */

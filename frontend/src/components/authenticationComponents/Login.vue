@@ -115,10 +115,10 @@
 </template>
 
 <script>
-import { authMixin } from '../../mixins/authMixin'
+//import { authMixin } from '../../mixins/authMixin'
 
 export default {
-    mixins: [ authMixin ],
+  // mixins: [ authMixin ],
   data: () => ({
     step: 1
   }),
