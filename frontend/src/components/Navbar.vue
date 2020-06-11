@@ -55,7 +55,7 @@ export default {
       sidebarMenu: true,
       toggleMini: false,
       items: [
-        { title: "Home", route: "/", icon: "mdi-home-outline" },
+        { title: "Home", route: "/home", icon: "mdi-home-outline" },
         { title: "Historical", route: "/projects-list", icon: "mdi-palette-swatch" }
       ]
     };

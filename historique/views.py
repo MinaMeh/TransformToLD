@@ -1,4 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.http import HttpResponse
+import json
+from rest_framework.authtoken.models import Token
+
 
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
@@ -60,12 +65,8 @@ def project_details(request, pk):
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
-'''
-@api_view(['GET'])
-def project_list_updated(request):
-    projects = Project.objects.filter(updated=True)
-
-    if request.method == 'GET':
-        projects_serializer = ProjectSerializer(projects, many=True)
-        return JsonResponse(projects_serializer.data, safe=False)
-'''
+@csrf_exempt
+@api_view(['POST'])
+def check_token(request, format=None):
+    token = Token.objects.filter(key=request.data['token']).exists()
+    return JsonResponse({"status": token})

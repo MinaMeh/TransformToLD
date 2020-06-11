@@ -38,11 +38,39 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'transformToLD',
+
     'rest_framework',
     'corsheaders',
+    'rest_framework.authtoken',
+    'social_django',
+    'rest_social_auth',
+
+    'oauth2_provider',
+    'rest_framework_social_oauth2',
+
+    'transformToLD',
     'historique',
 ]
+
+SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '265982645018-0qvdbb07ltu6uou8j4pbdelk76l1evef.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '7FhBw4of8NKCmip65RrL0G3J'
+SOCIAL_AUTH_GOOGLE_OAUTH2_FIELDS = ['email', 'username']  # optional
+
+CSRF_COOKIE_SECURE = True
+CORS_ORIGIN_ALLOW_ALL = True
+
+ROOT_URLCONF = 'linkeddata.urls'
+
+
+LOGIN_REDIRECT_URL = '/home'
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',)
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -56,7 +84,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'linkeddata.urls'
 
 TEMPLATES = [
     {
