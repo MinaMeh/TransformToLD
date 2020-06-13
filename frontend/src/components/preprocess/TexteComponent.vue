@@ -1,26 +1,38 @@
 <template>
-  <Paragraphs :sentences="results"></Paragraphs>
+  <v-container>
+    <v-row>
+      <v-col cols="12">
+        <h4 class="text-center">Sentences</h4>
+        <v-expansion-panels>
+          <v-expansion-panel v-for="(sentence,i) in $store.state.text.paragraph.sentences" :key="i">
+            <v-expansion-panel-header>{{sentence.text}}</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-data-table :headers="headers" :items="sentence.triplets">
+                <template v-slot:item.selected="{ item }">
+                  <v-checkbox v-model="item.selected" :value="item.selected"></v-checkbox>
+                </template>
+              </v-data-table>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 <script>
-import Paragraphs from "@/Subcomponents/Paragraphs";
 export default {
-  components: {
-    Paragraphs
-  },
+  components: {},
   data() {
     return {
-      results: null,
-      queries: ["text"]
+      headers: [
+        { text: "", value: "selected" },
+        { text: "Subject", value: "subject" },
+        { text: "Predicate", value: "predicate" },
+        { text: "Object", value: "object" }
+      ]
     };
   },
   watch: {
-    type(newType, oldType) {
-      console.log("old " + oldType + " new type " + newType);
-      this.results = this.$store.state.file_content.results;
-      console.log("queries" + this.queries);
-      console.log(this.results.entities);
-      //this.queries = this.results.entities;
-    },
     $v: {
       handler: function() {
         if (this.continue) {
@@ -32,17 +44,8 @@ export default {
       deep: true
     }
   },
-  computed: {
-    type() {
-      return this.$store.state.file_content.type;
-    }
-  },
+  computed: {},
   mounted() {
-    this.results = this.$store.state.file_content.results;
-    for (var word in this.results.entities) {
-      this.queries.push(this.results.entities[word].name);
-    }
-
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

@@ -103,6 +103,8 @@ def get_paragraphs_sentences(paragraphs):
         result = dict()
         result['paragraph'] = paragraph
         result['id'] = i
+        result['selected'] = False
+
         i += 1
         result['sentences'] = get_sentences(paragraph)
         paragraph_results.append(result)
@@ -117,5 +119,7 @@ def get_sentences(paragraph, model="en_core_web_sm"):
     nlp = spacy.load(model)
     doc = nlp(paragraph)
     for sent in doc.sents:
-        sentences.append(sent.text)
+        sentence = dict()
+        sentence['text'] = sent.text
+        sentences.append(sentence)
     return sentences

@@ -7,32 +7,50 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-row>
-          <v-col cols="12" v-for="table in results.results.tables" :key="table.id">
+          <v-col cols="12" v-for="table in tables_selected" :key="table.id">
             <v-card>
               <v-card-title>
-                <h2 class="mt-3">Table #{{table.id +1}}</h2>
+                <h2 class="mt-3">Table #{{table.id }}</h2>
               </v-card-title>
               <v-card-text>
                 <v-row>
-                  <v-col cols="6" v-for="prop in table.terms" :key="prop.uri">
-                    <v-card color="grey lighten-4">
+                  <v-col cols="12" v-for="prop in table.terms" :key="prop.uri">
+                    <v-card>
                       <v-card-text>
-                        <v-row no-gutters align="center" justify="center">
-                          <vcol cols="4" class="mt-5">
-                            <h4>{{prop.property}}</h4>
-                          </vcol>
+                        <v-row align="center" justify="center">
+                          <div class="headline">{{prop.property}}</div>
                           <v-col cols="8" class="ml-5">
                             <v-select
-                              class="mt-8"
-                              dense
-                              outlined
+                              v-model="prop.selected"
                               label="Select a term"
+                              :value="prop.selected.uri"
                               :items="prop.result"
                               item-value="uri"
-                              :item-text="item => item.prefixedName +' - (score = '+ item.score+' )'"
+                              :item-text="item => item.prefixedName +' - (score = '+ item.score+' )' +' - (term = '+ item.term+' )'"
                               return-object
-                            ></v-select>
+                            >
+                              <template v-slot:selection="{ item }">
+                                <a v-bind:href="item.uri" target="__">{{item.uri}}</a>
+                              </template>
+                            </v-select>
                           </v-col>
+                          <Modal
+                            v-if="modalVisible"
+                            @close="modalVisible = false"
+                            :prop="modalData"
+                            :active="modalVisible"
+                          ></Modal>
+                          <v-btn
+                            color="blue"
+                            dark
+                            class="mx-2"
+                            fab
+                            small
+                            @click.stop="modalVisible = true"
+                            @click="openModal(prop)"
+                          >
+                            <v-icon dark>mdi-magnify</v-icon>
+                          </v-btn>
                         </v-row>
                       </v-card-text>
                       <v-divider></v-divider>
@@ -46,83 +64,53 @@
       </v-tab-item>
       <v-tab-item>
         <v-row>
-          <v-col cols="12" v-for="(paragraph,index) in results.results.paragraphs" :key="index">
+          <v-col cols="12" v-for="(paragraph,index) in paragraphs_selected" :key="index">
             <v-card>
               <v-card-title>
-                <h2>Paragraph #{{index+1}}</h2>
+                <h2>Paragraph #{{paragraph.id}}</h2>
               </v-card-title>
               <v-card-text>
                 <v-row>
-                  <v-col cols="12" class="mb-5">{{paragraph.paragraph}}</v-col>
-                  <v-col cols="12">
+                  <v-col cols="12" v-for="prop in paragraph.terms" :key="prop.uri">
                     <v-card>
                       <v-card-text>
-                        <h4 class="text-center">Entities</h4>
-                        <v-simple-table dense class="ml-5">
-                          <thead>
-                            <tr>
-                              <th>Entity</th>
-                              <th>Class</th>
-                              <th>URI</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr
-                              v-for="(entity, index) in paragraph.entities"
-                              @click="show(entity)"
-                              :key="index"
+                        <v-row align="center" justify="center">
+                          <div class="headline">{{prop.property}}</div>
+                          <v-col cols="8" class="ml-5">
+                            <v-select
+                              v-model="prop.selected"
+                              label="Select a term"
+                              :value="prop.selected.uri"
+                              :items="prop.result"
+                              item-value="uri"
+                              :item-text="item => item.prefixedName +' - (score = '+ item.score+' )' +' - (term = '+ item.term+' )'"
+                              return-object
                             >
-                              <td>{{entity.name}}</td>
-
-                              <td class="caption ml-3">
-                                <v-select
-                                  dense
-                                  outlined
-                                  menu-props="auto"
-                                  :items="entity.entity_type"
-                                  v-model="entity.entity_type[0].prefixedName"
-                                  item-value="prefixedName"
-                                  item-text="prefixedName"
-                                ></v-select>
-                              </td>
-                              <td class="caption ml-3">
-                                <v-select
-                                  dense
-                                  outlined
-                                  menu-props="auto"
-                                  :items="entity.uri"
-                                  v-model="entity.uri[0]"
-                                  item-value="uri"
-                                  item-text="uri"
-                                ></v-select>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </v-simple-table>
+                              <template v-slot:selection="{ item }">
+                                <a v-bind:href="item.uri" target="__">{{item.uri}}</a>
+                              </template>
+                            </v-select>
+                          </v-col>
+                          <Modal
+                            v-if="modalVisible"
+                            @close="modalVisible = false"
+                            :prop="modalData"
+                            :active="modalVisible"
+                          ></Modal>
+                          <v-btn
+                            color="blue"
+                            dark
+                            class="mx-2"
+                            fab
+                            small
+                            @click.stop="modalVisible = true"
+                            @click="openModal(prop)"
+                          >
+                            <v-icon dark>mdi-magnify</v-icon>
+                          </v-btn>
+                        </v-row>
                       </v-card-text>
-                    </v-card>
-                  </v-col>
-                  <v-col cols="12">
-                    <v-card>
-                      <v-card-text>
-                        <h4 class="text-center" self-align="center">RDF Triples</h4>
-                        <v-simple-table class="ml-5" dense>
-                          <thead>
-                            <tr>
-                              <th>Subject</th>
-                              <th>Predicate</th>
-                              <th>Object</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr v-for="(triple,index) in triples" :key="index">
-                              <td>{{triple.subject}}</td>
-                              <td>{{triple.predicat}}</td>
-                              <td>{{triple.object}}</td>
-                            </tr>
-                          </tbody>
-                        </v-simple-table>
-                      </v-card-text>
+                      <v-divider></v-divider>
                     </v-card>
                   </v-col>
                 </v-row>
@@ -135,19 +123,52 @@
   </v-container>
 </template>
 <script>
+import Modal from "@/Subcomponents/Modal.vue";
+
 export default {
+  components: {
+    Modal
+  },
   data() {
     return {
-      results: null,
       tab: null,
-      triples: [{ subject: "test", predicat: "test", object: "test" }]
+      modalVisible: false,
+      modalData: null
     };
   },
-  methods: {
-    show(payload) {
-      console.log(payload);
+  computed: {
+    tables_selected() {
+      var selected = [];
+      this.$store.state.html.tables.forEach(function(table) {
+        if (table.selected) selected.push(table);
+      });
+      return selected;
+    },
+    paragraphs_selected() {
+      var selected = [];
+      this.$store.state.html.paragraphs.forEach(function(paragraph) {
+        if (paragraph.selected) selected.push(paragraph);
+      });
+      return selected;
     }
   },
+  methods: {
+    tables_headers: function(table) {
+      var headers_selected = [];
+
+      table.headers.forEach(function(header) {
+        if (header.selected == true) headers_selected.push(header);
+      });
+      return headers_selected;
+    },
+    openModal(data) {
+      console.log(data);
+      this.modalData = data;
+      this.modalVisible = true;
+      console.log(this.modalVisible);
+    }
+  },
+
   watch: {
     count(newCount, oldCount) {
       console.log("old " + oldCount + " new count " + newCount);
@@ -165,13 +186,7 @@ export default {
       deep: true
     }
   },
-  computed: {
-    count() {
-      return this.$store.state.properties.length;
-    }
-  },
   mounted() {
-    this.results = this.$store.state.properties;
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

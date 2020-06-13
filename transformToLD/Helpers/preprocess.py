@@ -1,5 +1,7 @@
 from googletrans import Translator
 from transformToLD.Classes.classes import Tag
+import textrazor
+
 import spacy
 import inflection
 TYPE_MAPPING = {
@@ -13,13 +15,12 @@ TYPE_MAPPING = {
 def preprocess_columns(columns):
     headers = []
     for col in columns:
-        header = dict()
-        header["name"] = col
-        translated = translate_word(col)
-        header['translated'] = translated
-        combinaison = get_combinaisons(translated)
-        header['combinaison'] = combinaison
-        headers.append(header)
+        if col['selected'] == True:
+            translated = translate_word(col['name'])
+            col['translated'] = translated
+            combinaison = get_combinaisons(translated)
+            col['combinaison'] = combinaison
+        headers.append(col)
    # content = file.values.tolist()
     return headers
 
@@ -110,3 +111,33 @@ def tagging_sentence(sentence, model="en_core_web_sm"):
         if (token.pos_ == "VERB"):
             tags.append(Tag(token.text, token.pos_).to_dict())
     return tags
+
+
+def preprocess_paragraph(paragraph):
+    textrazor.api_key = "4599791ae63e2fb4f39d911a2145db56469b306ba8fbd6eda53e65ce"
+    client = textrazor.TextRazor(extractors=['entities', 'relations'])
+    # client.set_entity_freebase_type_filters(["/organization/organization"])
+    client.set_entity_dbpedia_type_filters(["Company", "Person"])
+
+    for sentence in paragraph["sentences"]:
+        relations = []
+        response = client.analyze(sentence['text'])
+        for relation in response.relations():
+            rel = dict()
+            rel["selected"] = True
+            rel['predicate'] = concatenate(relation.predicate_words)
+            for param in relation.params:
+                if param.relation == "SUBJECT":
+                    rel['subject'] = concatenate(param.param_words)
+                else:
+                    rel['object'] = concatenate(param.param_words)
+            relations.append(rel)
+        sentence['triplets'] = relations
+    return paragraph
+
+
+def concatenate(word_list):
+    term = ""
+    for word in word_list:
+        term += " " + word.token
+    return term

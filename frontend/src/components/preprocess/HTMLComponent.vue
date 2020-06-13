@@ -7,9 +7,8 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-col cols="12">
-          <v-card v-for="table in $store.html.tables_selected" :key="table.id" class="mt-3">
+          <v-card v-for="table in tables_selected" :key="table.id" class="mt-3">
             <v-card-title>
-              <v-checkbox v-model="tables_selected" :id="table.id" :value="table.id" class="mt-10"></v-checkbox>
               <h2>Table #{{table.id}}</h2>
             </v-card-title>
             <v-card-text>
@@ -23,7 +22,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="header in table.headers" :key="header.name">
+                    <tr v-for="header in tables_headers(table)" :key="header.name">
                       <td>{{header.name}}</td>
                       <td>{{header.translated}}</td>
                       <td>
@@ -42,34 +41,80 @@
         </v-col>
       </v-tab-item>
       <v-tab-item>
-        <v-col
-          cols="12"
-          v-for="(paragraph,index) in $store.csv.paragraphs_selected"
-          :key="index"
-          class="mt-3"
-        >
-          <Paragraphs :sentences="paragraph" :id="index"></Paragraphs>
+        <v-col cols="12" v-for="(paragraph,index) in paragraphs_selected" :key="index" class="mt-3">
+          <v-card>
+            <v-card-title>
+              <h2>Paragraph #{{paragraph.id}}</h2>
+            </v-card-title>
+            <v-card-text>
+              <v-row>
+                <v-col cols="12">
+                  <h4 class="text-center">Sentences</h4>
+                  <v-expansion-panels>
+                    <v-expansion-panel v-for="(sentence,i) in paragraph.sentences" :key="i">
+                      <v-expansion-panel-header>{{sentence.text}}</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <v-data-table :headers="headers" :items="sentence.triplets">
+                          <template v-slot:item.selected="{ item }">
+                            <v-checkbox v-model="item.selected" :value="item.selected"></v-checkbox>
+                          </template>
+                        </v-data-table>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+                </v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-tab-item>
     </v-tabs-items>
   </v-container>
 </template>
 <script>
-import Paragraphs from "@/Subcomponents/Paragraphs";
-
 export default {
   name: "HTMLComponent",
-  components: {
-    Paragraphs
-  },
+  components: {},
   data() {
     return {
       tab: null,
       continue: true,
       selected: "",
-      tables_selected: []
+      headers: [
+        { text: "", value: "selected" },
+        { text: "Subject", value: "subject" },
+        { text: "Predicate", value: "predicate" },
+        { text: "Object", value: "object" }
+      ]
     };
   },
+  computed: {
+    tables_selected() {
+      var selected = [];
+      this.$store.state.html.tables.forEach(function(table) {
+        if (table.selected) selected.push(table);
+      });
+      return selected;
+    },
+    paragraphs_selected() {
+      var selected = [];
+      this.$store.state.html.paragraphs.forEach(function(paragraph) {
+        if (paragraph.selected) selected.push(paragraph);
+      });
+      return selected;
+    }
+  },
+  methods: {
+    tables_headers: function(table) {
+      var headers_selected = [];
+
+      table.headers.forEach(function(header) {
+        if (header.selected == true) headers_selected.push(header);
+      });
+      return headers_selected;
+    }
+  },
+
   watch: {
     $v: {
       handler: function() {
@@ -82,7 +127,6 @@ export default {
       deep: true
     }
   },
-  computed: {},
   mounted() {
     this.$store.state.progress = true;
     if (this.continue) {

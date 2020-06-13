@@ -21,7 +21,7 @@ import axios from "axios";
 // This components will have the content for each stepper step.
 import CreateComponent from "./CreateComponent";
 import PreprocessComponent from "./PreprocessComponent";
-
+import VocabsComponent from "./VocabsComponent";
 import ConvertComponent from "./ConvertComponent.vue";
 import ExploreComponent from "./ExploreComponent.vue";
 import DocumentComponent from "./DocumentComponent.vue";
@@ -63,7 +63,7 @@ export default {
           name: "fourth",
           title: "Select",
           subtitle: "Vocabularies Selection",
-          component: ExploreComponent,
+          component: VocabsComponent,
           completed: false
         },
         {
@@ -115,7 +115,7 @@ export default {
     },
     beforeNextStep({ currentStep }, next) {
       if (currentStep.name == "first") {
-        let formData = new FormData();
+        var formData = new FormData();
         formData.append("file", this.$store.state.file_uploaded);
         formData.append("project_name", this.$store.state.project_name);
         formData.append("separator", this.$store.state.csv.separator);
@@ -163,7 +163,7 @@ export default {
           .catch(error => console.log(error));
       }
       if (currentStep.name == "second") {
-        let formData_2 = new FormData();
+        var formData_2 = new FormData();
 
         console.log("columns" + typeof this.$store.state.csv.columns_selected);
         formData_2.append("file_type", this.$store.state.file_type);
@@ -171,18 +171,24 @@ export default {
         if (this.$store.state.file_type == "csv") {
           formData_2.append(
             "columns",
-            JSON.stringify(this.$store.state.csv.columns_selected)
+            JSON.stringify(this.$store.state.csv.headers)
           );
         }
 
         if (this.$store.state.file_type == "html") {
           formData_2.append(
             "tables",
-            JSON.stringify(this.$store.state.html.tables_selected)
+            JSON.stringify(this.$store.state.html.tables)
           );
           formData_2.append(
             "paragraphs",
-            JSON.stringify(this.$store.state.html.paragraphs_selected)
+            JSON.stringify(this.$store.state.html.paragraphs)
+          );
+        }
+        if (this.$store.state.file_type == "text") {
+          formData_2.append(
+            "paragraph",
+            JSON.stringify(this.$store.state.text)
           );
         }
 
@@ -191,9 +197,64 @@ export default {
           .then(response => {
             console.log(response.data);
             if (this.$store.state.file_type == "csv") {
-              this.$store.state.csv.columns_preprocessed =
-                response.data.headers;
+              this.$store.state.csv.headers = response.data.headers;
             }
+            if (this.$store.state.file_type == "html") {
+              this.$store.state.html.tables = response.data.tables_selected;
+              this.$store.state.html.paragraphs =
+                response.data.paragraphs_selected;
+            }
+            if (this.$store.state.file_type == "text") {
+              this.$store.state.text.paragraph = response.data;
+            }
+            this.$store.state.progress = false;
+          })
+          .catch();
+      }
+      if (currentStep.name == "fourth") {
+        var formData3 = new FormData();
+        formData3.append("file_type", this.$store.state.file_type);
+        formData3.append("vocabs", JSON.stringify(this.$store.state.vocabs));
+
+        if (this.$store.state.file_type == "csv") {
+          formData3.append(
+            "columns",
+            JSON.stringify(this.$store.state.csv.headers)
+          );
+        }
+        if (this.$store.state.file_type == "html") {
+          formData3.append(
+            "tables",
+            JSON.stringify(this.$store.state.html.tables)
+          );
+          formData3.append(
+            "paragraphs",
+            JSON.stringify(this.$store.state.html.paragraphs)
+          );
+        }
+        if (this.$store.state.file_type == "text") {
+          formData3.append(
+            "paragraph",
+            JSON.stringify(this.$store.state.text.paragraph)
+          );
+        }
+
+        axios
+          .post("http://localhost:8000/explore/", formData3)
+          .then(response => {
+            console.log(response.data);
+            if (this.$store.state.file_type == "csv") {
+              this.$store.state.csv.terms = response.data.terms;
+              console.log(response.data);
+            }
+            if (this.$store.state.file_type == "html") {
+              this.$store.state.html.tables = response.data.tables;
+              this.$store.state.html.paragraphs = response.data.paragraphs;
+            }
+            if (this.$store.state.file_type == "text") {
+              this.$store.state.text.paragraph = response.data;
+            }
+
             this.$store.state.progress = false;
           })
           .catch();

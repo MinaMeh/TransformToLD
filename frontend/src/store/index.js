@@ -14,16 +14,18 @@ export default new Vuex.Store({
     progress: true,
     project_name: "",
     text: {
-      paragraph: "",
-      sentences: [],
+      paragraph: {
+        paragraph: "",
+        sentences: [],
+        terms: [],
+      },
     },
     csv: {
       separator: ";",
       headers: [],
       lines: 0,
       columns: 0,
-      columns_selected: [],
-      columns_preprocessed: [],
+      terms: [],
     },
     size: 0,
     html: {
@@ -33,8 +35,6 @@ export default new Vuex.Store({
       paragraphs: [],
       num_tables: 0,
       num_paragraphs: 0,
-      tables_selected: [],
-      paragraphs_selected: [],
     },
   },
   getters: {},
