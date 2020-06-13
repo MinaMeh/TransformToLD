@@ -30,26 +30,45 @@
           <v-card-title>
             <h2>Table columns</h2>
             <v-card-text>
-              <v-simple-table>
-                <thead>
+              <v-data-table :headers="headers" :items="$store.state.csv.headers">
+                <template v-slot:item="header">
                   <tr>
-                    <th></th>
-                    <th>Column</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr></tr>
-                  <tr v-for="(header,index) in $store.state.csv.headers" :key="index">
                     <td>
-                      <v-checkbox v-model="header.selected" :id="header" :value="header.selected"></v-checkbox>
+                      <v-checkbox
+                        v-model="header.item.selected"
+                        :id="String(header.item.name)"
+                        :value="header.item.selected"
+                      ></v-checkbox>
                     </td>
-
                     <td>
-                      <div class="mt-4 headline">{{header.name}}</div>
+                      <div class="mt-5 headline">
+                        <v-edit-dialog
+                          :return-value.sync="header.item.name"
+                          lazy
+                          @save="save"
+                          @cancel="cancel"
+                          @open="open"
+                          @close="close"
+                        >
+                          {{ header.item.name }}
+                          <template v-slot:input>
+                            <v-text-field
+                              v-model="header.item.name"
+                              label="Edit"
+                              single-line
+                              counter
+                            ></v-text-field>
+                          </template>
+                        </v-edit-dialog>
+                      </div>
                     </td>
                   </tr>
-                </tbody>
-              </v-simple-table>
+                </template>
+              </v-data-table>
+              <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+                {{ snackText }}
+                <v-btn flat @click="snack = false">Close</v-btn>
+              </v-snackbar>
             </v-card-text>
           </v-card-title>
         </v-card>
@@ -61,7 +80,15 @@
 export default {
   data() {
     return {
-      continue: true
+      continue: true,
+      snack: false,
+      snackColor: "",
+      snackText: "",
+
+      headers: [
+        { text: "Add", value: "Add" },
+        { text: "Header", value: "name", sortable: false }
+      ]
     };
   },
   watch: {
@@ -76,7 +103,26 @@ export default {
       deep: true
     }
   },
-  computed: {},
+  methods: {
+    save() {
+      this.snack = true;
+      this.snackColor = "success";
+      this.snackText = "Data saved";
+    },
+    cancel() {
+      this.snack = true;
+      this.snackColor = "error";
+      this.snackText = "Canceled";
+    },
+    open() {
+      this.snack = true;
+      this.snackColor = "info";
+      this.snackText = "Edit header name";
+    },
+    close() {
+      console.log("Dialog closed");
+    }
+  },
   mounted() {
     this.content = this.$store.state.file_content;
     if (this.continue) {

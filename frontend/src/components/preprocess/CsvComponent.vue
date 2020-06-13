@@ -16,7 +16,7 @@
                 </thead>
                 <tbody>
                   <tr></tr>
-                  <tr v-for="header in $store.state.csv.columns_preprocessed" :key="header.header">
+                  <tr v-for="header in headers" :key="header.name">
                     <td>{{header.name}}</td>
                     <td>{{header.translated}}</td>
                     <td>
@@ -44,6 +44,15 @@ export default {
     return {
       continue: true
     };
+  },
+  computed: {
+    headers() {
+      var selected = [];
+      this.$store.state.csv.headers.forEach(function(header) {
+        if (header.selected) selected.push(header);
+      });
+      return selected;
+    }
   },
   watch: {
     $v: {

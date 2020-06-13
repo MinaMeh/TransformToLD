@@ -16,9 +16,17 @@ client.set_entity_dbpedia_type_filters(["Company"])
 response = client.analyze(
     "Spain's stricken Bankia expects to sell off its vast portfolio of industrial holdings that includes a stake in parent company of British Airways and Iberia.")
 
+relations = []
 for relation in response.relations():
-    print("relation")
-    print("predicate_words {}".format(concatenate(relation.predicate_words)))
+    rel = dict()
+    rel['predicate'] = concatenate(relation.predicate_words)
+    i = 0
+    rel["param"] = []
+
     for param in relation.params:
-        print("param words {}".format(concatenate(param.param_words)))
-        print("param reation {}".format(param.relation))
+        params = dict()
+        params['param'] = concatenate(param.param_words)
+        params['param relation'] = param.relation
+        rel["param"].append(params)
+    relations.append(rel)
+print(rel)

@@ -1,5 +1,5 @@
 <template>
-  <Paragraphs :sentences="results"></Paragraphs>
+  <Paragraphs :sentences="$store.state.text.sentences"></Paragraphs>
 </template>
 <script>
 import Paragraphs from "@/Subcomponents/Paragraphs";
@@ -8,19 +8,9 @@ export default {
     Paragraphs
   },
   data() {
-    return {
-      results: null,
-      queries: ["text"]
-    };
+    return {};
   },
   watch: {
-    type(newType, oldType) {
-      console.log("old " + oldType + " new type " + newType);
-      this.results = this.$store.state.file_content.results;
-      console.log("queries" + this.queries);
-      console.log(this.results.entities);
-      //this.queries = this.results.entities;
-    },
     $v: {
       handler: function() {
         if (this.continue) {
@@ -32,17 +22,8 @@ export default {
       deep: true
     }
   },
-  computed: {
-    type() {
-      return this.$store.state.file_content.type;
-    }
-  },
+  computed: {},
   mounted() {
-    this.results = this.$store.state.file_content.results;
-    for (var word in this.results.entities) {
-      this.queries.push(this.results.entities[word].name);
-    }
-
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

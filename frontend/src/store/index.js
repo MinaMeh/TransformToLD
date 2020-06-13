@@ -22,8 +22,7 @@ export default new Vuex.Store({
       headers: [],
       lines: 0,
       columns: 0,
-      columns_selected: [],
-      columns_preprocessed: [],
+      terms: [],
     },
     size: 0,
     html: {

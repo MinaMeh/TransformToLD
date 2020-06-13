@@ -4,16 +4,15 @@
       <v-col cols="12">
         <v-card>
           <v-card-title>
-            <h2>Paragraph #{{id}}</h2>
+            <h2>Text</h2>
           </v-card-title>
           <v-card-text>
-            <v-row>{{paragraph}}</v-row>
             <v-row>
               <v-col cols="12">
                 <h4 class="text-center">Sentences</h4>
                 <v-expansion-panels>
                   <v-expansion-panel v-for="(sentence,i) in sentences" :key="i">
-                    <v-expansion-panel-header>{{sentence}}</v-expansion-panel-header>
+                    <v-expansion-panel-header>{{sentence.text}}</v-expansion-panel-header>
                     <v-expansion-panel-content></v-expansion-panel-content>
                   </v-expansion-panel>
                 </v-expansion-panels>
@@ -28,10 +27,7 @@
 <script>
 export default {
   props: {
-    sentences: Array,
-    tags: Array,
-    id: Number,
-    paragraph: String
+    sentences: Array
   },
   data() {
     return {

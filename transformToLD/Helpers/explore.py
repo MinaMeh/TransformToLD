@@ -57,4 +57,32 @@ def get_vocab_list():
             element["prefix"], element['uri'], element['titles'][0]['value']).to_dict()
         vocab_list.append(vocab)
     return vocab_list
-    
+
+
+def explore_csv(columns, vocabs_list):
+    '''
+    Map csv columns to LOV terms
+    '''
+    terms = []
+    for col in columns:
+        terms.append(explore_column(col, vocabs_list))
+
+    return terms
+
+
+def explore_column(column, vocabs_list):
+    """
+    Get column terms in the LOV cloud
+    """
+    term = {}
+    transated = column["translated"]
+    combinaisons = column["combinaison"]
+    term["property"] = column['name']
+    term["selected"] = ""
+
+    term["result"] = []
+    for comb in combinaisons:
+        data = get_vocab(comb, vocabs_list, 'property')
+        term["result"] += data
+    term['result'].sort(key=lambda term: term.get('score'), reverse=True)
+    return term

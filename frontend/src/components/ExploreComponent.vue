@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-progress-linear
-      v-if="progress"
+      v-if="$store.state.progress"
       class="mt-10"
       indeterminate
       color="light-blue"
@@ -10,8 +10,8 @@
       striped
     ></v-progress-linear>
 
-    <CsvComponent v-if="csv" :terms="results"></CsvComponent>
-    <HTMLComponent v-if="html"></HTMLComponent>
+    <CsvComponent v-if="$store.state.file_type=='csv'"></CsvComponent>
+    <HTMLComponent v-if="$store.state.file_type=='html'"></HTMLComponent>
   </div>
 </template>
 <script>
@@ -23,40 +23,11 @@ export default {
   props: ["clickedNext", "currentStep"],
   data() {
     return {
-      csv: false,
-      html: false,
-      progress: true,
-      results: []
+      progress: true
     };
   },
-  computed: {
-    type() {
-      return this.$store.state.file_content.type;
-    },
-    terms() {
-      return this.$store.state.csv.terms;
-    }
-  },
+  computed: {},
   watch: {
-    type(newCount, oldCount) {
-      console.log("old " + oldCount + " new count " + newCount);
-      var type = this.$store.state.file_content.type;
-      switch (type) {
-        case "csv":
-          this.csv = true;
-          break;
-        case "html":
-          this.html = true;
-          break;
-      }
-    },
-    terms(newTerms, oldTerms) {
-      this.progress = false;
-
-      console.log("old terms " + oldTerms + "new terms " + newTerms);
-      this.results = this.$store.state.csv.terms;
-    },
-
     $v: {
       handler: function() {
         if (this.continue) {
@@ -69,15 +40,6 @@ export default {
     }
   },
   mounted() {
-    var type = this.$store.state.file_content.type;
-    switch (type) {
-      case "csv":
-        this.csv = true;
-        break;
-      case "html":
-        this.html = true;
-        break;
-    }
     if (!this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
