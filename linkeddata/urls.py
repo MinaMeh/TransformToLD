@@ -5,11 +5,13 @@ from django.views.generic import TemplateView
 
 from rest_framework.urlpatterns import format_suffix_patterns
 from transformToLD import views
+
 from django.conf.urls import url, include
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('allauth.urls')),
-    path('', TemplateView.as_view(template_name="index.html")),
+    #path('accounts/', include('allauth.urls')),
+    #path('', TemplateView.as_view(template_name="index.html")),
+
 
     path('extract/', views.extract),
     path('vocabs/', views.listVocabs),
