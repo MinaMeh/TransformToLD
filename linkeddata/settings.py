@@ -22,8 +22,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-    'rest_auth',
-    'rest_framework.authtoken',
+    #'rest_auth',
+    #'rest_framework.authtoken',
 
     'allauth',
     'allauth.account',
