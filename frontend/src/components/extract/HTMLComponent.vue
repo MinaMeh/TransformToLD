@@ -72,9 +72,8 @@
                         <v-checkbox
                           v-model="header.selected"
                           :disabled="!table.selected"
-                          @change="toggleCol(header,table.id)"
                           :id="String(header)"
-                          :value="header.name"
+                          :value="header.selected"
                         ></v-checkbox>
                       </td>
                       <td>{{header.name}}</td>
@@ -112,7 +111,6 @@ export default {
       tab: null,
       continue: true,
       selected: "",
-      tables_selected: [],
       content: null
     };
   },
@@ -128,57 +126,7 @@ export default {
       deep: true
     }
   },
-  methods: {
-    tableContainsHeader: function(table_id, header) {
-      var existe = false;
-      var tables = this.$store.state.html.tables_selected.filter(table => {
-        return table.id == table_id;
-      });
-      var contain = tables[0].columns_selected.filter(col => {
-        return col == header;
-      });
-      if (contain.length != 0) existe = true;
-      console.log("existe", existe);
-      return existe;
-    },
-    tableIsNotSelected: function(table_id) {
-      var not_selected = true;
-      var tables = this.$store.state.html.tables_selected.filter(table => {
-        return table.id == table_id;
-      });
-      if (tables && tables.length) not_selected = false;
-      return not_selected;
-    },
-    toggleTable: function(table_id) {
-      console.log(table_id);
-      var tables = this.$store.state.html.tables_selected.filter(table => {
-        return table.id == table_id;
-      });
-      console.log("len(tables)" + tables.length);
-
-      if (tables && tables.length) {
-        this.$store.state.html.tables_selected.splice(tables[0], 1);
-      } else {
-        this.$store.state.html.tables_selected.push({
-          id: table_id,
-          columns_selected: []
-        });
-      }
-      console.log(this.$store.state.html.tables_selected);
-    },
-    toggleCol: function(header, table_id) {
-      var tables = this.$store.state.html.tables_selected.filter(table => {
-        return table.id == table_id;
-      });
-      var contain = tables[0].columns_selected.filter(col => {
-        return col == header;
-      });
-      if (contain.length == 0) tables[0].columns_selected.push(header);
-      else tables[0].columns_selected.splice(header, 1);
-      console.log(header, table_id);
-      console.log(this.$store.state.html.tables_selected);
-    }
-  },
+  methods: {},
   mounted() {
     this.content = this.$store.state.file_content;
     if (this.continue) {

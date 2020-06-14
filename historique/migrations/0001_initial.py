@@ -16,7 +16,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Author',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=70)),
                 ('email', models.EmailField(max_length=254)),
                 ('password', models.CharField(max_length=20)),
@@ -25,11 +26,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Project',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('project_name', models.CharField(default='', max_length=70)),
                 ('description', models.TextField()),
                 ('licence', models.CharField(default='', max_length=100)),
-                ('author', djongo.models.fields.EmbeddedField(model_container=historique.models.Author, model_form_class=historique.models.AuthorForm, null=True)),
+                ('author', djongo.models.fields.EmbeddedField(
+                    model_container=historique.models.Author, model_form_class=historique.models.AuthorForm, null=True)),
                 ('file_path', models.TextField(default='')),
                 ('updated', models.BooleanField(default=False)),
                 ('creation_date', models.DateTimeField(auto_now_add=True)),
