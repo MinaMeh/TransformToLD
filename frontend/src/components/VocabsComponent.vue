@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row no-gutters>
+    <v-row no-gutters class="mt-12">
       <v-col cols="12">
         <h1>Vocabularies</h1>
         <v-card flat>
@@ -57,6 +57,16 @@
               </tr>
             </template>
           </v-data-table>
+          <v-progress-linear
+            v-if="loading"
+            class="mt-10"
+            indeterminate
+            color="light-blue"
+            height="10"
+            value="10"
+            striped
+          ></v-progress-linear>
+
           <v-sheet v-if="loading" color="grey lighten-4" class="px-3 pt-3 pb-3">
             <v-skeleton-loader class="mx-auto" type="table-tbody"></v-skeleton-loader>
           </v-sheet>
@@ -76,6 +86,7 @@ export default {
     return {
       continue: true,
       search: "",
+      loading: true,
       headers: [
         { text: "Prefix", value: "prefix" },
         { text: "Title", value: "title" },

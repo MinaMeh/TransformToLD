@@ -9,6 +9,7 @@
           @active-step="isStepActive"
           @stepper-finished="alert"
           @before-next-step="beforeNextStep"
+          @clicking-back="$store.state.progress=false"
         ></horizontal-stepper>
       </v-col>
     </v-row>
@@ -114,6 +115,8 @@ export default {
       });
     },
     beforeNextStep({ currentStep }, next) {
+      this.$store.state.progress = true;
+
       if (currentStep.name == "first") {
         var formData = new FormData();
         formData.append("file", this.$store.state.file_uploaded);
@@ -163,9 +166,10 @@ export default {
           .catch(error => console.log(error));
       }
       if (currentStep.name == "second") {
+        this.$store.state.progress = true;
+
         var formData_2 = new FormData();
 
-        console.log("columns" + typeof this.$store.state.csv.columns_selected);
         formData_2.append("file_type", this.$store.state.file_type);
 
         if (this.$store.state.file_type == "csv") {
@@ -196,6 +200,10 @@ export default {
           .post("http://localhost:8000/preprocess/", formData_2)
           .then(response => {
             console.log(response.data);
+            console.log("before", this.$store.state.progress);
+            this.$store.state.progress = false;
+            console.log("after", this.$store.state.progress);
+
             if (this.$store.state.file_type == "csv") {
               this.$store.state.csv.headers = response.data.headers;
             }
@@ -207,11 +215,12 @@ export default {
             if (this.$store.state.file_type == "text") {
               this.$store.state.text.paragraph = response.data;
             }
-            this.$store.state.progress = false;
           })
           .catch();
       }
       if (currentStep.name == "fourth") {
+        this.$store.state.progress = true;
+
         var formData3 = new FormData();
         formData3.append("file_type", this.$store.state.file_type);
         formData3.append("vocabs", JSON.stringify(this.$store.state.vocabs));

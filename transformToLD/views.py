@@ -48,7 +48,7 @@ def extract(request):
     upload_file = fs.url(filename)
     file_type = file.content_type
     # Project(project_name=project_name, file_path=upload_file).save()
-    if file_type == 'text/csv':
+    if file_type == 'text/csv' or file_type == "application/vnd.ms-excel":
         results = extract_csv_data(upload_file, separator)
         resp = {'results': results, 'filename': filename,
                 'type': 'csv', 'size': file.size}
@@ -90,7 +90,8 @@ def preprocess(request):
     elif file_type == "text":
         paragraph = json.loads(request.POST.get('paragraph', 'nthg'))
         paragraph = preprocess_paragraph(paragraph)
-        return Response(paragraph)
+        resp = paragraph
+    return Response(resp)
 
 
 @api_view(['GET'])

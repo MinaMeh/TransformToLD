@@ -128,7 +128,6 @@ export default {
     }
   },
   mounted() {
-    this.$store.state.progress = true;
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

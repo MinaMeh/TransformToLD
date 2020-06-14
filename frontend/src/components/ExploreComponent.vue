@@ -9,10 +9,13 @@
       value="10"
       striped
     ></v-progress-linear>
+    <v-sheet v-if="$store.state.progress" color="grey lighten-4" class="px-3 pt-3 pb-3">
+      <v-skeleton-loader class="mx-auto" type="table-tbody"></v-skeleton-loader>
+    </v-sheet>
 
-    <CsvComponent v-if="$store.state.file_type=='csv'"></CsvComponent>
-    <HTMLComponent v-if="$store.state.file_type=='html'"></HTMLComponent>
-    <TextComponent v-if="$store.state.file_type=='text'"></TextComponent>
+    <CsvComponent v-if="$store.state.file_type=='csv' && $store.state.progress==false"></CsvComponent>
+    <HTMLComponent v-if="$store.state.file_type=='html' && $store.state.progress==false"></HTMLComponent>
+    <TextComponent v-if="$store.state.file_type=='text' && $store.state.progress==false"></TextComponent>
   </div>
 </template>
 <script>

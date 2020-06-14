@@ -46,7 +46,7 @@
               <h2>Table #{{table.id}}</h2>
             </v-card-title>
             <v-card-text>
-              <v-col cols="3">
+              <v-col cols="6">
                 <h3>Table Statistics</h3>
                 <v-simple-table dense>
                   <tr>
