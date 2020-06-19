@@ -1,98 +1,43 @@
 <template>
-  <div style="padding: 2rem 3rem; text-align: left;">
-    <div class="field">
-      <label class="label">Project Name</label>
-      <div class="control">
-        <input
-          :class="['input', ($v.form.project_name.$error) ? 'is-danger' : '']"
-          type="text"
-          placeholder="Project Name"
-          v-model="form.project_name"
-        />
-      </div>
-      <p v-if="$v.form.project_name.$error" class="help is-danger">This project name is invalid</p>
+  <v-container class="mt-10">
+    <div>
+      <v-progress-linear
+        v-if="$store.state.progress"
+        class="mt-10"
+        indeterminate
+        color="light-blue"
+        height="10"
+        value="10"
+        striped
+      ></v-progress-linear>
+      <v-sheet v-if="$store.state.progress" color="grey lighten-4" class="px-3 pt-3 pb-3">
+        <v-skeleton-loader class="mx-auto" type="table-tbody"></v-skeleton-loader>
+      </v-sheet>
+
+      <CsvComponent v-if="$store.state.file_type=='csv' && $store.state.progress==false"></CsvComponent>
+      <HTMLComponent v-if="$store.state.file_type=='html' && $store.state.progress==false"></HTMLComponent>
+      <TextComponent v-if="$store.state.file_type=='text' && $store.state.progress==false"></TextComponent>
     </div>
-    <div class="field">
-      <label class="label">File Link</label>
-      <div class="control">
-        <input
-          :class="['input', ($v.form.file_link.$error) ? 'is-danger' : '']"
-          type="text"
-          placeholder="File Link"
-          v-model="form.file_link"
-        />
-      </div>
-      <p v-if="$v.form.file_link.$error" class="help is-danger">This file link is invalid</p>
-    </div>
-    <div class="field">
-      <label class="label">Vocabularies</label>
-      <div class="control">
-        <div class="tags">
-          <span class="tag is-link">
-            foaf
-            <button class="delete is-small"></button>
-          </span>
-          <span class="tag is-link">
-            vcard
-            <button class="delete is-small"></button>
-          </span>
-          <span class="tag is-link">
-            rdfs
-            <button class="delete is-small"></button>
-          </span>
-        </div>
-      </div>
-    </div>
-    <table class="table is-bordered">
-      <thead>
-        <tr>
-          <th>Prefix</th>
-          <th>URI</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>foaf</td>
-          <td>
-            <a href="http://xmlns.com">http://xmlns.com</a>
-          </td>
-          <td>
-            <button class="button is-success">add</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  </v-container>
 </template>
 <script>
-import { validationMixin } from "vuelidate";
-import { required } from "vuelidate/lib/validators";
+import CsvComponent from "./convert/CsvComponent.vue";
+import HTMLComponent from "./convert/HTMLComponent.vue";
+import TextComponent from "./convert/TextComponent.vue";
+
 export default {
   props: ["clickedNext", "currentStep"],
-  mixins: [validationMixin],
+  components: { CsvComponent, HTMLComponent, TextComponent },
+
   data() {
     return {
-      form: {
-        project_name: "",
-        file_link: ""
-      }
+      continue: true
     };
-  },
-  validations: {
-    form: {
-      project_name: {
-        required
-      },
-      file_link: {
-        required
-      }
-    }
   },
   watch: {
     $v: {
-      handler: function(val) {
-        if (!val.$invalid) {
+      handler: function() {
+        if (this.continue) {
           this.$emit("can-continue", { value: true });
         } else {
           this.$emit("can-continue", { value: false });
@@ -101,13 +46,12 @@ export default {
       deep: true
     },
     clickedNext(val) {
-      if (val === true) {
-        this.$v.form.$touch();
-      }
+      console.log("test");
+      console.log(val);
     }
   },
   mounted() {
-    if (!this.$v.$invalid) {
+    if (!this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
       this.$emit("can-continue", { value: false });

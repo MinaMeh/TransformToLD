@@ -7,7 +7,11 @@ urlpatterns = [
     path('vocabs/', views.listVocabs),
     path('preprocess/', views.preprocess),
     path('explore/', views.explore),
+    path('vocabs/', views.select_vocabs),
+    path('convert/', views.convert),
+
     path('test/', views.test),
+    path('searchProperty/', views.search_property),
     url(r'^', include('historique.urls'))
 ]
 

@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <v-content>
-    <Navbar/>
-    <HorizontalStepper />
+      <Navbar />
+      <HorizontalStepper />
     </v-content>
   </v-app>
 </template>

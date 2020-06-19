@@ -52,11 +52,6 @@ export default {
         }
       },
       deep: true
-    },
-    clickedNext(val) {
-      if (val === true) {
-        this.$v.form.$touch();
-      }
     }
   },
   mounted() {
