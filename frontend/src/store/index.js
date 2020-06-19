@@ -18,6 +18,7 @@ export default new Vuex.Store({
         paragraph: "",
         sentences: [],
         terms: [],
+        triplets: [],
       },
     },
     csv: {
@@ -26,6 +27,7 @@ export default new Vuex.Store({
       lines: 0,
       columns: 0,
       terms: [],
+      triplets: [],
     },
     size: 0,
     html: {
@@ -35,6 +37,8 @@ export default new Vuex.Store({
       paragraphs: [],
       num_tables: 0,
       num_paragraphs: 0,
+      tables_triplets: [],
+      paragraphs_triplets: [],
     },
   },
   getters: {},

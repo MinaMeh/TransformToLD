@@ -268,6 +268,90 @@ export default {
           })
           .catch();
       }
+      if (currentStep.name == "fifth") {
+        var formData4 = new FormData();
+        formData4.append("file_type", this.$store.state.file_type);
+        formData4.append("file_name", this.$store.state.filename);
+        if (this.$store.state.file_type == "csv") {
+          formData4.append("delimiter", this.$store.state.csv.separator);
+          var terms = [];
+          this.$store.state.csv.terms.forEach(function(term) {
+            terms.push({ property: term.property, term: term.selected });
+          });
+          formData4.append("terms", JSON.stringify(terms));
+        }
+        if (this.$store.state.file_type == "text") {
+          var triplets = [];
+          this.$store.state.text.paragraph.sentences.forEach(function(
+            sentence
+          ) {
+            sentence.triplets.forEach(function(triplet) {
+              if (triplet.selected) {
+                triplets.push(triplet);
+              }
+            });
+          });
+          terms = [];
+          this.$store.state.text.paragraph.terms.forEach(function(term) {
+            terms.push({ property: term.property, term: term.selected });
+          });
+          formData4.append("terms", JSON.stringify(terms));
+          formData4.append("triplets", JSON.stringify(triplets));
+        }
+        if (this.$store.state.file_type == "html") {
+          var tables = [];
+          this.$store.state.html.tables.forEach(function(table) {
+            if (table.selected) {
+              var filename = table.filename;
+              var id = table.id;
+              var terms = [];
+              table.terms.forEach(function(term) {
+                terms.push({ property: term.property, term: term.selected });
+              });
+              tables.push({ filename: filename, id: id, terms: terms });
+            }
+          });
+          var paragraphs = [];
+          this.$store.state.html.paragraphs.forEach(function(paragraph) {
+            if (paragraph.selected) {
+              var id = paragraph.id;
+              var terms = [];
+              var triplets = [];
+              paragraph.terms.forEach(function(term) {
+                terms.push({ property: term.property, term: term.selected });
+              });
+              paragraph.sentences.forEach(function(sentence) {
+                sentence.triplets.forEach(function(triplet) {
+                  if (triplet.selected) triplets.push(triplet);
+                });
+              });
+
+              paragraphs.push({ id: id, terms: terms, triplets: triplets });
+            }
+          });
+
+          formData4.append("tables", JSON.stringify(tables));
+          formData4.append("paragraphs", JSON.stringify(paragraphs));
+        }
+        axios
+          .post("http://localhost:8000/convert/", formData4)
+          .then(response => {
+            this.$store.state.progress = false;
+            console.log(response.data);
+            if (this.$store.state.file_type == "csv") {
+              this.$store.state.csv.triplets = response.data;
+            }
+            if (this.$store.state.file_type == "text") {
+              this.$store.state.text.triplets = response.data;
+            }
+            if (this.$store.state.file_type == "html") {
+              this.$store.state.html.tables_triplets = response.data.tables;
+              this.$store.state.html.paragraphs_triplets =
+                response.data.paragraphs;
+            }
+          })
+          .catch();
+      }
       next();
     },
     alert() {

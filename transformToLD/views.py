@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from transformToLD.Helpers.extract import extract_text_data, extract_csv_data, extract_html_data
 from transformToLD.Helpers.explore import get_vocab_list, explore_csv, explore_column, get_vocab, explore_paragraph
 from transformToLD.Helpers.preprocess import preprocess_columns, preprocess_paragraph
+from transformToLD.Helpers.convert import convert_csv, convert_text, convert_html
 import pandas as pd
 import csv
 import json
@@ -133,22 +134,40 @@ def explore(request):
         return Response(paragraph)
 
 
-@ api_view(['POST'])
-def properties(request):
-    file = request.FILES['file']
-    fs = FileSystemStorage()
-    filename = fs.save(file.name, file)
-    upload_file = fs.url(filename)
-    file_type = file.content_type
-    if (file_type == 'text/csv'):
-        vocabs = request.POST['vocabs']
-        results = trait_csv(upload_file, vocabs)
-        resp = {'results': results, 'filename': filename, 'type': 'csv'}
-    elif (file_type == 'text/html'):
-        results = trait_html(upload_file, request.POST['vocabs'])
-        resp = {'results': results, 'tables': 0, "paragraphs": 0,
-                "type": "html", 'filename': filename}
-    return Response(resp)
+@api_view(['POST'])
+def convert(request):
+    file_type = request.POST.get("file_type")
+    file_name = request.POST.get("file_name")
+    if file_type == "csv":
+        terms = json.loads(request.POST.get("terms"))
+        delimiter = request.POST.get("delimiter")
+
+        lines = convert_csv(file_name, delimiter, terms)
+        return Response(lines)
+    if file_type == "text":
+        terms = json.loads(request.POST.get("terms"))
+        triplets = json.loads(request.POST.get("triplets"))
+        lines = convert_text(triplets, terms)
+        return Response(lines)
+    if file_type == "html":
+        tables = json.loads(request.POST.get("tables"))
+        paragraphs = json.loads(request.POST.get("paragraphs"))
+        tables_triplets = []
+        paragraphs_triplets = []
+        for table in tables:
+            line = dict()
+            line["id"] = table['id']
+            line['triplets'] = convert_html(table)
+            tables_triplets.append(line)
+        for paragraph in paragraphs:
+            triplets = paragraph['triplets']
+            terms = paragraph['terms']
+            line = dict()
+            line['id'] = paragraph["id"]
+            line["triplets"] = convert_text(triplets, terms)
+            paragraphs_triplets.append(line)
+
+        return Response({"tables": tables_triplets, 'paragraphs': paragraphs_triplets})
 
 
 @api_view(['POST'])
