@@ -119,6 +119,11 @@ export default {
 
       if (currentStep.name == "first") {
         var formData = new FormData();
+        var project = {
+          project_name: this.$store.state.project_name,
+          author: this.$store.state.user
+        };
+        formData.append("project", JSON.stringify(project));
         formData.append("file", this.$store.state.file_uploaded);
         formData.append("project_name", this.$store.state.project_name);
         formData.append("separator", this.$store.state.csv.separator);

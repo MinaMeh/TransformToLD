@@ -20,6 +20,8 @@ from rest_framework.permissions import IsAuthenticated
 from transformToLD.models import MyUser
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
+from historique.models import Project
+from historique.serializers import ProjectSerializer
 
 
 @api_view(['GET'])
@@ -33,7 +35,6 @@ def test(request):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
 def listVocabs(request):
     vocabs = get_vocab_list()
     results = VocabularySerializer(vocabs, many=True).data
@@ -45,6 +46,14 @@ def extract(request):
     file = request.FILES['file']
     project_name = request.POST.get('project_name')
     separator = request.POST.get('separator')
+    project = json.loads(request.POST.get("project"))
+
+    project_serializer = ProjectSerializer(data=project)
+
+    if project_serializer.is_valid():
+        project_serializer.save()
+    else:
+        return Response(project_serializer.data)
     tables = True if request.POST.get('tables') == 'true' else False
     paragraphs = True if request.POST.get('paragraphs') == 'true' else False
     fs = FileSystemStorage()
@@ -144,7 +153,6 @@ def convert(request):
     if file_type == "csv":
         terms = json.loads(request.POST.get("terms"))
         delimiter = request.POST.get("delimiter")
-
         lines = convert_csv(file_name, delimiter, terms)
         return Response(lines)
     if file_type == "text":
