@@ -21,39 +21,6 @@
                   </template>
                 </v-select>
               </v-col>
-              <!-- <v-dialog v-model="addDialog" width="800">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn color="green" dark v-bind="attrs" v-on="on" class="mx-2" fab small>
-                    <v-icon dark>mdi-plus</v-icon>
-                  </v-btn>
-                </template>
-                <v-card>
-                  <v-card-title>Add new property</v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <v-row>
-                        <v-col cols="12">
-                          <v-text-field label="Domain Name"></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
-                          <v-text-field label="Property Name"></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
-                          <v-textarea
-                            label="Property Description"
-                            hint="Add description to show what this property means and some examples about its uses"
-                          ></v-textarea>
-                        </v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="red darken-1" text @click="addDialog = false">Close</v-btn>
-                    <v-btn color="green darken-1" text @click="addDialog = false">Save</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>-->
               <Modal
                 v-if="modalVisible"
                 @close="modalVisible = false"

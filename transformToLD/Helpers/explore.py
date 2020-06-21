@@ -92,12 +92,13 @@ def explore_paragraph(paragraph, vocab_list):
     terms = []
     for sentence in paragraph['sentences']:
         for triplet in sentence['triplets']:
-            term = {}
-            term["property"] = triplet['predicate']
-            term["selected"] = ""
-            term["result"] = get_vocab(triplet['predicate'], vocab_list)
-            term['result'].sort(
-                key=lambda term: term.get('score'), reverse=True)
-            terms.append(term)
+            if triplet["selected"] == True:
+                term = {}
+                term["property"] = triplet['predicate']
+                term["selected"] = ""
+                term["result"] = get_vocab(triplet['predicate'], vocab_list)
+                term['result'].sort(
+                    key=lambda term: term.get('score'), reverse=True)
+                terms.append(term)
     paragraph['terms'] = terms
     return paragraph

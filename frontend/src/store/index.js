@@ -94,6 +94,23 @@ export default new Vuex.Store({
         resolve();
       });
     },
+    // refreshToken(context, userData) {
+    //   return new Promise((resolve) =>
+    //     Axios.post("http://localhost:8000/api/token/refresh/", {
+    //       token: this.state.accessToken,
+    //     }).then((response) => {
+    //       console.log(response.data);
+    //       context.commit("updateStorage", {
+    //         accessToken: response.data.token,
+    //         first_name: response.data.first_name,
+    //         last_name: response.data.last_name,
+    //         email: response.data.email,
+    //       });
+    //       resolve();
+    //     });
+    //     )
+    //   );
+    // },
     userRegister(context, userData) {
       return new Promise((resolve) => {
         Axios.post("http://localhost:8000/register/", {
@@ -124,11 +141,16 @@ export default new Vuex.Store({
           exp - Date.now() / 1000 < 1800 &&
           Date.now() / 1000 - orig_iat < 628200
         ) {
-          this.dispatch("refreshToken");
+          this.dispatch("userLogin", {
+            email: this.state.user.email,
+            password: this.state.user.password,
+          }).then(() => {
+            this.$router.push({ name: "home" });
+          });
         } else if (exp - Date.now() / 1000 < 1800) {
-          // DO NOTHING, DO NOT REFRESH
+          this.$router.push({ name: "login" });
         } else {
-          // PROMPT USER TO RE-LOGIN, THIS ELSE CLAUSE COVERS THE CONDITION WHERE A TOKEN IS EXPIRED AS WELL
+          this.$router.push({ name: "login" });
         }
       }
     },
