@@ -6,15 +6,18 @@ import store from "./store";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import vuetify from "./plugins/vuetify";
-import VueRouter from "vue-router";
 
-import routes from "./routes";
-
+import router from "./routes";
 Vue.config.productionTip = false;
 Vue.component("text-highlight", TextHighlight);
-Vue.use(VueRouter);
-const router = new VueRouter({ routes });
-
+store
+  .dispatch("inspectToken")
+  .then(() => {
+    console.log(store.accessToken);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 new Vue({
   router,
   store,
