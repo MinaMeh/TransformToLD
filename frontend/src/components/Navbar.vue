@@ -11,6 +11,7 @@
       <v-toolbar-title class="white--text">Data Linked</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
+      <v-btn text color="white" @click.prevent="logout">Logout</v-btn>
       <v-icon class="white--text">mdi-account</v-icon>
     </v-app-bar>
     <v-navigation-drawer
@@ -66,6 +67,13 @@ export default {
         { title: "Historical", href: "", icon: "mdi-palette-swatch" }
       ]
     };
+  },
+  methods: {
+    logout() {
+      this.$store
+        .dispatch("userLogout")
+        .then(this.$router.push({ name: "login" }));
+    }
   },
   computed: {
     mini() {

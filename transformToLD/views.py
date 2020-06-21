@@ -10,14 +10,16 @@ import json
 import io
 from rest_framework import viewsets, static
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from .Serializers import VocabularySerializer, ProjectSerializer
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 from transformToLD.models import Project
 from rest_framework import serializers
-
+from rest_framework.permissions import IsAuthenticated
+from transformToLD.models import MyUser
 # Create your views here.
+from rest_framework_jwt.settings import api_settings
 
 
 @api_view(['GET'])
@@ -31,6 +33,7 @@ def test(request):
 
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def listVocabs(request):
     vocabs = get_vocab_list()
     results = VocabularySerializer(vocabs, many=True).data
@@ -175,3 +178,22 @@ def search_property(request):
     term = request.POST.get("term")
     vocab_list = get_vocab(term)
     return Response(vocab_list)
+
+
+@api_view(["POST"])
+def register(request):
+    body_unicode = request.body.decode('utf-8')
+    data = json.loads(body_unicode)
+    email = data.get("email")
+    first_name = data.get("first_name")
+    last_name = data.get("last_name")
+    password = data.get("password")
+    user = MyUser.objects.create_user(
+        email=email, first_name=first_name, last_name=last_name, password=password)
+
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+
+    payload = jwt_payload_handler(user)
+    token = jwt_encode_handler(payload)
+    return Response({"token": token, "email": user.email, "id": user.id, "last_name": user.last_name, "first_name": first_name})
