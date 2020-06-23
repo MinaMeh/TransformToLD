@@ -1,131 +1,169 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import Axios from "axios";
+import jwt_decode from "jwt-decode";
 
-
-import * as types from './mutation-types'
-import VueResource from 'vue-resource'
-import axios from 'axios';
-import router from '../router'
-
-
-Vue.use(VueResource);
 Vue.use(Vuex);
 
-// api end point
-const API_END_POINT = 'http://localhost:8000/'
-
-// mutation
-const mutations = {
-    [types.LOGIN](state) {
-        state.pending = true;
-    },
-    [types.LOGIN_SUCCESS](state) {
-        state.isLoggedIn = true;
-        state.pending = false;
-    },
-    [types.LOGOUT](state) {
-        state.isLoggedIn = false;
-    }
-}
-
-// state
-const state = {
-    isLoggedIn: !!localStorage.getItem('auth')
-}
-
-// actions
-const actions = {
-    login({
-        commit
-    }, token) {
-        commit(types.LOGIN);
-        axios.post(API_END_POINT + 'auth/google/', {
-                access_token: token.access_token
-            }).then(response => {
-                localStorage.setItem("auth", response.data.key);
-                commit(types.LOGIN_SUCCESS);
-                console.log('backend auth successful');
-                router.push({
-                    name: 'home'
-                })
-            })
-            .catch(response => {
-                if (response.status === 400) {
-                    console.log('Not authorized.');
-                } else if (response.status === 403) {
-                    console.log('You are not suposed to see this message. Contact Administrator');
-                }
-            });
-    },
-    logout({
-        commit
-    }) {
-        localStorage.removeItem("auth");
-        commit(types.LOGOUT);
-    }
-}
-
-// getters
-const getters = {
-        isLoggedIn: state => state.isLoggedIn
-    }
-    /*
-    export default new Vuex.Store({
-        state: {
-            properties: [],
-            vocabs: [],
-            file_type: null,
-            file_uploaded: "",
-            file_content: [],
-            filename: "",
-            progress: true,
-            project_name: "",
-            text: {
+export default new Vuex.Store({
+    state: {
+        accessToken: localStorage.getItem("t"),
+        refreshToken: null,
+        user: {
+            first_name: "",
+            last_name: "",
+            email: "",
+        },
+        properties: [],
+        vocabs: [],
+        file_type: null,
+        file_uploaded: "",
+        file_content: [],
+        filename: "",
+        progress: true,
+        project_name: "",
+        text: {
+            paragraph: {
                 paragraph: "",
                 sentences: [],
-            },
-            csv: {
-                separator: ";",
-                headers: [],
-                lines: 0,
-                columns: 0,
-                columns_selected: [],
-                columns_preprocessed: [],
-            },
-            size: 0,
-            html: {
-                extract_tables: true,
-                extract_paragraphs: true,
-                tables: [],
-                paragraphs: [],
-                num_tables: 0,
-                num_paragraphs: 0,
-                tables_selected: [],
-                paragraphs_selected: [],
+                terms: [],
+                triplets: [],
             },
         },
-        getters: {},
-        mutations: {
-            UPDATE_PROPERTIES(state, payload) {
-                state.properties = payload.properties;
-            },
+        csv: {
+            separator: ";",
+            headers: [],
+            lines: 0,
+            columns: 0,
+            terms: [],
+            triplets: [],
         },
-        actions: {
-            addProperties({
-                commit
-            }, payload) {
-                commit("UPDATE_PROPERTIES", payload);
-            },
+        size: 0,
+        html: {
+            extract_tables: true,
+            extract_paragraphs: true,
+            tables: [],
+            paragraphs: [],
+            num_tables: 0,
+            num_paragraphs: 0,
+            tables_triplets: [],
+            paragraphs_triplets: [],
         },
-    });
-    */
+    },
+    getters: {
+        loggedIn(state) {
+            return state.accessToken != null;
+        },
+    },
+    mutations: {
+        updateStorage(state, {
+            accessToken,
+            first_name,
+            last_name,
+            email
+        }) {
+            localStorage.setItem("t", accessToken);
 
-
-// one store for entire application
-export default new Vuex.Store({
-    state,
-    //strict: debug,
-    getters,
-    actions,
-    mutations
+            state.accessToken = accessToken;
+            state.user.first_name = first_name;
+            state.user.last_name = last_name;
+            state.user.email = email;
+        },
+        removeToken(state) {
+            localStorage.removeItem("t");
+            state.accessToken = null;
+        },
+    },
+    actions: {
+        userLogin(context, userData) {
+            console.log(userData);
+            return new Promise((resolve) => {
+                Axios.post("http://localhost:8000/api/token/", {
+                    email: userData.email,
+                    password: userData.password,
+                }).then((response) => {
+                    console.log(response.data);
+                    context.commit("updateStorage", {
+                        accessToken: response.data.token,
+                        first_name: response.data.first_name,
+                        last_name: response.data.last_name,
+                        email: response.data.email,
+                    });
+                    resolve();
+                });
+            });
+        },
+        userLogout(context) {
+            return new Promise((resolve) => {
+                context.commit("removeToken");
+                resolve();
+            });
+        },
+        // refreshToken(context, userData) {
+        //   return new Promise((resolve) =>
+        //     Axios.post("http://localhost:8000/api/token/refresh/", {
+        //       token: this.state.accessToken,
+        //     }).then((response) => {
+        //       console.log(response.data);
+        //       context.commit("updateStorage", {
+        //         accessToken: response.data.token,
+        //         first_name: response.data.first_name,
+        //         last_name: response.data.last_name,
+        //         email: response.data.email,
+        //       });
+        //       resolve();
+        //     });
+        //     )
+        //   );
+        // },
+        userRegister(context, userData) {
+            return new Promise((resolve) => {
+                Axios.post("http://localhost:8000/register/", {
+                    email: userData.email,
+                    password: userData.password,
+                    first_name: userData.first_name,
+                    last_name: userData.last_name,
+                }).then((response) => {
+                    console.log(response.data);
+                    context.commit("updateStorage", {
+                        accessToken: response.data.token,
+                        first_name: response.data.first_name,
+                        last_name: response.data.last_name,
+                        email: response.data.email,
+                    });
+                    resolve();
+                });
+            });
+        },
+        inspectToken() {
+            const token = this.state.accessToken;
+            if (token) {
+                const decoded = jwt_decode(token);
+                const exp = decoded.exp;
+                const orig_iat = decoded.orig_iat;
+                console.log(decoded);
+                if (
+                    exp - Date.now() / 1000 < 1800 &&
+                    Date.now() / 1000 - orig_iat < 628200
+                ) {
+                    this.dispatch("userLogin", {
+                        email: this.state.user.email,
+                        password: this.state.user.password,
+                    }).then(() => {
+                        this.$router.push({
+                            name: "home"
+                        });
+                    });
+                } else if (exp - Date.now() / 1000 < 1800) {
+                    this.$router.push({
+                        name: "login"
+                    });
+                } else {
+                    this.$router.push({
+                        name: "login"
+                    });
+                }
+            }
+        },
+    },
 });
