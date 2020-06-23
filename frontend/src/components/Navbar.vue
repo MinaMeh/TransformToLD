@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar app flat color="#3493b3ff">
+    <v-app-bar app flat color="primary accent-4">
       <v-app-bar-nav-icon
         @click.stop="sidebarMenu = !sidebarMenu"
         class="white--text"
