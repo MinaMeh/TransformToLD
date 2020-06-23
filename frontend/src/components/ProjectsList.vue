@@ -1,5 +1,6 @@
 <template>
   <v-container>
+  <Navbar></Navbar>
     <v-data-table
       :headers="headers"
       :items="projects"
@@ -71,7 +72,11 @@
 </template>
 
 <script>
+import Navbar from "@/components/Navbar";
 export default {
+  components: {
+    Navbar
+  },
   data: () => ({
     dialog: false,
     search: "",
