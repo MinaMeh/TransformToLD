@@ -12,6 +12,9 @@ export default {
   components: {
     HorizontalStepper,
     Navbar
+  },
+  data() {
+    return {};
   }
 };
 </script>

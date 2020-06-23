@@ -11,6 +11,10 @@
           @before-next-step="beforeNextStep"
           @clicking-back="$store.state.progress=false"
         ></horizontal-stepper>
+        <v-snackbar v-model="error" color="red">
+          {{errorMsg}}
+          <v-btn text @click="error=false">close</v-btn>
+        </v-snackbar>
       </v-col>
     </v-row>
   </v-container>
@@ -33,6 +37,8 @@ export default {
   },
   data() {
     return {
+      error: false,
+      errorMsg: "",
       demoSteps: [
         {
           icon: "folder",
@@ -167,8 +173,13 @@ export default {
             }
 
             this.$store.state.progress = false;
+            next();
           })
-          .catch(error => console.log(error));
+          .catch(error => {
+            console.log(error);
+            this.error = true;
+            this.errorMsg = error.response.data.msg;
+          });
       }
       if (currentStep.name == "second") {
         this.$store.state.progress = true;
@@ -220,8 +231,13 @@ export default {
             if (this.$store.state.file_type == "text") {
               this.$store.state.text.paragraph = response.data;
             }
+            next();
           })
-          .catch();
+          .catch(error => {
+            console.log(error);
+            this.error = true;
+            this.errorMsg = error.response.data.msg;
+          });
       }
       if (currentStep.name == "fourth") {
         this.$store.state.progress = true;
@@ -270,8 +286,13 @@ export default {
             }
 
             this.$store.state.progress = false;
+            next();
           })
-          .catch();
+          .catch(error => {
+            console.log(error);
+            this.error = true;
+            this.errorMsg = error.response.data.msg;
+          });
       }
       if (currentStep.name == "fifth") {
         var formData4 = new FormData();
@@ -354,10 +375,14 @@ export default {
               this.$store.state.html.paragraphs_triplets =
                 response.data.paragraphs;
             }
+            next();
           })
-          .catch();
+          .catch(error => {
+            console.log(error);
+            this.error = true;
+            this.errorMsg = error.response.data.msg;
+          });
       }
-      next();
     },
     alert() {
       alert("finished");

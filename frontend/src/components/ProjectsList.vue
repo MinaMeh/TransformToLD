@@ -1,6 +1,6 @@
 <template>
   <v-container>
-  <Navbar></Navbar>
+    <Navbar></Navbar>
     <v-data-table
       :headers="headers"
       :items="projects"
@@ -58,8 +58,8 @@
         </v-toolbar>
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-btn text color="success" medium to="/Project">
-          <v-icon medium class="mr-2">mdi-eye</v-icon>
+        <v-btn text color="success">
+          <v-icon medium class="mr-2" @click="$router.push({name: 'project-details'})">mdi-eye</v-icon>
         </v-btn>
         <v-icon color="primary" medium class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
         <v-icon color="error" medium @click="deleteItem(item)">mdi-delete</v-icon>
@@ -122,7 +122,7 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
     this.initialize();
   },
 

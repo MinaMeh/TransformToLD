@@ -5,7 +5,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.response import Response
 from historique.models import Project, Author
 from historique.serializers import ProjectSerializer, AuthorSerializer
 
@@ -25,7 +25,9 @@ def projects_list(request):
 
     elif request.method == 'POST':
         project_data = JSONParser().parse(request)
+
         project_serializer = ProjectSerializer(data=project_data)
+
         if project_serializer.is_valid():
             project_serializer.save()
             return JsonResponse(project_serializer.data, status=status.HTTP_201_CREATED)
