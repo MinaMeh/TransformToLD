@@ -20,7 +20,13 @@ def extract_csv_data(csv_file, separator=";"):
         stores the content in the database
     '''
     file = pd.read_csv(csv_file, delimiter=separator)
-    headers = file.columns
+    cols = file.columns
+    headers = []
+    for col in cols:
+        head = {}
+        head['name'] = col
+        head['selected'] = False
+        headers.append(head)
     lines = file.shape[0]
     columns = file.shape[1]
     return {"headers": headers, 'columns': columns, "lines": lines}
@@ -40,7 +46,7 @@ def extract_html_data(file, extract_tables=False, extract_paragraphs=False):
     num_paragraphs = 0
     if (extract_tables):
         tables_html = soup.find_all("table")
-        tables = get_tables_content(tables_html)
+        tables = get_tables_content(tables_html, file)
         num_tables = len(tables)
     if (extract_paragraphs):
         paragraphs = [par.text for par in soup.find_all("p")]
@@ -51,37 +57,36 @@ def extract_html_data(file, extract_tables=False, extract_paragraphs=False):
     return results
 
 
-def get_tables_content(tables):
+def get_tables_content(tables, file):
     '''
     Extract data from HTML Tables
     Returns: headers, number of columns, number of lines
     Stores the content in a database
     '''
     tables_results = []
+
     for i in range(len(tables)):
+        filename = "{}_{}.html".format(
+            "".join(file.split(".")[:-1]), str(i), "html")
+        with open(filename, "w") as f:
+            f.write(str(tables[i]))
+        # html_file = pd.read_html(filename)
         tables_content = dict()
-        data = lh.fromstring(str(tables[i]))
-        tr_elements = data.xpath('//tr')
+        # data = lh.fromstring(str(tables[i]))
+        # tr_elements = data.xpath('//tr')
+        file_content = pd.read_html(filename)[0]
         headers = []
         tables_content["id"] = i
         tables_content["selected"] = False
-
-        for header in tr_elements[0]:
+        tables_content["filename"] = filename
+        for header in file_content.columns:
             head = dict()
-            name = header.text_content()
+            name = header
             head = {"name": name, "selected": False}
             headers.append(head)
         tables_content['headers'] = headers
         tables_content['columns'] = len(headers)
-        #tables_content["elements"] = []
-        content = []
-        for row in tr_elements[1:]:
-            line = []
-            for cell in row:
-                line.append(cell.text_content())
-            content.append(line)
-            # tables_content["elements"].append(line)
-        tables_content["lines"] = len(content)
+        tables_content["lines"] = file_content.shape[0]
         tables_results.append(tables_content)
     return tables_results
 
@@ -97,6 +102,8 @@ def get_paragraphs_sentences(paragraphs):
         result = dict()
         result['paragraph'] = paragraph
         result['id'] = i
+        result['selected'] = False
+
         i += 1
         result['sentences'] = get_sentences(paragraph)
         paragraph_results.append(result)
@@ -111,5 +118,7 @@ def get_sentences(paragraph, model="en_core_web_sm"):
     nlp = spacy.load(model)
     doc = nlp(paragraph)
     for sent in doc.sents:
-        sentences.append(sent.text)
+        sentence = dict()
+        sentence['text'] = sent.text
+        sentences.append(sentence)
     return sentences

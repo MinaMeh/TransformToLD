@@ -19,6 +19,7 @@ store
     .catch((err) => {
         console.log(err);
     });
+
 new Vue({
     router,
     store,

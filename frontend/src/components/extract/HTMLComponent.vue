@@ -164,13 +164,16 @@ export default {
       continue: true,
       selected: "",
       tables_selected: [],
+
       snack: false,
       snackColor: "",
       snackText: "",
+
       headers: [
         { text: "Add", value: "Add" },
         { text: "Header", value: "header", sortable: true },
       ],
+
       content: null,
     };
   },
@@ -194,8 +197,10 @@ export default {
       for (var header in tables[0].headers) {
         tables[0].headers[header].selected = false;
       }
+
       console.log(tables[0]);
     },
+
     save() {
       this.snack = true;
       this.snackColor = "success";

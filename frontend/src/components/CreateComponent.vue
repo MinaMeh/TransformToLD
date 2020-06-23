@@ -131,7 +131,7 @@ export default {
     },
     clickedNext(val) {
       if (val === true) {
-        console.log(this.file);
+        console.log("next", val);
         this.$v.form.$touch();
       }
     }
