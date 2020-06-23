@@ -28,13 +28,11 @@ const routes = [{
         path: "/login",
         component: Login,
         name: "login",
-    },
-    {
+    }, {
         path: "/signup",
         component: Register,
         name: "signup",
-    },
-    {
+    }, {
         path: "/projects-list",
         name: "projects",
         component: ProjectsList
@@ -45,7 +43,10 @@ const routes = [{
     },
 ];
 Vue.use(VueRouter);
-const router = new VueRouter({ routes });
+const router = new VueRouter({
+    mode: "history",
+    routes
+});
 router.beforeEach((to, from, next) => {
     const publicPages = ["/login", "/signup"];
     const authRequired = !publicPages.includes(to.path);
@@ -59,5 +60,4 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
-
 export default router;
