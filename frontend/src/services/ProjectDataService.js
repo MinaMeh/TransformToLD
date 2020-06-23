@@ -18,16 +18,16 @@ class ProjectDataService {
     }
 
     delete(id) {
-            return http.delete(`/projects/${id}`);
-        }
-        /*
-            deleteAll() {
-                return http.delete(`/projects`);
-            }
-*/
-        /*  findByName(project_name) {
+        return http.delete(`/projects/${id}`);
+    }
+
+    deleteAll() {
+        return http.delete(`/projects`);
+    }
+
+    findByName(project_name) {
         return http.get(`/projects?project_name=${project_name}`);
-    }*/
+    }
 }
 
 export default new ProjectDataService();

@@ -1,22 +1,27 @@
 import Vue from "vue";
-
 import App from "./App.vue";
-
 import TextHighlight from "vue-text-highlight";
+import "./../node_modules/bulma/css/bulma.css";
+import store from "./store";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import vuetify from "./plugins/vuetify";
 
-import store from "./store/index.js";
-import router from './router'
-
-
+import router from "./routes";
 Vue.config.productionTip = false;
 Vue.component("text-highlight", TextHighlight);
 
+store
+    .dispatch("inspectToken")
+    .then(() => {
+        console.log(store.accessToken);
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 new Vue({
+    router,
     store,
     vuetify,
-    router,
-    render: h => h(App)
+    render: (h) => h(App),
 }).$mount("#app");
