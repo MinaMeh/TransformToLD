@@ -6,3 +6,4 @@ class projectForm(forms.Form):
     description = forms.Textarea(label="Description")
     licence = forms.CharField(label="Licence")
     file_path = forms.FileField(label="Dataset file")
+    creation_date = forms.DateField(label="Creation Date")

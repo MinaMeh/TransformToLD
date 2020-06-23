@@ -8,9 +8,6 @@ from rest_framework.decorators import api_view
 from historique.models import Project, Author
 from historique.serializers import ProjectSerializer, AuthorSerializer
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from rest_auth.registration.views import SocialLoginView
-
 
 @api_view(['GET', 'POST', 'DELETE'])
 def projects_list(request):
@@ -59,7 +56,3 @@ def project_details(request, pk):
     elif request.method == 'DELETE':
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
-
-
-class GoogleLogin(SocialLoginView):
-    adapter_class = GoogleOAuth2Adapter

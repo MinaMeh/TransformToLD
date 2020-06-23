@@ -9,9 +9,7 @@ import vuetify from "./plugins/vuetify";
 
 import store from "./store/index.js";
 import router from './router'
-import GSignInButton from 'vue-google-signin-button'
 
-Vue.use(GSignInButton);
 
 Vue.config.productionTip = false;
 Vue.component("text-highlight", TextHighlight);

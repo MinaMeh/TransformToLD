@@ -1,4 +1,3 @@
-
 from rest_meets_djongo import serializers
 from historique.models import Project, Author
 
@@ -19,6 +18,11 @@ class ProjectSerializer(serializers.DjongoModelSerializer):
             'description',
             'licence',
             'author',
+            'input_file',
+            'output_files',
+            'intermediate_files',
+            'csv_data',
+            'text_data',
+            'html_data',
             'creation_date',
-            'file_path'
         )
