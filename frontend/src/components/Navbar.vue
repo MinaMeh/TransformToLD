@@ -1,10 +1,7 @@
 <template>
   <nav>
     <v-app-bar app flat color="primary accent-4">
-      <v-app-bar-nav-icon
-        @click.stop="sidebarMenu = !sidebarMenu"
-        class="white--text"
-      ></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu" class="white--text"></v-app-bar-nav-icon>
       <v-toolbar-title class="white--text">Data Linked</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
@@ -33,20 +30,15 @@
         <v-list-item-icon>
           <v-icon>mdi-account-outline</v-icon>
         </v-list-item-icon>
-        <v-list-item-content class="text-truncate font-weight-bold"
-          >{{ $store.state.user.first_name }}
-          {{ $store.state.user.last_name }}</v-list-item-content
-        >
+        <v-list-item-content class="text-truncate font-weight-bold">
+          {{ $store.state.user.first_name }}
+          {{ $store.state.user.last_name }}
+        </v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
       <v-list>
         <v-list-item-group color="#3493b3ff">
-          <v-list-item
-            v-for="item in items"
-            :key="item.title"
-            router
-            :to="item.route"
-          >
+          <v-list-item v-for="item in items" :key="item.title" router :to="item.route">
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -71,9 +63,9 @@ export default {
         {
           title: "Historical",
           route: "/projects-list",
-          icon: "mdi-palette-swatch",
-        },
-      ],
+          icon: "mdi-palette-swatch"
+        }
+      ]
     };
   },
   methods: {
@@ -81,7 +73,7 @@ export default {
       this.$store
         .dispatch("userLogout")
         .then(this.$router.push({ name: "login" }));
-    },
+    }
   },
   computed: {
     mini() {
@@ -90,8 +82,8 @@ export default {
     user: {
       get() {
         return this.$store.user.first_name;
-      },
-    },
-  },
+      }
+    }
+  }
 };
 </script>

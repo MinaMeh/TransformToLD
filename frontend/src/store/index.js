@@ -8,8 +8,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         accessToken: localStorage.getItem("t"),
-        //refreshToken: null,
-        refreshToken: localStorage.getItem("r"),
+        refreshToken: null,
+        //refreshToken: localStorage.getItem("r"),
         user: {
             first_name: "",
             last_name: "",
@@ -65,7 +65,6 @@ export default new Vuex.Store({
             email
         }) {
             localStorage.setItem("t", accessToken);
-            localStorage.setItem("r", refreshToken);
             state.accessToken = accessToken;
             state.refreshToken = refreshToken;
             state.user.first_name = first_name;
@@ -74,7 +73,6 @@ export default new Vuex.Store({
         },
         removeToken(state) {
             localStorage.removeItem("t");
-            localStorage.removeItem("r");
             state.accessToken = null;
             state.refreshToken = null;
         },
@@ -90,7 +88,6 @@ export default new Vuex.Store({
                     console.log(response.data);
                     context.commit("updateStorage", {
                         accessToken: response.data.token,
-                        refreshToken: response.data.token_refresh,
                         first_name: response.data.first_name,
                         last_name: response.data.last_name,
                         email: response.data.email,
@@ -105,7 +102,6 @@ export default new Vuex.Store({
             if (context.getters.loggedIn) {
                 return new Promise((resolve) => {
                     localStorage.removeItem("t");
-                    localStorage.removeItem("r");
                     context.commit("removeToken");
                     resolve();
                 });
@@ -129,10 +125,9 @@ export default new Vuex.Store({
         //     )
         //   );
         // },
-        refreshToken(context, userData) {
+        refreshToken(context) {
             return new Promise((resolve, reject) => {
-                axiosBase.post("http://localhost:8000/api/token/refresh/", {
-                        refresh: this.state.refreshToken,
+                Axios.post("http://localhost:8000/api/token/refresh/", {
                         token: this.state.accessToken
                     }) // send the stored refresh token to the backend API
                     .then(response => { // if API sends back new access and refresh token update the store
