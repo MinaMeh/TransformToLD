@@ -117,7 +117,7 @@ export default {
       this.$store.state.file_uploaded = this.file;
       this.type = this.file.type;
     }
-  },
+  }, 
   watch: {
     $v: {
       handler: function(val) {

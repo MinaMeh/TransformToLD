@@ -1,15 +1,13 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Axios from "axios";
-import jwt_decode from "jwt-decode";
+//import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-        accessToken: localStorage.getItem("t"),
-        refreshToken: null,
-        //refreshToken: localStorage.getItem("r"),
+        jwt: localStorage.getItem("t"),
         user: {
             first_name: "",
             last_name: "",
@@ -23,6 +21,9 @@ export default new Vuex.Store({
         filename: "",
         progress: true,
         project_name: "",
+        description: "",
+        licence: "",
+
         text: {
             paragraph: {
                 paragraph: "",
@@ -53,28 +54,25 @@ export default new Vuex.Store({
     },
     getters: {
         loggedIn(state) {
-            return state.accessToken != null;
+            return state.jwt != null;
         },
     },
     mutations: {
         updateStorage(state, {
-            accessToken,
-            refreshToken,
+            newToken,
             first_name,
             last_name,
             email
         }) {
-            localStorage.setItem("t", accessToken);
-            state.accessToken = accessToken;
-            state.refreshToken = refreshToken;
+            localStorage.setItem("t", newToken);
+            state.jwt = newToken;
             state.user.first_name = first_name;
             state.user.last_name = last_name;
             state.user.email = email;
         },
         removeToken(state) {
             localStorage.removeItem("t");
-            state.accessToken = null;
-            state.refreshToken = null;
+            state.jwt = null;
         },
     },
     actions: {
@@ -87,7 +85,7 @@ export default new Vuex.Store({
                 }).then((response) => {
                     console.log(response.data);
                     context.commit("updateStorage", {
-                        accessToken: response.data.token,
+                        jwt: response.data.token,
                         first_name: response.data.first_name,
                         last_name: response.data.last_name,
                         email: response.data.email,
@@ -125,28 +123,28 @@ export default new Vuex.Store({
         //     )
         //   );
         // },
-        refreshToken(context) {
-            return new Promise((resolve, reject) => {
-                Axios.post("http://localhost:8000/api/token/refresh/", {
-                        token: context.state.refreshToken
-                    }) // send the stored refresh token to the backend API
-                    .then(response => { // if API sends back new access and refresh token update the store
-                        console.log('New access successfully generated')
-                        console.log(response.data)
-                        context.commit("updateStorage", {
-                            accessToken: response.data.token,
-                            first_name: response.data.first_name,
-                            last_name: response.data.last_name,
-                            email: response.data.email,
-                        })
-                        resolve()
-                    })
-                    .catch(err => {
-                        console.log('error in refreshToken Task')
-                        reject(err) // error generating new access and refresh token because refresh token has expired
-                    })
+
+
+        /*        refreshToken(context) {
+        //console.log(userData);
+        const payload = {
+            token: this.state.jwt
+        }
+        return new Promise((resolve, reject) => {
+            Axios.post("http://localhost:8000/api/token/refresh/",
+                payload
+            ).then((response) => {
+                console.log(response.data);
+                context.commit("updateStorage", response.data.token);
+                resolve();
+            }).catch(err => {
+                reject(err);
             })
-        },
+        });
+    },
+*/
+
+
         userRegister(context, userData) {
             return new Promise((resolve) => {
                 Axios.post("http://localhost:8000/register/", {
@@ -157,8 +155,7 @@ export default new Vuex.Store({
                 }).then((response) => {
                     console.log(response.data);
                     context.commit("updateStorage", {
-                        accessToken: response.data.token,
-                        refreshToken: response.data.refresh,
+                        jwt: response.data.token,
                         first_name: response.data.first_name,
                         last_name: response.data.last_name,
                         email: response.data.email,
@@ -167,17 +164,16 @@ export default new Vuex.Store({
                 });
             });
         },
-        inspectToken() {
-            const token = this.state.accessToken;
+        /*inspectToken() {
+            const token = this.state.jwt;
             if (token) {
-                const decoded = jwt_decode(token);
-                const exp = decoded.exp;
-                const orig_iat = decoded.orig_iat;
-                console.log(decoded);
+                const decodedData = jwt_decode(token);
+                const expirationDate = decodedData.exp;
+                const orig_iat = decodedData.orig_iat;
+                console.log(decodedData);
                 if (
-                    exp - Date.now() / 1000 < 1800 &&
-                    Date.now() / 1000 - orig_iat < 628200
-                ) {
+                    expirationDate - (Date.now() / 1000) < 1800 &&
+                    (Date.now() / 1000) - orig_iat < 628200) {
                     this.dispatch("userLogin", {
                         email: this.state.user.email,
                         password: this.state.user.password,
@@ -186,7 +182,7 @@ export default new Vuex.Store({
                             name: "home"
                         });
                     });
-                } else if (exp - Date.now() / 1000 < 1800) {
+                } else if (expirationDate - (Date.now() / 1000) < 1800) {
                     this.$router.push({
                         name: "login"
                     });
@@ -197,5 +193,6 @@ export default new Vuex.Store({
                 }
             }
         },
+        */
     },
 });
