@@ -8,7 +8,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         accessToken: localStorage.getItem("t"),
-        refreshToken: null,
+        //refreshToken: null,
+        refreshToken: localStorage.getItem("r"),
         user: {
             first_name: "",
             last_name: "",
@@ -58,26 +59,30 @@ export default new Vuex.Store({
     mutations: {
         updateStorage(state, {
             accessToken,
+            refreshToken,
             first_name,
             last_name,
             email
         }) {
             localStorage.setItem("t", accessToken);
-
+            localStorage.setItem("r", refreshToken);
             state.accessToken = accessToken;
+            state.refreshToken = refreshToken;
             state.user.first_name = first_name;
             state.user.last_name = last_name;
             state.user.email = email;
         },
         removeToken(state) {
             localStorage.removeItem("t");
+            localStorage.removeItem("r");
             state.accessToken = null;
+            state.refreshToken = null;
         },
     },
     actions: {
         userLogin(context, userData) {
             console.log(userData);
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 Axios.post("http://localhost:8000/api/token/", {
                     email: userData.email,
                     password: userData.password,
@@ -85,20 +90,28 @@ export default new Vuex.Store({
                     console.log(response.data);
                     context.commit("updateStorage", {
                         accessToken: response.data.token,
+                        refreshToken: response.data.token_refresh,
                         first_name: response.data.first_name,
                         last_name: response.data.last_name,
                         email: response.data.email,
                     });
                     resolve();
-                });
+                }).catch(err => {
+                    reject(err);
+                })
             });
         },
         userLogout(context) {
-            return new Promise((resolve) => {
-                context.commit("removeToken");
-                resolve();
-            });
+            if (context.getters.loggedIn) {
+                return new Promise((resolve) => {
+                    localStorage.removeItem("t");
+                    localStorage.removeItem("r");
+                    context.commit("removeToken");
+                    resolve();
+                });
+            }
         },
+
         // refreshToken(context, userData) {
         //   return new Promise((resolve) =>
         //     Axios.post("http://localhost:8000/api/token/refresh/", {
@@ -116,6 +129,29 @@ export default new Vuex.Store({
         //     )
         //   );
         // },
+        refreshToken(context, userData) {
+            return new Promise((resolve, reject) => {
+                axiosBase.post("http://localhost:8000/api/token/refresh/", {
+                        refresh: this.state.refreshToken,
+                        token: this.state.accessToken
+                    }) // send the stored refresh token to the backend API
+                    .then(response => { // if API sends back new access and refresh token update the store
+                        console.log('New access successfully generated')
+                        console.log(response.data)
+                        context.commit("updateStorage", {
+                            accessToken: response.data.token,
+                            first_name: response.data.first_name,
+                            last_name: response.data.last_name,
+                            email: response.data.email,
+                        })
+                        resolve()
+                    })
+                    .catch(err => {
+                        console.log('error in refreshToken Task')
+                        reject(err) // error generating new access and refresh token because refresh token has expired
+                    })
+            })
+        },
         userRegister(context, userData) {
             return new Promise((resolve) => {
                 Axios.post("http://localhost:8000/register/", {
@@ -127,6 +163,7 @@ export default new Vuex.Store({
                     console.log(response.data);
                     context.commit("updateStorage", {
                         accessToken: response.data.token,
+                        refreshToken: response.data.refresh,
                         first_name: response.data.first_name,
                         last_name: response.data.last_name,
                         email: response.data.email,
