@@ -128,7 +128,7 @@ export default new Vuex.Store({
         refreshToken(context) {
             return new Promise((resolve, reject) => {
                 Axios.post("http://localhost:8000/api/token/refresh/", {
-                        token: this.state.accessToken
+                        token: context.state.refreshToken
                     }) // send the stored refresh token to the backend API
                     .then(response => { // if API sends back new access and refresh token update the store
                         console.log('New access successfully generated')
