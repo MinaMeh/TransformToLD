@@ -1,5 +1,6 @@
 <template>
   <v-container class="px-5 py-5" fluid>
+  <Navbar></Navbar>
     <h1 class="font-weight-bold display-1">Project "{{projects[1].project_name}}" Details</h1>
     <v-divider></v-divider>
     <v-card>
@@ -161,6 +162,8 @@
 </template>
 
 <script>
+import Navbar from "@/components/Navbar";
+
 const allProjects = [
   {
     id: 1,
@@ -185,6 +188,9 @@ const allProjects = [
   }
 ];
 export default {
+  components: {
+Navbar
+  },
   data: () => {
     return {
       projects: [...allProjects],

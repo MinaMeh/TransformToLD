@@ -3,15 +3,16 @@ from django.shortcuts import render
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
+#, permission_classes
+#from rest_framework.permissions import IsAuthenticated
 
 from historique.models import Project, Author
 from historique.serializers import ProjectSerializer, AuthorSerializer
 
 
 @api_view(['GET', 'POST', 'DELETE'])
-@permission_classes((IsAuthenticated,))
+#@permission_classes((IsAuthenticated,))
 def projects_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
@@ -37,7 +38,7 @@ def projects_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((IsAuthenticated,))
+#@permission_classes((IsAuthenticated,))
 def project_details(request, pk):
     try:
         project = Project.objects.get(pk=pk)

@@ -109,6 +109,7 @@ export default {
   data() {
     return {
       form: {
+        id: null,
         project_name: "",
         description: "",
         licence: "",
@@ -161,6 +162,7 @@ export default {
         })
         .then(response => {
           console.log(response.data);
+          this.project.id = response.data.id;
           this.$store.state.filename = response.data.filename;
           this.$store.state.file_type = response.data.type;
           this.$store.state.size = response.data.size;

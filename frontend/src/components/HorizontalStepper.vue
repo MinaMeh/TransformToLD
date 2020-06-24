@@ -20,7 +20,6 @@ import HorizontalStepper from "vue-stepper";
 import axios from "axios";
 
 // This components will have the content for each stepper step.
-import CreateComponent from "./CreateComponent";
 import PreprocessComponent from "./PreprocessComponent";
 import VocabsComponent from "./VocabsComponent";
 import ConvertComponent from "./ConvertComponent.vue";
