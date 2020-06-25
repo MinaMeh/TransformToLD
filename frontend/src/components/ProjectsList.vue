@@ -4,8 +4,6 @@
     <v-data-table
       :headers="headers"
       :items="$store.state.projects"
-      sort-by="id"
-      class="elevation-1"
       :search="search"
     >
       <template v-slot:top>
@@ -23,44 +21,43 @@
           <v-spacer></v-spacer>
         </v-toolbar>
       </template>
-      <template v-slot:item.status="{ item }">
-        <v-chip small :color="getColor(item.status)" dark>{{
-          item.status
-        }}</v-chip>
-      </template>
-      <template v-slot:item.author="{ item }">
-        <p>{{ item.author.email }}</p>
-      </template>
-      <template v-slot:item.creation="{ item }">
-        <p>{{ item.creation_date | formatDate }}</p>
-      </template>
-      <template v-slot:item.actions="{ item }">
-        <v-btn text color="success" medium>
-          <a v-bind:href="'/projects/' + item.id">
-            <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
-          </a>
-        </v-btn>
-        <v-btn text medium to="/transform">
-          <v-icon color="success" medium class="mr-2">mdi-file-sync</v-icon>
-        </v-btn>
-        <v-icon color="error" medium @click="deleteProjectConfirm = true"
-          >mdi-delete</v-icon
-        >
+      <template v-slot:item="row">
+        <tr>
+          <td>{{ row.item.id }}</td>
+          <td>{{ row.item.project_name }}</td>
+          <td>{{ row.item.author.email }}</td>
+          <td>{{ row.item.creation_date | formatDate }}</td>
+          <td>
+            <v-chip small :color="getColor(row.item.status)" dark>
+              {{ row.item.status }}
+            </v-chip>
+          </td>
+          <td>
+            <v-btn text color="success" medium>
+              <a v-bind:href="'/projects/' + row.item.id">
+                <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
+              </a>
+            </v-btn>
+            <v-btn @click="deleteProjectConfirm =true" text>
+              <v-icon color="error" medium>mdi-delete</v-icon>
+            </v-btn>
+          </td>
+        </tr>
         <v-dialog v-model="deleteProjectConfirm" width="600">
           <v-card>
-            <v-card-title class="headline pt-8" primary-title
-              >Confirm Delete</v-card-title
-            >
+            <v-card-title class="headline pt-8" primary-title>
+              Confirm Delete
+            </v-card-title>
             <v-divider></v-divider>
-            <v-card-text class="pl-8 font-weight-bold"
-              >are you sure ? You want to delete this project ?</v-card-text
-            >
+            <v-card-text class="pl-8 font-weight-bold">
+              are you sure ? You want to delete this project ?
+            </v-card-text>
             <v-card-actions class="pa-5">
               <v-btn
                 dark
                 class="ml-auto"
                 color="error"
-                @click="deleteProject(item)"
+                @click="deleteProject(row.item)"
                 @projectDeleted="snackbarDelete = true"
                 >Delete</v-btn
               >
@@ -68,28 +65,18 @@
                 >Cancel</v-btn
               >
             </v-card-actions>
+            <v-snackbar
+              v-model="snackbarDelete"
+              :timeout="4000"
+              bottom
+              color="error"
+              ><span>Project Deleted successfully</span>
+              <v-btn text color="white" @click="snackbarDelete = false"
+                >Close
+              </v-btn>
+            </v-snackbar>
           </v-card>
         </v-dialog>
-        <v-snackbar
-          v-model="snackbarDelete"
-          :timeout="4000"
-          bottom
-          color="error"
-        >
-          <span>Project Deleted successfully</span>
-          <v-btn text color="white" @click="snackbarDelete = false"
-            >Close</v-btn
-          >
-        </v-snackbar>
-      </template>
-      <template v-slot:no-data>
-        <v-card class="mx-auto" max-width="500">
-          <v-card-text>
-            <p class="text-center font-weight-bold red--text">
-              There is no project !
-            </p>
-          </v-card-text>
-        </v-card>
       </template>
     </v-data-table>
   </v-container>
@@ -114,14 +101,12 @@ export default {
       { text: "Conversion Status", value: "status" },
       { text: "Actions", value: "actions", sortable: false },
     ],
-    snackbarDelete: false,
     deleteProjectConfirm: false,
+    snackbarDelete: false,
   }),
-
   mounted() {
     this.getAllProjects();
   },
-
   methods: {
     getAllProjects() {
       axios
@@ -134,26 +119,10 @@ export default {
         })
         .catch((error) => console.log(error));
     },
+
     getColor(status) {
       if (status == "converted") return "green";
       else return "red";
-    },
-
-    deleteProject(item) {
-      const index = this.$store.state.projects.indexOf(item);
-      console.log("index = " + index);
-      axios
-        .delete(`http://127.0.0.1:8000/api/projects/` + item.id)
-        .then((response) => {
-          console.log("id = " + item.id);
-          console.log(response.data);
-          console.log(this.$store.state.projects.length);
-          this.deleteProjectConfirm = false;
-          this.snackbarDelete = true;
-          this.$store.state.projects.splice(index, 1);
-          this.getAllProjects();
-        })
-        .catch((error) => console.log(error));
     },
   },
 };
