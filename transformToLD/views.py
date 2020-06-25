@@ -45,6 +45,8 @@ def listVocabs(request):
 def extract(request):
     file = request.FILES['file']
     project_name = request.POST.get('project_name')
+    description = request.POST.get('description')
+    licence = request.POST.get('licence')
     separator = request.POST.get('separator')
     project = json.loads(request.POST.get("project"))
 

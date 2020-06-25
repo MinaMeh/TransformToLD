@@ -1,6 +1,5 @@
 import Home from "./components/Home";
 import Login from "@/components/AuthComponents/Login";
-import Register from "@/components/AuthComponents/Register";
 import Transform from "./components/Transform";
 import Project from "./components/Project";
 import ProjectsList from "./components/ProjectsList";
@@ -28,13 +27,7 @@ const routes = [{
         path: "/login",
         component: Login,
         name: "login",
-    },
-    {
-        path: "/signup",
-        component: Register,
-        name: "signup",
-    },
-    {
+    }, {
         path: "/projects-list",
         name: "projects",
         component: ProjectsList
@@ -45,7 +38,10 @@ const routes = [{
     },
 ];
 Vue.use(VueRouter);
-const router = new VueRouter({ routes });
+const router = new VueRouter({
+    mode: "history",
+    routes
+});
 router.beforeEach((to, from, next) => {
     const publicPages = ["/login", "/signup"];
     const authRequired = !publicPages.includes(to.path);
@@ -59,5 +55,4 @@ router.beforeEach((to, from, next) => {
         next();
     }
 });
-
 export default router;

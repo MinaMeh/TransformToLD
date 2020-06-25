@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar app flat color="#3493b3ff">
+    <v-app-bar app flat color="primary accent-4">
       <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu" class="white--text"></v-app-bar-nav-icon>
       <v-toolbar-title class="white--text">Data Linked</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
@@ -19,7 +19,7 @@
       <v-layout column align-center>
         <v-list-item class="px-2" @click="toggleMini = !toggleMini">
           <v-flex class="mt-4">
-            <img :aspect-ratio="16/9" src="/logo-sm.png" alt="Logo" />
+            <img :aspect-ratio="16 / 9" src="/logo-sm.png" alt="Logo" />
           </v-flex>
           <v-btn icon small>
             <v-icon>mdi-chevron-left</v-icon>
@@ -30,9 +30,10 @@
         <v-list-item-icon>
           <v-icon>mdi-account-outline</v-icon>
         </v-list-item-icon>
-        <v-list-item-content
-          class="text-truncate font-weight-bold"
-        >{{ $store.state.user.first_name }} {{ $store.state.user.last_name }}</v-list-item-content>
+        <v-list-item-content class="text-truncate font-weight-bold">
+          {{ $store.state.user.first_name }}
+          {{ $store.state.user.last_name }}
+        </v-list-item-content>
       </v-list-item>
       <v-divider></v-divider>
       <v-list>
@@ -57,10 +58,13 @@ export default {
     return {
       sidebarMenu: true,
       toggleMini: false,
-      snackbar: false,
       items: [
         { title: "Home", route: "/", icon: "mdi-home-outline" },
-        { title: "Historical", route: "/projects-list", icon: "mdi-palette-swatch" }
+        {
+          title: "Historical",
+          route: "/projects-list",
+          icon: "mdi-palette-swatch"
+        }
       ]
     };
   },

@@ -5,7 +5,7 @@
       <v-tab>Paragraphs</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
-      <v-tab-item>
+      <v-tab-item> 
         <v-row>
           <v-col cols="12" v-for="table in tables_selected" :key="table.id">
             <v-card>
@@ -128,7 +128,7 @@ import Modal from "@/Subcomponents/Modal.vue";
 export default {
   components: {
     Modal
-  },
+  },  
   data() {
     return {
       tab: null,

@@ -11,15 +11,15 @@
               <v-simple-table>
                 <tr>
                   <th>File size</th>
-                  <td>{{$store.state.size}}</td>
+                  <td>{{ $store.state.size }}</td>
                 </tr>
                 <tr>
                   <th>Number of tables</th>
-                  <td>{{$store.state.html.num_tables}}</td>
+                  <td>{{ $store.state.html.num_tables }}</td>
                 </tr>
                 <tr>
                   <th>Number of paragraphs</th>
-                  <td>{{$store.state.html.num_paragraphs}}</td>
+                  <td>{{ $store.state.html.num_paragraphs }}</td>
                 </tr>
               </v-simple-table>
             </v-col>
@@ -34,7 +34,11 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-col cols="12">
-          <v-card v-for="table in $store.state.html.tables" :key="table.id" class="mt-3">
+          <v-card
+            v-for="table in $store.state.html.tables"
+            :key="table.id"
+            class="mt-3"
+          >
             <v-card-title>
               <v-checkbox
                 v-model="table.selected"
@@ -43,7 +47,7 @@
                 @change="toggleTable(table.id)"
                 class="mt-10"
               ></v-checkbox>
-              <h2>Table #{{table.id}}</h2>
+              <h2>Table #{{ table.id }}</h2>
             </v-card-title>
             <v-card-text>
               <v-col cols="6">
@@ -51,11 +55,11 @@
                 <v-simple-table dense>
                   <tr>
                     <th>Number of lines</th>
-                    <td>{{table.lines}}</td>
+                    <td>{{ table.lines }}</td>
                   </tr>
                   <tr>
                     <th>Number of columns</th>
-                    <td>{{table.columns}}</td>
+                    <td>{{ table.columns }}</td>
                   </tr>
                 </v-simple-table>
               </v-col>
@@ -122,16 +126,21 @@
                     :id="String(paragraph.id)"
                     :value="paragraph.selected"
                   ></v-checkbox>
-                  <h2>Paragraph #{{paragraph.id}}</h2>
+                  <h2>Paragraph #{{ paragraph.id }}</h2>
                 </v-card-title>
                 <v-card-text>
-                  <v-row>{{paragraph.paragraph}}</v-row>
+                  <v-row>{{ paragraph.paragraph }}</v-row>
                   <v-row>
                     <v-col cols="12">
                       <h4 class="text-center">Sentences</h4>
                       <v-expansion-panels>
-                        <v-expansion-panel v-for="(sentence,i) in paragraph.sentences" :key="i">
-                          <v-expansion-panel-header>{{sentence.text}}</v-expansion-panel-header>
+                        <v-expansion-panel
+                          v-for="(sentence, i) in paragraph.sentences"
+                          :key="i"
+                        >
+                          <v-expansion-panel-header>{{
+                            sentence.text
+                          }}</v-expansion-panel-header>
                           <v-expansion-panel-content></v-expansion-panel-content>
                         </v-expansion-panel>
                       </v-expansion-panels>
@@ -149,23 +158,23 @@
 <script>
 export default {
   name: "HTMLComponent",
-
   data() {
     return {
       tab: null,
       continue: true,
       selected: "",
       tables_selected: [],
+
       snack: false,
       snackColor: "",
       snackText: "",
 
       headers: [
         { text: "Add", value: "Add" },
-        { text: "Header", value: "header", sortable: true }
+        { text: "Header", value: "header", sortable: true },
       ],
 
-      content: null
+      content: null,
     };
   },
   watch: {
@@ -177,19 +186,21 @@ export default {
           this.$emit("can-continue", { value: false });
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   methods: {
     toggleTable: function(table_id) {
-      var tables = this.$store.state.html.tables.filter(table => {
+      var tables = this.$store.state.html.tables.filter((table) => {
         if (table.id == table_id) return table;
       });
       for (var header in tables[0].headers) {
         tables[0].headers[header].selected = false;
       }
+
       console.log(tables[0]);
     },
+
     save() {
       this.snack = true;
       this.snackColor = "success";
@@ -207,7 +218,7 @@ export default {
     },
     close() {
       console.log("Dialog closed");
-    }
+    },
   },
   mounted() {
     this.content = this.$store.state.file_content;
@@ -216,6 +227,6 @@ export default {
     } else {
       this.$emit("can-continue", { value: false });
     }
-  }
+  },
 };
 </script>

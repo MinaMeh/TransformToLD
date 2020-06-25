@@ -1,3 +1,4 @@
+  
 <template>
   <v-container class="fill-height" fluid>
     <v-row justify="center">
@@ -28,13 +29,11 @@
                         name="Password"
                         v-model="userDataLogin.password"
                         prepend-icon="mdi-lock"
-                        :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-                        @click:append="show1 = !show1"
-                        :type="show1 ? 'text' : 'password'"
+                        type="password"
                         color="primary accent-4"
                       />
                     </v-form>
-                    <!--<h3 class="text-right mt-3">Forget your password ?</h3>-->
+                    <h3 class="text-right mt-3">Forget your password ?</h3>
                   </v-card-text>
                   <div class="text-center mt-3 mb-3">
                     <v-btn color="primary accent-4" dark @click.prevent="login">SIGN IN</v-btn>

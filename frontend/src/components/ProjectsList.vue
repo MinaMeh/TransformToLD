@@ -1,185 +1,132 @@
 <template>
   <v-container>
-  <Navbar></Navbar>
-    <v-data-table
-      :headers="headers"
-      :items="projects"
-      sort-by="name"
-      class="elevation-1"
-      :search="search"
-    >
-      <template v-slot:top>
-        <v-toolbar flat color="white">
-          <v-toolbar-title>Projects List</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-spacer></v-spacer>
-          <v-dialog v-model="dialog" max-width="500px">
-            <template v-slot:activator="{ on }">
-              <v-btn color="success" dark small class="mb-2 font-weight-bold" v-on="on">New Project</v-btn>
-            </template>
-            <v-card>
-              <v-card-title>
-                <span class="headline">{{ formTitle }}</span>
-              </v-card-title>
+    <Navbar></Navbar>
+    <v-row>
+      <v-col cols="12">
+        <v-card>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Projects List</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+          <v-card-text>
+            <v-col cols="12">
+              <v-data-table
+                :headers="headers"
+                :items="$store.state.projects"
+                sort-by="id"
+                class="elevation-1"
+                :search="search"
+              >
+                <template v-slot:item.status="{ item }">
+                  <v-chip small :color="getColor(item.status)" dark>{{
+                    item.status
+                  }}</v-chip>
+                </template>
+                <template v-slot:item.author="{ item }">
+                  <p>{{ item.author.email }}</p>
+                </template>
+                <template v-slot:item.creation="{ item }">
+                  <p>{{ item.creation_date | formatDate }}</p>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn text color="success" medium>
+                    <a v-bind:href="'/projects/' + item.id">
+                      <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
+                    </a>
+                  </v-btn>
 
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <v-text-field v-model="editedItem.name" label="Project name" required></v-text-field>
-                  </v-row>
-                  <v-row>
-                    <v-textarea v-model="editedItem.description" label="Description" required></v-textarea>
-                  </v-row>
-                  <v-row>
-                    <v-select
-                      v-model="editedItem.licence"
-                      :items="licences"
-                      label="Licence"
-                      required
-                    ></v-select>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn small dark color="error" @click="close">Cancel</v-btn>
-                <v-btn small dark color="secondary" @click="save">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-toolbar>
-      </template>
-      <template v-slot:item.actions="{ item }">
-        <v-btn text color="success" medium to="/Project">
-          <v-icon medium class="mr-2">mdi-eye</v-icon>
-        </v-btn>
-        <v-icon color="primary" medium class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
-        <v-icon color="error" medium @click="deleteItem(item)">mdi-delete</v-icon>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
-      </template>
-    </v-data-table>
+                  <ConfirmDeletion
+                    v-if="modalVisible"
+                    @close="modalVisible = false"
+                    :item="modalData"
+                    :confirmDelete="modalVisible"
+                  >
+                  </ConfirmDeletion>
+                  <v-btn
+                    color="error"
+                    dark
+                    class="mx-2"
+                    text
+                    medium
+                    @click.stop="modalVisible = true"
+                    @click="openModal(item)"
+                  >
+                    <v-icon dark>mdi-delete</v-icon>
+                  </v-btn>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar";
+import ConfirmDeletion from "@/components/DeleteProjectComponent";
+import axios from "axios";
 export default {
   components: {
-    Navbar
+    Navbar,
+    ConfirmDeletion,
   },
   data: () => ({
     dialog: false,
     search: "",
+    loading: true,
     headers: [
-      {
-        text: "Project Name",
-        align: "start",
-        sortable: true,
-        value: "name"
-      },
-      { text: "Project's Author", value: "Author" },
-      { text: "Creation date", value: "CreationDate" },
-      { text: "Actions", value: "actions", sortable: false }
+      { text: "Id", value: "id", align: "start", sortable: true },
+      { text: "Project Name", value: "project_name" },
+      { text: "Project author", value: "author" },
+      { text: "Creation date", value: "creation" },
+      { text: "Conversion Status", value: "status" },
+      { text: "Actions", value: "actions", sortable: false },
     ],
-    projects: [],
-    licences: [],
-    editedIndex: -1,
-    editedItem: {
-      name: "",
-      description: "",
-      licence: "",
-      Author: "",
-      CreationDate: ""
-    },
-    defaultItem: {
-      name: "",
-      description: "",
-      licence: "",
-      Author: "",
-      CreationDate: ""
-    }
+    snackbarDelete: false,
+    deleteProjectConfirm: false,
+
+    modalVisible: false,
+    modalData: null,
   }),
 
-  computed: {
-    formTitle() {
-      return this.editedIndex === -1 ? "New Project" : "Edit Project";
-    }
-  },
-
-  watch: {
-    dialog(val) {
-      val || this.close();
-    }
-  },
-
-  created() {
-    this.initialize();
+  mounted() {
+    this.getAllProjects();
   },
 
   methods: {
-    initialize() {
-      this.projects = [
-        {
-          name: "KitKat",
-          description: "informations",
-          licence: "Item 1",
-          Author: "imene gmail",
-          CreationDate: "Date 1"
-        },
-        {
-          name: "Eclair",
-          description: "infos",
-          licence: "Item 2",
-          Author: "amina",
-          CreationDate: "Date 2"
-        }
-      ];
-      this.licences = ["Item 1", "Item 2", "Item 3", "Item 4"];
+    getAllProjects() {
+      axios
+        .get("http://127.0.0.1:8000/api/projects")
+        .then((response) => {
+          this.$store.state.projects = response.data;
+          console.log(this.$store.state.projects.length);
+          console.log(response.data);
+          this.loading = false;
+        })
+        .catch((error) => console.log(error));
+    },
+    getColor(status) {
+      if (status == "converted") return "green";
+      else return "red";
     },
 
-    editItem(item) {
-      this.editedIndex = this.projects.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+    openModal(data) {
+      console.log(data);
+      this.modalData = data;
+      this.modalVisible = true;
+      console.log(this.modalVisible);
     },
-
-    showItem(item) {
-      const index = this.projects.indexOf(item);
-      this.projects.value(index);
-    },
-
-    deleteItem(item) {
-      const index = this.projects.indexOf(item);
-      confirm("Are you sure you want to delete this item?") &&
-        this.projects.splice(index, 1);
-    },
-
-    close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.projects[this.editedIndex], this.editedItem);
-      } else {
-        this.projects.push(this.editedItem);
-      }
-      this.close();
-    }
-  }
+  },
 };
 </script>
