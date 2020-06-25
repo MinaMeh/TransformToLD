@@ -13,7 +13,7 @@
           </template>
         </v-data-table>
       </v-card-text>
-    </v-card>
+    </v-card> 
   </v-container>
 </template>
 <script>

@@ -131,7 +131,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    ),
+    )
 }
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),

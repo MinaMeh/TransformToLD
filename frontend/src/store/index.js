@@ -1,18 +1,17 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Axios from "axios";
-import jwt_decode from "jwt-decode";
+//import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    accessToken: localStorage.getItem("t"),
-    refreshToken: null,
+    jwt: localStorage.getItem("t"),
     user: {
-      first_name: localStorage.getItem("first_name"),
-      last_name: localStorage.getItem("last_name"),
-      email: localStorage.getItem("email"),
+      first_name: "",
+      last_name: "",
+      email: "",
     },
     properties: [],
     vocabs: [],
@@ -22,7 +21,10 @@ export default new Vuex.Store({
     filename: "",
     progress: true,
     project_name: "",
-    project_id: "",
+    description: "",
+    licence: "",
+    projects: [],
+
     text: {
       paragraph: {
         paragraph: "",
@@ -53,58 +55,55 @@ export default new Vuex.Store({
   },
   getters: {
     loggedIn(state) {
-      return state.accessToken != null;
+      return state.jwt != null;
     },
   },
   mutations: {
-    updateStorage(state, { accessToken, first_name, last_name, email }) {
-      localStorage.setItem("t", accessToken);
-      localStorage.setItem("first_name", first_name);
-      localStorage.setItem("last_name", last_name);
-      localStorage.setItem("email", email);
-
-      state.accessToken = accessToken;
+    updateStorage(state, { newToken, first_name, last_name, email }) {
+      localStorage.setItem("t", newToken);
+      state.jwt = newToken;
       state.user.first_name = first_name;
       state.user.last_name = last_name;
       state.user.email = email;
     },
     removeToken(state) {
       localStorage.removeItem("t");
-      localStorage.removeItem("first_name");
-      localStorage.removeItem("last_name");
-      localStorage.removeItem("email");
-
-      state.accessToken = null;
-      state.user.first_name = "";
-      state.user.last_name = "";
-      state.user.email = "";
+      state.jwt = null;
     },
   },
   actions: {
     userLogin(context, userData) {
       console.log(userData);
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         Axios.post("http://localhost:8000/api/token/", {
           email: userData.email,
           password: userData.password,
-        }).then((response) => {
-          console.log(response.data);
-          context.commit("updateStorage", {
-            accessToken: response.data.token,
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            email: response.data.email,
+        })
+          .then((response) => {
+            console.log(response.data);
+            context.commit("updateStorage", {
+              jwt: response.data.token,
+              first_name: response.data.first_name,
+              last_name: response.data.last_name,
+              email: response.data.email,
+            });
+            resolve();
+          })
+          .catch((err) => {
+            reject(err);
           });
-          resolve();
-        });
       });
     },
     userLogout(context) {
-      return new Promise((resolve) => {
-        context.commit("removeToken");
-        resolve();
-      });
+      if (context.getters.loggedIn) {
+        return new Promise((resolve) => {
+          localStorage.removeItem("t");
+          context.commit("removeToken");
+          resolve();
+        });
+      }
     },
+
     // refreshToken(context, userData) {
     //   return new Promise((resolve) =>
     //     Axios.post("http://localhost:8000/api/token/refresh/", {
@@ -122,6 +121,26 @@ export default new Vuex.Store({
     //     )
     //   );
     // },
+
+    /*        refreshToken(context) {
+        //console.log(userData);
+        const payload = {
+            token: this.state.jwt
+        }
+        return new Promise((resolve, reject) => {
+            Axios.post("http://localhost:8000/api/token/refresh/",
+                payload
+            ).then((response) => {
+                console.log(response.data);
+                context.commit("updateStorage", response.data.token);
+                resolve();
+            }).catch(err => {
+                reject(err);
+            })
+        });
+    },
+*/
+
     userRegister(context, userData) {
       return new Promise((resolve) => {
         Axios.post("http://localhost:8000/register/", {
@@ -132,7 +151,7 @@ export default new Vuex.Store({
         }).then((response) => {
           console.log(response.data);
           context.commit("updateStorage", {
-            accessToken: response.data.token,
+            jwt: response.data.token,
             first_name: response.data.first_name,
             last_name: response.data.last_name,
             email: response.data.email,
@@ -141,29 +160,35 @@ export default new Vuex.Store({
         });
       });
     },
-    inspectToken() {
-      const token = this.state.accessToken;
-      if (token) {
-        const decoded = jwt_decode(token);
-        const exp = decoded.exp;
-        const orig_iat = decoded.orig_iat;
-        console.log(decoded);
-        if (
-          exp - Date.now() / 1000 < 1800 &&
-          Date.now() / 1000 - orig_iat < 628200
-        ) {
-          this.dispatch("userLogin", {
-            email: this.state.user.email,
-            password: this.state.user.password,
-          }).then(() => {
-            this.$router.push({ name: "home" });
-          });
-        } else if (exp - Date.now() / 1000 < 1800) {
-          //this.$router.push({ name: "login" });
-        } else {
-          // this.$router.push({ name: "login" });
-        }
-      }
-    },
+    /*inspectToken() {
+            const token = this.state.jwt;
+            if (token) {
+                const decodedData = jwt_decode(token);
+                const expirationDate = decodedData.exp;
+                const orig_iat = decodedData.orig_iat;
+                console.log(decodedData);
+                if (
+                    expirationDate - (Date.now() / 1000) < 1800 &&
+                    (Date.now() / 1000) - orig_iat < 628200) {
+                    this.dispatch("userLogin", {
+                        email: this.state.user.email,
+                        password: this.state.user.password,
+                    }).then(() => {
+                        this.$router.push({
+                            name: "home"
+                        });
+                    });
+                } else if (expirationDate - (Date.now() / 1000) < 1800) {
+                    this.$router.push({
+                        name: "login"
+                    });
+                } else {
+                    this.$router.push({
+                        name: "login"
+                    });
+                }
+            }
+        },
+        */
   },
 });

@@ -24,7 +24,6 @@ import HorizontalStepper from "vue-stepper";
 import axios from "axios";
 
 // This components will have the content for each stepper step.
-import CreateComponent from "./CreateComponent";
 import PreprocessComponent from "./PreprocessComponent";
 import VocabsComponent from "./VocabsComponent";
 import ConvertComponent from "./ConvertComponent.vue";
@@ -41,17 +40,8 @@ export default {
       errorMsg: "",
       demoSteps: [
         {
-          icon: "folder",
-          name: "first",
-          title: "Create",
-          subtitle: "Project Creation",
-          component: CreateComponent,
-          completed: false
-        },
-
-        {
           icon: "data_usage",
-          name: "second",
+          name: "first",
           title: "Extract",
           subtitle: "Data Extraction",
           component: ExtractComponent,
@@ -59,7 +49,7 @@ export default {
         },
         {
           icon: "perm_data_setting",
-          name: "third",
+          name: "second",
           title: "Preprocess",
           subtitle: "Data Preprocessing",
           component: PreprocessComponent,
@@ -67,7 +57,7 @@ export default {
         },
         {
           icon: "find_in_page",
-          name: "fourth",
+          name: "third",
           title: "Select",
           subtitle: "Vocabularies Selection",
           component: VocabsComponent,
@@ -75,7 +65,7 @@ export default {
         },
         {
           icon: "explore",
-          name: "fifth",
+          name: "fourth",
           title: "Explore",
           subtitle: "Data Exploration and mapping",
           component: ExploreComponent,
@@ -83,7 +73,7 @@ export default {
         },
         {
           icon: "transform",
-          name: "sixth",
+          name: "fifth",
           title: "Convert",
           subtitle: "Data Conversion to RDF",
           component: ConvertComponent,
@@ -92,7 +82,7 @@ export default {
 
         {
           icon: "info",
-          name: "seventh",
+          name: "sixth",
           title: "Document",
           subtitle: "Data Documentation",
           component: DocumentComponent,
@@ -124,64 +114,6 @@ export default {
       this.$store.state.progress = true;
 
       if (currentStep.name == "first") {
-        var formData = new FormData();
-        var project = {
-          project_name: this.$store.state.project_name,
-          author: this.$store.state.user
-        };
-        formData.append("project", JSON.stringify(project));
-        formData.append("file", this.$store.state.file_uploaded);
-        formData.append("project_name", this.$store.state.project_name);
-        formData.append("separator", this.$store.state.csv.separator);
-        formData.append("tables", this.$store.state.html.extract_tables);
-        formData.append(
-          "paragraphs",
-          this.$store.state.html.extract_paragraphs
-        );
-
-        axios
-          .post("http://localhost:8000/extract/", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
-          })
-          .then(response => {
-            console.log(response.data);
-            this.$store.state.filename = response.data.filename;
-            this.$store.state.file_type = response.data.type;
-            this.$store.state.size = response.data.size;
-
-            if (response.data.type == "csv") {
-              this.$store.state.csv.headers = response.data.results.headers;
-              this.$store.state.csv.columns = response.data.results.columns;
-              this.$store.state.csv.lines = response.data.results.lines;
-            }
-            if (response.data.type == "html") {
-              this.$store.state.html.tables = response.data.results.tables;
-              this.$store.state.html.paragraphs =
-                response.data.results.paragraphs;
-              this.$store.state.html.num_paragraphs =
-                response.data.results.num_paragraphs;
-              this.$store.state.html.num_tables =
-                response.data.results.num_tables;
-            }
-            if (response.data.type == "text") {
-              this.$store.state.text.paragraph =
-                response.data.results.paragraph;
-              this.$store.state.text.sentences =
-                response.data.results.sentences;
-            }
-
-            this.$store.state.progress = false;
-            next();
-          })
-          .catch(error => {
-            console.log(error);
-            this.error = true;
-            this.errorMsg = error.response.data.msg;
-          });
-      }
-      if (currentStep.name == "second") {
         this.$store.state.progress = true;
 
         var formData_2 = new FormData();
@@ -239,7 +171,7 @@ export default {
             this.errorMsg = error.response.data.msg;
           });
       }
-      if (currentStep.name == "fourth") {
+      if (currentStep.name == "third") {
         this.$store.state.progress = true;
 
         var formData3 = new FormData();
@@ -294,7 +226,7 @@ export default {
             this.errorMsg = error.response.data.msg;
           });
       }
-      if (currentStep.name == "fifth") {
+      if (currentStep.name == "fourth") {
         var formData4 = new FormData();
         formData4.append("file_type", this.$store.state.file_type);
         formData4.append("file_name", this.$store.state.filename);

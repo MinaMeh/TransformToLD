@@ -46,6 +46,7 @@ class Vocabulary(models.Model):
     prefix = models.CharField(max_length=10)
     uri = models.CharField(max_length=255)
 
+
 class CsvProject(models.Model):
     separator = models.CharField(max_length=3)
     lines = models.IntegerField()

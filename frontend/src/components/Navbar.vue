@@ -1,6 +1,6 @@
 <template>
   <nav>
-    <v-app-bar app flat color="#3493b3ff">
+    <v-app-bar app flat color="primary accent-4">
       <v-app-bar-nav-icon @click.stop="sidebarMenu = !sidebarMenu" class="white--text"></v-app-bar-nav-icon>
       <v-toolbar-title class="white--text">Data Linked</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
@@ -60,7 +60,11 @@ export default {
       toggleMini: false,
       items: [
         { title: "Home", route: "/", icon: "mdi-home-outline" },
-        { title: "Historical", route: "/projects", icon: "mdi-palette-swatch" }
+        {
+          title: "Historical",
+          route: "/projects-list",
+          icon: "mdi-palette-swatch"
+        }
       ]
     };
   },

@@ -1,6 +1,5 @@
 import Home from "./components/Home";
 import Login from "@/components/AuthComponents/Login";
-import Register from "@/components/AuthComponents/Register";
 import Transform from "./components/Transform";
 import Project from "./components/Project";
 import ProjectsList from "./components/ProjectsList";
@@ -8,14 +7,6 @@ import VueRouter from "vue-router";
 import Vue from "vue";
 
 const routes = [
-  {
-    path: "/",
-    component: Home,
-    name: "home",
-    meta: {
-      requiresLogin: true,
-    },
-  },
   {
     path: "/",
     component: Home,
@@ -39,12 +30,7 @@ const routes = [
     name: "login",
   },
   {
-    path: "/signup",
-    component: Register,
-    name: "signup",
-  },
-  {
-    path: "/projects",
+    path: "/projects-list",
     name: "projects",
     component: ProjectsList,
   },
@@ -72,5 +58,4 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
 export default router;

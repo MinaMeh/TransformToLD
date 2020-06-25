@@ -9,12 +9,19 @@ import HorizontalStepper from "@/components/HorizontalStepper";
 import Navbar from "@/components/Navbar";
 
 export default {
+  data() {
+    return {
+      snackbarCreate: false
+    };
+  },
   components: {
     HorizontalStepper,
     Navbar
   },
-  data() {
-    return {};
+  methods: {
+    test() {
+      console.log("Hello");
+    }
   }
 };
 </script>
