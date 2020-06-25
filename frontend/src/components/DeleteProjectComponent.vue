@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="active" width="600">
+  <v-dialog v-model="confirmDelete" width="600">
     <v-card>
       <v-card-title class="headline pt-8" primary-title>
         Confirm Deletion of {{ item.project_name }}
@@ -36,7 +36,7 @@
 <script>
 import axios from "axios";
 export default {
-  props: ["item", "active"],
+  props: ["item", "confirmDelete"],
 
   data() {
     return {
@@ -44,7 +44,22 @@ export default {
       loadDelete: false,
     };
   },
+
+  mounted() {
+    this.refreshListProjects();
+  },
   methods: {
+    refreshListProjects() {
+      axios
+        .get("http://127.0.0.1:8000/api/projects")
+        .then((response) => {
+          this.$store.state.projects = response.data;
+          //console.log(this.$store.state.projects.length);
+          //console.log(response.data);
+          this.loading = false;
+        })
+        .catch((error) => console.log(error));
+    },
     deleteProject(project) {
       this.loadDelete = true;
       axios
@@ -56,6 +71,8 @@ export default {
           this.deleteProjectConfirm = false;
           this.snackbarDelete = true;
           this.loadDelete = false;
+          this.$emit("close");
+          this.refreshListProjects();
         })
         .catch((error) => console.log(error));
     },

@@ -2,7 +2,7 @@
   <v-container>
     <Navbar></Navbar>
     <v-row>
-      <v-col cols="12" >      
+      <v-col cols="12">
         <v-card>
           <v-toolbar flat color="white">
             <v-toolbar-title>Projects List</v-toolbar-title>
@@ -25,7 +25,7 @@
                 sort-by="id"
                 class="elevation-1"
                 :search="search"
-              > 
+              >
                 <template v-slot:item.status="{ item }">
                   <v-chip small :color="getColor(item.status)" dark>{{
                     item.status
@@ -48,29 +48,27 @@
                     v-if="modalVisible"
                     @close="modalVisible = false"
                     :item="modalData"
-                    :active="modalVisible"
-                  >   
+                    :confirmDelete="modalVisible"
+                  >
                   </ConfirmDeletion>
-                   <v-btn
-                      color="error"
-                      dark
-                      class="mx-2"
-                      text
-                      medium
-                      @click.stop="modalVisible = true"
-                      @click="openModal(item)"
-                    >
-                      <v-icon dark>mdi-delete</v-icon>
-                    </v-btn>
+                  <v-btn
+                    color="error"
+                    dark
+                    class="mx-2"
+                    text
+                    medium
+                    @click.stop="modalVisible = true"
+                    @click="openModal(item)"
+                  >
+                    <v-icon dark>mdi-delete</v-icon>
+                  </v-btn>
                 </template>
               </v-data-table>
             </v-col>
           </v-card-text>
         </v-card>
-        
-
       </v-col>
-    </v-row>  
+    </v-row>
   </v-container>
 </template>
 
@@ -81,7 +79,7 @@ import axios from "axios";
 export default {
   components: {
     Navbar,
-    ConfirmDeletion
+    ConfirmDeletion,
   },
   data: () => ({
     dialog: false,
@@ -128,23 +126,6 @@ export default {
       this.modalData = data;
       this.modalVisible = true;
       console.log(this.modalVisible);
-    },
-
-    deleteProject(item) {
-      const index = this.$store.state.projects.indexOf(item);
-      console.log("index = " + index);
-      axios
-        .delete(`http://127.0.0.1:8000/api/projects/` + item.id)
-        .then((response) => {
-          console.log("id = " + item.id);
-          console.log(response.data);
-          console.log(this.$store.state.projects.length);
-          this.deleteProjectConfirm = false;
-          this.snackbarDelete = true;
-          this.$store.state.projects.splice(index, 1);
-          this.get;
-        })
-        .catch((error) => console.log(error));
     },
   },
 };
