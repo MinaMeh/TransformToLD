@@ -11,7 +11,7 @@ from historique.serializers import ProjectSerializer, AuthorSerializer
 
 
 @api_view(['GET', 'POST', 'DELETE'])
-@permission_classes((IsAuthenticated,))
+#@permission_classes((IsAuthenticated,))
 def projects_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
@@ -25,13 +25,12 @@ def projects_list(request):
 
     elif request.method == 'POST':
         project_data = JSONParser().parse(request)
-
         project_serializer = ProjectSerializer(data=project_data)
 
         if project_serializer.is_valid():
             project_serializer.save()
             return JsonResponse(project_serializer.data, status=status.HTTP_201_CREATED)
-        return JsonResponse(project_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse(project_serializer.errors)
 
     elif request.method == 'DELETE':
         count = Project.objects.all().delete()
@@ -39,7 +38,7 @@ def projects_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes((IsAuthenticated,))
+#@permission_classes((IsAuthenticated,))
 def project_details(request, pk):
     try:
         project = Project.objects.get(pk=pk)
