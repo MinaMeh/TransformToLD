@@ -4,89 +4,41 @@
     <v-data-table
       :headers="headers"
       :items="$store.state.projects"
-      sort-by="id"
-      class="elevation-1"
       :search="search"
     >
-      <template v-slot:top>
-        <v-toolbar flat color="white">
-          <v-toolbar-title>Projects List</v-toolbar-title>
-          <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Search"
-            single-line
-            hide-details
-          ></v-text-field>
-          <v-spacer></v-spacer>
-        </v-toolbar>
-      </template>
-      <template v-slot:item.status="{ item }">
-        <v-chip small :color="getColor(item.status)" dark>{{
-          item.status
-        }}</v-chip>
-      </template>
-      <template v-slot:item.author="{ item }">
-        <p>{{ item.author.email }}</p>
-      </template>
-      <template v-slot:item.creation="{ item }">
-        <p>{{ item.creation_date | formatDate }}</p>
-      </template>
-      <template v-slot:item.actions="{ item }">
-        <v-btn text color="success" medium>
-          <a v-bind:href="'/projects/' + item.id">
-            <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
-          </a>
-        </v-btn>
-        <v-icon color="error" medium @click="deleteProjectConfirm = true"
-          >mdi-delete</v-icon
-        >
-        <v-dialog v-model="deleteProjectConfirm" width="600">
-          <v-card>
-            <v-card-title class="headline pt-8" primary-title
-              >Confirm Delete</v-card-title
+      <template v-slot:item="row">
+        <tr>
+          <td>{{ row.item.id }}</td>
+          <td>{{ row.item.project_name }}</td>
+          <td>{{ row.item.author.email }}</td>
+          <td>{{ row.item.creation_date | formatDate }}</td>
+          <td>
+            <v-chip small :color="getColor(row.item.status)" dark>
+              {{ row.item.status }}
+            </v-chip>
+          </td>
+          <td>
+            <v-btn text color="success" medium>
+              <a v-bind:href="'/projects/' + row.item.id">
+                <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
+              </a>
+            </v-btn>
+            <confirmModel
+              text
+              color="error"
+              v-if="modalVisible"
+              @close="modalVisible = false"
+              :item="modalData"
+              :active="modalVisible"
+              message="Are you sure you want to delete this project?"
             >
-            <v-divider></v-divider>
-            <v-card-text class="pl-8 font-weight-bold"
-              >are you sure ? You want to delete this project ?</v-card-text
-            >
-            <v-card-actions class="pa-5">
-              <v-btn
-                dark
-                class="ml-auto"
-                color="error"
-                @click="deleteProject(item)"
-                @projectDeleted="snackbarDelete = true"
-                >Delete</v-btn
-              >
-              <v-btn @click="deleteProjectConfirm = false" dark color="primary"
-                >Cancel</v-btn
-              >
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-        <v-snackbar
-          v-model="snackbarDelete"
-          :timeout="4000"
-          bottom
-          color="error"
-        >
-          <span>Project Deleted successfully</span>
-          <v-btn text color="white" @click="snackbarDelete = false"
-            >Close</v-btn
-          >
-        </v-snackbar>
-      </template>
-      <template v-slot:no-data>
-        <v-card class="mx-auto" max-width="500">
-          <v-card-text>
-            <p class="text-center font-weight-bold red--text">
-              There is no project !
-            </p>
-          </v-card-text>
-        </v-card>
+            </confirmModel>
+            <v-btn text @click.stop="modalVisible = true" @click="openModal(item)">
+              <v-icon text color="error" medium class="mr-2">mdi-delete</v-icon>
+            </v-btn>
+            
+          </td>
+        </tr>
       </template>
     </v-data-table>
   </v-container>
@@ -94,10 +46,12 @@
 
 <script>
 import Navbar from "@/components/Navbar";
+import confirmModel from "@/components/confirm";
 import axios from "axios";
 export default {
   components: {
     Navbar,
+    confirmModel,
   },
   data: () => ({
     dialog: false,
@@ -113,6 +67,9 @@ export default {
     ],
     snackbarDelete: false,
     deleteProjectConfirm: false,
+
+    modalVisible: false,
+    modalData: null,
   }),
 
   mounted() {
@@ -134,6 +91,13 @@ export default {
     getColor(status) {
       if (status == "converted") return "green";
       else return "red";
+    },
+
+    openModal(data) {
+      console.log(data);
+      this.modalData = data;
+      this.modalVisible = true;
+      console.log(this.modalVisible);
     },
 
     deleteProject(item) {

@@ -128,7 +128,7 @@ import Modal from "@/Subcomponents/Modal.vue";
 export default {
   components: {
     Modal
-  }, 
+  },  
   data() {
     return {
       tab: null,
