@@ -2,7 +2,7 @@
   <v-dialog v-model="active" width="600">
     <v-card>
       <v-card-title class="headline pt-8" primary-title>
-        Confirm Deletion of {{ project.project_name }}
+        Confirm Deletion of {{ item.project_name }}
       </v-card-title>
       <v-divider></v-divider>
       <v-card-text class="pl-8 font-weight-bold">
@@ -15,6 +15,7 @@
           color="error"
           @click="deleteProject(item)"
           @projectDeleted="snackbarDelete = true"
+          :loading="loadDelete"
         >
           Delete</v-btn
         >
@@ -35,25 +36,26 @@
 <script>
 import axios from "axios";
 export default {
-  props: ["project", "active"],
+  props: ["item", "active"],
 
-  data(){
-      return{
-        snackbarDelete : false,
-      }
-
+  data() {
+    return {
+      snackbarDelete: false,
+      loadDelete: false,
+    };
   },
   methods: {
-       deleteProject(item) {
+    deleteProject(project) {
+      this.loadDelete = true;
       axios
-        .delete(`http://127.0.0.1:8000/api/projects/` + item.id)
+        .delete(`http://127.0.0.1:8000/api/projects/` + project.id)
         .then((response) => {
-          console.log("id = " + item.id);
+          console.log("id = " + project.id);
           console.log(response.data);
           console.log(this.$store.state.projects.length);
           this.deleteProjectConfirm = false;
           this.snackbarDelete = true;
-          this.getAllProjects();
+          this.loadDelete = false;
         })
         .catch((error) => console.log(error));
     },

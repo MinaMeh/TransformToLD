@@ -1,57 +1,87 @@
 <template>
   <v-container>
     <Navbar></Navbar>
-    <v-data-table
-      :headers="headers"
-      :items="$store.state.projects"
-      :search="search"
-    >
-      <template v-slot:item="row">
-        <tr>
-          <td>{{ row.item.id }}</td>
-          <td>{{ row.item.project_name }}</td>
-          <td>{{ row.item.author.email }}</td>
-          <td>{{ row.item.creation_date | formatDate }}</td>
-          <td>
-            <v-chip small :color="getColor(row.item.status)" dark>
-              {{ row.item.status }}
-            </v-chip>
-          </td>
-          <td>
-            <v-btn text color="success" medium>
-              <a v-bind:href="'/projects/' + row.item.id">
-                <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
-              </a>
-            </v-btn>
-            <confirmModel
-              text
-              color="error"
-              v-if="modalVisible"
-              @close="modalVisible = false"
-              :item="modalData"
-              :active="modalVisible"
-              message="Are you sure you want to delete this project?"
-            >
-            </confirmModel>
-            <v-btn text @click.stop="modalVisible = true" @click="openModal(item)">
-              <v-icon text color="error" medium class="mr-2">mdi-delete</v-icon>
-            </v-btn>
-            
-          </td>
-        </tr>
-      </template>
-    </v-data-table>
+    <v-row>
+      <v-col cols="12" >      
+        <v-card>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>Projects List</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-spacer></v-spacer>
+            <v-text-field
+              v-model="search"
+              append-icon="mdi-magnify"
+              label="Search"
+              single-line
+              hide-details
+            ></v-text-field>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+          <v-card-text>
+            <v-col cols="12">
+              <v-data-table
+                :headers="headers"
+                :items="$store.state.projects"
+                sort-by="id"
+                class="elevation-1"
+                :search="search"
+              > 
+                <template v-slot:item.status="{ item }">
+                  <v-chip small :color="getColor(item.status)" dark>{{
+                    item.status
+                  }}</v-chip>
+                </template>
+                <template v-slot:item.author="{ item }">
+                  <p>{{ item.author.email }}</p>
+                </template>
+                <template v-slot:item.creation="{ item }">
+                  <p>{{ item.creation_date | formatDate }}</p>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn text color="success" medium>
+                    <a v-bind:href="'/projects/' + item.id">
+                      <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
+                    </a>
+                  </v-btn>
+
+                  <ConfirmDeletion
+                    v-if="modalVisible"
+                    @close="modalVisible = false"
+                    :item="modalData"
+                    :active="modalVisible"
+                  >   
+                  </ConfirmDeletion>
+                   <v-btn
+                      color="error"
+                      dark
+                      class="mx-2"
+                      text
+                      medium
+                      @click.stop="modalVisible = true"
+                      @click="openModal(item)"
+                    >
+                      <v-icon dark>mdi-delete</v-icon>
+                    </v-btn>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-card-text>
+        </v-card>
+        
+
+      </v-col>
+    </v-row>  
   </v-container>
 </template>
 
 <script>
 import Navbar from "@/components/Navbar";
-import confirmModel from "@/components/confirm";
+import ConfirmDeletion from "@/components/DeleteProjectComponent";
 import axios from "axios";
 export default {
   components: {
     Navbar,
-    confirmModel,
+    ConfirmDeletion
   },
   data: () => ({
     dialog: false,

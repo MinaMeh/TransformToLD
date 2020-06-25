@@ -26,7 +26,7 @@
                 @close="modalVisible = false"
                 :prop="modalData"
                 :active="modalVisible"
-              ></Modal>
+              ></Modal> 
               <v-btn
                 color="blue"
                 dark
