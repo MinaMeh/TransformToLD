@@ -15,15 +15,12 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <CreateProject @projectAdded="snackbar = true"></CreateProject>
+        <CreateProject></CreateProject>
         <v-btn color="primary" class="font-weight-bold" to="/projects-list">
           <v-icon medium class="mr-1">mdi-file-eye</v-icon>Show projects
         </v-btn>
       </v-card-actions>
-      <v-snackbar v-model="snackbar" :timeout="4000" bottom color="success">
-        <span>Awesome! You added a new project.</span>
-        <v-btn text color="white" @click="snackbar = false">Close</v-btn>
-      </v-snackbar>
+      
     </v-card>
   </v-container>
 </template>
@@ -33,7 +30,7 @@ import CreateProject from "./CreateProject";
 export default {
   data() {
     return {
-      snackbar: false
+      //snackbar: false
     };
   },
   components: { Navbar, CreateProject }

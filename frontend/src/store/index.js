@@ -23,6 +23,7 @@ export default new Vuex.Store({
         project_name: "",
         description: "",
         licence: "",
+        projects: [],
 
         text: {
             paragraph: {
