@@ -112,7 +112,6 @@ export default {
     },
     beforeNextStep({ currentStep }, next) {
       this.$store.state.progress = true;
-
       if (currentStep.name == "first") {
         this.$store.state.progress = true;
 
@@ -171,6 +170,11 @@ export default {
             this.errorMsg = error.response.data.msg;
           });
       }
+      if (currentStep.name == "second") {
+        console.log(currentStep.component);
+        next();
+      }
+
       if (currentStep.name == "third") {
         this.$store.state.progress = true;
 

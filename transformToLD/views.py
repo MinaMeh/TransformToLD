@@ -20,7 +20,7 @@ from rest_framework.permissions import IsAuthenticated
 from transformToLD.models import MyUser
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
-from historique.models import Project, CsvProject
+from historique.models import Project, CsvProject, HtmlProject
 from historique.serializers import ProjectSerializer
 import os
 from django.conf import settings
@@ -69,7 +69,7 @@ def extract(request):
         project_serializer.save()
         project_id = project_serializer.data['id']
     else:
-        return Response({"msg": project_serializer.data}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"msg": project_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     project = Project.objects.get(pk=project_id)
     if file_type == 'text/csv' or file_type == "application/vnd.ms-excel":
         results = extract_csv_data(upload_file, separator)
@@ -82,7 +82,16 @@ def extract(request):
     elif file_type == "text/html":
         results = extract_html_data(
             upload_file, extract_tables=tables, extract_paragraphs=paragraphs)
-
+        tables_data = []
+        for table in results['tables']:
+            table_file = {
+                'path': table['filename'], 'filename': table['filename'], 'file_type': 'html'}
+            csv_data = CsvProject(
+                columns=table['columns'], lines=table['lines'], table_file=table_file)
+            tables_data.append(csv_data)
+        html_data = HtmlProject(tables=tables_data)
+        project.html_data = html_data
+        project.save()
         resp = {'results': results, 'filename': filename,
                 'type': 'html', 'size': file.size, "extract_tables": tables,
                 "extract_paragraphs": paragraphs, 'project_id': project_id}
@@ -99,6 +108,9 @@ def extract(request):
 @api_view(['POST'])
 def preprocess(request):
     file_type = request.POST.get('file_type')
+    project_id = request.POST.get('project_id')
+    project = Project.objects.get(pk=project_id)
+
     if file_type == "csv":
         columns_selected = json.loads(request.POST.get('columns', 'nthg'))
         headers = preprocess_columns(columns_selected)

@@ -9,9 +9,9 @@ export default new Vuex.Store({
   state: {
     jwt: localStorage.getItem("t"),
     user: {
-      first_name: "",
-      last_name: "",
-      email: "",
+      first_name: localStorage.getItem("first_name"),
+      last_name: localStorage.getItem("last_name"),
+      email: localStorage.getItem("email"),
     },
     properties: [],
     vocabs: [],
@@ -65,6 +65,9 @@ export default new Vuex.Store({
       state.user.first_name = first_name;
       state.user.last_name = last_name;
       state.user.email = email;
+      localStorage.getItem("first_name", first_name);
+      localStorage.getItem("last_name", last_name);
+      localStorage.getItem("email", email);
     },
     removeToken(state) {
       localStorage.removeItem("t");
