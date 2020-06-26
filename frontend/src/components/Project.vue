@@ -70,8 +70,7 @@
                       cols="6"
                       class="text-left text--primary subtitle-1 py-0"
                     >
-                      {{ this.project.author.first_name }}
-                      {{this.project.author.last_name}} , {{ this.project.author.email }}
+                      {{ this.project.author }}
                     </v-col>
                   </v-row>
                   <v-row class="mb-5 pb-2" align-center>
@@ -280,7 +279,13 @@ export default {
       dialogRead: false,
       activeSlide: null,
 
-      project: {},
+      project: {
+        project_name : "",
+        description :"",
+        author : "",
+        created_at : "",
+        input_file : null,
+      },
     };
   },
 
@@ -293,7 +298,14 @@ export default {
     },
     getProject(id) {
       axios
-        .get("http://127.0.0.1:8000/api/projects/" + id)
+        .get("http://127.0.0.1:8000/api/projects/" + id , 
+          {
+            headers: {
+              "Content-Type":"multipart/form-data",
+              Authorization : `JWT ${this.$store.state.jwt}`
+            }
+          },
+          { params: { user_email: this.$store.state.user.email }})
         .then((response) => {
           this.project = response.data;
           console.log(this.project.input_file.filename);

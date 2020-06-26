@@ -28,7 +28,7 @@
               >
                 <template v-slot:item.status="{ item }">
                   <v-chip v-if="item.status=false" small color="green" dark>{{ item.converted }}</v-chip>
-                  <v-chip v-if="item.status=true" small color="red" dark>{{ item.converted }}</v-chip>              
+                  <v-chip v-if="item.status=true" small color="red" dark>{{ item.converted }}</v-chip>
                 </template>
                 <template v-slot:item.author="{ item }">
                   <p>{{ item.author.email }}</p>
@@ -112,8 +112,17 @@ export default {
 
   methods: {
     getAllProjects() {
+      console.log(this.$store.state.user.email)
       axios
-        .get("http://127.0.0.1:8000/api/projects")
+        .get("http://127.0.0.1:8000/api/projects", {
+          params: {
+            user_email: this.$store.state.user.email
+          },
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `JWT ${this.$store.state.jwt}`
+          }
+        })
         .then(response => {
           this.projects = response.data;
           console.log(this.projects.length);

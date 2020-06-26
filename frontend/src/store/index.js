@@ -60,9 +60,9 @@ export default new Vuex.Store({
         },
     },
     mutations: {
-        updateStorage(state, { newToken, first_name, last_name, email }) {
-            localStorage.setItem("t", newToken);
-            state.jwt = newToken;
+        updateStorage(state, { jwt, first_name, last_name, email }) {
+            localStorage.setItem("t", jwt);
+            state.jwt = jwt;
             state.user.first_name = first_name;
             state.user.last_name = last_name;
             state.user.email = email;
