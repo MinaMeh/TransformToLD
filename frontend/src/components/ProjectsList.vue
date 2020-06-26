@@ -21,7 +21,7 @@
             <v-col cols="12">
               <v-data-table
                 :headers="headers"
-                :items="$store.state.projects"
+                :items="projects"
                 sort-by="id"
                 class="elevation-1"
                 :search="search"
@@ -85,7 +85,6 @@ import axios from "axios";
 export default {
   components: {
     Navbar,
-
     ConfirmDeletion
   },
   data: () => ({
@@ -103,7 +102,8 @@ export default {
     snackbarDelete: false,
     deleteProjectConfirm: false,
     modalVisible: false,
-    modalData: null
+    modalData: null,
+    projects: []
   }),
 
   mounted() {
@@ -115,8 +115,8 @@ export default {
       axios
         .get("http://127.0.0.1:8000/api/projects")
         .then(response => {
-          this.$store.state.projects = response.data;
-          console.log(this.$store.state.projects.length);
+          this.projects = response.data;
+          console.log(this.projects.length);
           console.log(response.data);
           this.loading = false;
         })
