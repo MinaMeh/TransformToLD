@@ -20,6 +20,7 @@ export default new Vuex.Store({
     file_content: [],
     filename: "",
     progress: true,
+    project_id: "",
     project_name: "",
     description: "",
     licence: "",

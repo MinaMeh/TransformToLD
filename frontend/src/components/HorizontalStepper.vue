@@ -116,7 +116,7 @@ export default {
         this.$store.state.progress = true;
 
         var formData_2 = new FormData();
-
+        formData_2.append("project_id", this.$store.state.project_id);
         formData_2.append("file_type", this.$store.state.file_type);
 
         if (this.$store.state.file_type == "csv") {
@@ -181,6 +181,7 @@ export default {
         var formData3 = new FormData();
         formData3.append("file_type", this.$store.state.file_type);
         formData3.append("vocabs", JSON.stringify(this.$store.state.vocabs));
+        formData3.append("project_id", this.$store.state.project_id);
 
         if (this.$store.state.file_type == "csv") {
           formData3.append(
@@ -233,6 +234,7 @@ export default {
       if (currentStep.name == "fourth") {
         var formData4 = new FormData();
         formData4.append("file_type", this.$store.state.file_type);
+        formData4.append("project_id", this.$store.state.project_id);
         formData4.append("file_name", this.$store.state.filename);
         if (this.$store.state.file_type == "csv") {
           formData4.append("delimiter", this.$store.state.csv.separator);
