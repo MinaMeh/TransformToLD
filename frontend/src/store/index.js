@@ -6,6 +6,7 @@ import Axios from "axios";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+
     state: {
         jwt: localStorage.getItem("t"),
         user: {
@@ -23,8 +24,8 @@ export default new Vuex.Store({
         project_id: "",
         project_name: "",
         description: "",
+        licence: "",
         projects: [],
-
         text: {
             paragraph: {
                 paragraph: "",

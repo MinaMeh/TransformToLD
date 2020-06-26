@@ -105,12 +105,10 @@
         </v-form>
       </v-card-text>
     </v-card>
-    <v-snackbar color="red" v-model="snackbar"
-      >{{ snackbarText }}
-      <v-btn text color="white" @click="snackbar = false"
-        >close</v-btn
-      ></v-snackbar
-    >
+    <v-snackbar color="red" v-model="snackbar">
+      {{snackbarText}}
+      <v-btn text color="white" @click="snackbar=false">close</v-btn>
+    </v-snackbar>
   </v-dialog>
 </template>
 
@@ -177,6 +175,7 @@ export default {
         .then((response) => {
           console.log(response.data);
           this.project.id = response.data.id;
+          this.$store.state.project_id = response.data.project_id;
           this.$store.state.filename = response.data.filename;
           this.$store.state.file_type = response.data.type;
           this.$store.state.size = response.data.size;
