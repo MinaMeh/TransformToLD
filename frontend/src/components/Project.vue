@@ -61,21 +61,6 @@
                     <v-col sm="6" cols="6" class="py-0">
                       <h4 class="title font-weight-bold text--primary">
                         <v-icon class="text--primary title font-weight-bold"
-                          >mdi-file-certificate</v-icon
-                        >Licence :
-                      </h4>
-                    </v-col>
-                    <v-col
-                      sm="6"
-                      cols="6"
-                      class="text-left text--primary subtitle-1 py-0"
-                      >{{ this.project.licence }}</v-col
-                    >
-                  </v-row>
-                  <v-row class="mb-5 pb-2" align-center>
-                    <v-col sm="6" cols="6" class="py-0">
-                      <h4 class="title font-weight-bold text--primary">
-                        <v-icon class="text--primary title font-weight-bold"
                           >mdi-account-box</v-icon
                         >Created by :
                       </h4>
@@ -137,28 +122,6 @@
                     >
                       <v-btn @click="seeOutputFile()" text color="primary"
                         >See results of conversion</v-btn
-                      >
-                    </v-col>
-                  </v-row>
-                  <v-row class="mb-5 pb-2" align-center>
-                    <v-col sm="6" cols="6" class="py-0">
-                      <h4 class="title font-weight-bold text--primary">
-                        <v-icon class="text--primary title font-weight-bold"
-                          >mdi-file-edit</v-icon
-                        >Edition historical :
-                      </h4>
-                    </v-col>
-                    <v-col
-                      sm="6"
-                      cols="6"
-                      class="text-left text--primary subtitle-1 py-0"
-                    >
-                      <v-btn
-                        style="{ cursor: 'pointer'}"
-                        text
-                        color="primary"
-                        @click="seeEditions()"
-                        >See historic of editions</v-btn
                       >
                     </v-col>
                   </v-row>
@@ -225,19 +188,6 @@
           </v-tabs-items>
         </v-col>
       </v-row>
-      <v-dialog v-model="dialogRead" width="500">
-        <v-card>
-          <v-card-title class="headline elevation-1" primary-title
-            >Editions</v-card-title
-          >
-          <v-card-text class="pa-5">list des editions</v-card-text>
-          <v-card-actions class="pa-5">
-            <v-btn class="ml-auto" @click="dialogRead = false" color="error"
-              >Close</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
     </v-card>
   </v-container>
 </template>
@@ -268,9 +218,6 @@ export default {
   },
 
   methods: {
-    seeEditions() {
-      this.dialogRead = true;
-    },
     seeInputFile() {
       this.tab++;
     },
