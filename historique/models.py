@@ -30,31 +30,63 @@ class File(models.Model):
     filename = models.CharField(max_length=100)
     file_type = models.CharField(max_length=10)
 
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return File.objects.create(**validated_data)
+
 
 class Triplet(models.Model):
     t_subject = models.CharField(max_length=255)
     t_predicate = models.CharField(max_length=255)
     t_object = models.CharField(max_length=255)
 
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return Triplet.objects.create(**validated_data)
+
 
 class Header(models.Model):
     column = models.CharField(max_length=50)
     term = models.CharField(max_length=255)
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return Header.objects.create(**validated_data)
 
 
 class Vocabulary(models.Model):
     prefix = models.CharField(max_length=10)
     uri = models.CharField(max_length=255)
 
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return Vocabulary.objects.create(**validated_data)
+
 
 class CsvProject(models.Model):
-    separator = models.CharField(max_length=3)
+    separator = models.CharField(max_length=3, null=True, blank=True)
     lines = models.IntegerField()
     columns = models.IntegerField()
     headers = models.ArrayField(model_container=Header, null=True, blank=True)
-    triplet = models.ArrayField(model_container=Triplet, null=True, blank=True)
+    triplets = models.ArrayField(
+        model_container=Triplet, null=True, blank=True)
     table_file = models.EmbeddedField(
         model_container=File, null=True, blank=True)
+    selected = models.BooleanField(null=True,  blank=True, default=False)
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return CsvProject.objects.create(**validated_data)
 
 
 class TextProject(models.Model):
@@ -63,16 +95,29 @@ class TextProject(models.Model):
     terms = models.ArrayField(model_container=Header, null=True, blank=True)
     p_file = models.EmbeddedField(model_container=File, null=True, blank=True)
 
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return TextProject.objects.create(**validated_data)
 
-class HtmlProject():
+
+class HtmlProject(models.Model):
     tables = models.ArrayField(
         model_container=CsvProject, null=True, blank=True)
     paragraphs = models.ArrayField(
         model_container=TextProject, null=True, blank=True)
 
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return HtmlProject.objects.create(**validated_data)
+
 
 class Project(models.Model):
-    project_name = models.CharField(max_length=70, blank=False, default='')
+    project_name = models.CharField(
+        max_length=70, blank=False, default='', unique=True)
     description = models.TextField(null=True)
     vocabularies = models.ArrayField(
         model_container=Vocabulary, null=True, blank=True)
@@ -89,11 +134,11 @@ class Project(models.Model):
         blank=True
 
     )
-    csv_data = models.ArrayField(
+    csv_data = models.EmbeddedField(
         model_container=CsvProject, null=True, blank=True)
-    text_data = models.ArrayField(
+    text_data = models.EmbeddedField(
         model_container=TextProject, null=True, blank=True)
-    html_data = models.ArrayField(
+    html_data = models.EmbeddedField(
         model_container=HtmlProject, null=True, blank=True)
     output_files = models.ArrayField(
         model_container=File, null=True, blank=True)
@@ -103,3 +148,9 @@ class Project(models.Model):
     converted = models.BooleanField(default=False)
     converted_at = models.DateTimeField(auto_now=False)
     objects = models.DjongoManager()
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return Project.objects.create(**validated_data)

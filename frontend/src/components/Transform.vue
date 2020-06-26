@@ -11,17 +11,17 @@ import Navbar from "@/components/Navbar";
 export default {
   data() {
     return {
-      snackbarCreate: false,
+      snackbarCreate: false
     };
   },
   components: {
     HorizontalStepper,
-    Navbar,
+    Navbar
   },
   methods: {
     test() {
-      console.log('Hello');
-    },
-  },
+      console.log("Hello");
+    }
+  }
 };
 </script>

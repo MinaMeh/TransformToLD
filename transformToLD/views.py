@@ -8,7 +8,7 @@ import pandas as pd
 import csv
 import json
 import io
-from rest_framework import viewsets, static
+from rest_framework import viewsets, static, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .Serializers import VocabularySerializer, ProjectSerializer
@@ -20,18 +20,17 @@ from rest_framework.permissions import IsAuthenticated
 from transformToLD.models import MyUser
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
-from historique.models import Project
+from historique.models import Project, CsvProject, HtmlProject
 from historique.serializers import ProjectSerializer
+import os
+from django.conf import settings
 
 
 @api_view(['GET'])
 def test(request):
-    # Project.objects.all().delete()
-    # test = Project(project_name="test5", file_path="test/test").save()
-    test2 = Project.objects.all()
-    # pr = ProjectSerializer(test2).data
-    ser = ProjectSerializer(test2, many=True).data
-    return Response(ser)
+    fs = FileSystemStorage(settings.MEDIA_URL+"/test")
+    test = fs.url("test_k9HX35L.csv")
+    return Response(test)
 
 
 @api_view(['GET'])
@@ -48,34 +47,58 @@ def extract(request):
     description = request.POST.get('description')
     licence = request.POST.get('licence')
     separator = request.POST.get('separator')
+    tables = True if request.POST.get('tables') == 'true' else False
+    paragraphs = True if request.POST.get('paragraphs') == 'true' else False
     project = json.loads(request.POST.get("project"))
+    directory = settings.MEDIA_URL+project["project_name"]
+    try:
+        os.mkdir(directory)
+    except FileExistsError:
+        return Response({"msg": "project already exists"}, status=status.HTTP_400_BAD_REQUEST)
+    fs = FileSystemStorage(location=directory)
 
+    filename = fs.save(file.name, file)
+    upload_file = "{}/{}".format(directory, filename)
+    file_type = file.content_type
+    input_file = {"path": upload_file,
+                  "filename": filename, "file_type": file_type}
+    project["input_file"] = input_file
     project_serializer = ProjectSerializer(data=project)
 
     if project_serializer.is_valid():
         project_serializer.save()
+        project_id = project_serializer.data['id']
     else:
-        return Response(project_serializer.data)
-    tables = True if request.POST.get('tables') == 'true' else False
-    paragraphs = True if request.POST.get('paragraphs') == 'true' else False
-    fs = FileSystemStorage()
-    filename = fs.save(file.name, file)
-    upload_file = fs.url(filename)
-    file_type = file.content_type
-    # Project(project_name=project_name, file_path=upload_file).save()
+        return Response({"msg": project_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    project = Project.objects.get(pk=project_id)
     if file_type == 'text/csv' or file_type == "application/vnd.ms-excel":
         results = extract_csv_data(upload_file, separator)
         resp = {'results': results, 'filename': filename,
-                'type': 'csv', 'size': file.size}
+                'type': 'csv', 'size': file.size, 'project_id': project_id}
+        csv_data = CsvProject(separator=separator,
+                              columns=results['columns'], lines=results['lines'])
+        project.csv_data = csv_data
+        project.save()
     elif file_type == "text/html":
         results = extract_html_data(
             upload_file, extract_tables=tables, extract_paragraphs=paragraphs)
+        tables_data = []
+        for table in results['tables']:
+            table_file = {
+                'path': table['filename'], 'filename': table['filename'], 'file_type': 'html'}
+            csv_data = CsvProject(
+                columns=table['columns'], lines=table['lines'], table_file=table_file)
+            tables_data.append(csv_data)
+        html_data = HtmlProject(tables=tables_data)
+        project.html_data = html_data
+        project.save()
         resp = {'results': results, 'filename': filename,
-                'type': 'html', 'size': file.size, "extract_tables": tables, "extract_paragraphs": paragraphs}
+                'type': 'html', 'size': file.size, "extract_tables": tables,
+                "extract_paragraphs": paragraphs, 'project_id': project_id}
     elif file_type == "text/plain":
         results = extract_text_data(upload_file)
         resp = {'results': results, 'filename': filename,
-                'type': 'text', 'size': file.size}
+                'type': 'text', 'size': file.size, 'project_id': project_id}
     else:
         pass
 
@@ -85,6 +108,9 @@ def extract(request):
 @api_view(['POST'])
 def preprocess(request):
     file_type = request.POST.get('file_type')
+    project_id = request.POST.get('project_id')
+    project = Project.objects.get(pk=project_id)
+
     if file_type == "csv":
         columns_selected = json.loads(request.POST.get('columns', 'nthg'))
         headers = preprocess_columns(columns_selected)

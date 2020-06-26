@@ -27,9 +27,9 @@
                 :search="search"
               >
                 <template v-slot:item.status="{ item }">
-                  <v-chip small :color="getColor(item.status)" dark>{{
-                    item.status
-                  }}</v-chip>
+                  <v-chip small :color="getColor(item.status)" dark>
+                    {{ item.status }}
+                  </v-chip>
                 </template>
                 <template v-slot:item.author="{ item }">
                   <p>{{ item.author.email }}</p>
@@ -38,17 +38,7 @@
                   <p>{{ item.creation_date | formatDate }}</p>
                 </template>
                 <template v-slot:item.actions="{ item }">
-                  <Project
-                    v-if="projectVisible"
-                    :item="projectData"
-                    :showProject="projectVisible"
-                  >
-                  </Project>
-                  <v-btn
-                    text
-                    color="success"
-                    medium
-                  >
+                  <v-btn text color="success" medium>
                     <a v-bind:href="'/projects/' + item.id">
                       <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
                     </a>
@@ -59,8 +49,7 @@
                     @close="modalVisible = false"
                     :item="modalData"
                     :confirmDelete="modalVisible"
-                  >
-                  </ConfirmDeletion>
+                  ></ConfirmDeletion>
                   <v-btn
                     color="error"
                     dark
@@ -85,13 +74,12 @@
 <script>
 import Navbar from "@/components/Navbar";
 import ConfirmDeletion from "@/components/DeleteProjectComponent";
-import Project from "@/components/Project";
 import axios from "axios";
 export default {
   components: {
     Navbar,
+
     ConfirmDeletion,
-    Project,
   },
   data: () => ({
     dialog: false,
@@ -110,8 +98,6 @@ export default {
 
     modalVisible: false,
     modalData: null,
-    projectVisible: false,
-    projectData: null,
   }),
 
   mounted() {
@@ -141,7 +127,6 @@ export default {
       this.modalVisible = true;
       console.log(this.modalVisible);
     },
-    
   },
 };
 </script>
