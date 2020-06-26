@@ -11,17 +11,15 @@ from historique.serializers import ProjectSerializer, AuthorSerializer
 
 
 @api_view(['GET', 'POST', 'DELETE'])
-#@permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,))
 def projects_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
-        project_name = request.GET.get('project_name', None)
-        if project_name is not None:
-            projects = projects.filter(project_name__icontains=project_name)
-
+        email = request.GET.get('user_email', None)
+        projects = projects.filter(
+            author={'email': email})
         projects_serializer = ProjectSerializer(projects, many=True)
         return JsonResponse(projects_serializer.data, safe=False)
-        # 'safe=False' for objects serialization
 
     elif request.method == 'POST':
         project_data = JSONParser().parse(request)
@@ -38,7 +36,7 @@ def projects_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-#@permission_classes((IsAuthenticated,))
+# @permission_classes((IsAuthenticated,))
 def project_details(request, pk):
     try:
         project = Project.objects.get(pk=pk)

@@ -35,6 +35,7 @@ def test(request):
 
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def listVocabs(request):
     vocabs = get_vocab_list()
     results = VocabularySerializer(vocabs, many=True).data
@@ -42,6 +43,7 @@ def listVocabs(request):
 
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
 def extract(request):
     file = request.FILES['file']
     project_name = request.POST.get('project_name')
