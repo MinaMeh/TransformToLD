@@ -1,5 +1,6 @@
 from djongo import models
 from django import forms
+from django.contrib.postgres.fields import ArrayField
 
 
 class Author(models.Model):
@@ -38,9 +39,10 @@ class File(models.Model):
 
 
 class Triplet(models.Model):
-    t_subject = models.CharField(max_length=255)
-    t_predicate = models.CharField(max_length=255)
-    t_object = models.CharField(max_length=255)
+    subject = models.CharField(max_length=255)
+    predicate = models.CharField(max_length=255)
+    object = models.CharField(max_length=255)
+    selected = models.BooleanField(default=True)
 
     def create(self, validated_data):
         """
@@ -50,8 +52,11 @@ class Triplet(models.Model):
 
 
 class Header(models.Model):
-    column = models.CharField(max_length=50)
-    term = models.CharField(max_length=255)
+    name = models.CharField(max_length=50)
+    term = models.CharField(max_length=255, null=True, blank=True)
+    combinaison = models.ListField(null=True, blank=True, default=[])
+    translated = models.CharField(max_length=20, null=True, blank=True)
+    selected = models.BooleanField(default=False)
 
     def create(self, validated_data):
         """
@@ -72,13 +77,14 @@ class Vocabulary(models.Model):
 
 
 class CsvProject(models.Model):
+    id = models.IntegerField(default=0, primary_key=True)
     separator = models.CharField(max_length=3, null=True, blank=True)
     lines = models.IntegerField()
     columns = models.IntegerField()
     headers = models.ArrayField(model_container=Header, null=True, blank=True)
     triplets = models.ArrayField(
         model_container=Triplet, null=True, blank=True)
-    table_file = models.EmbeddedField(
+    filename = models.EmbeddedField(
         model_container=File, null=True, blank=True)
     selected = models.BooleanField(null=True,  blank=True, default=False)
 

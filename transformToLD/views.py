@@ -20,10 +20,11 @@ from rest_framework.permissions import IsAuthenticated
 from transformToLD.models import MyUser
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
-from historique.models import Project, CsvProject, HtmlProject
+from historique.models import Project, CsvProject, HtmlProject, TextProject
 from historique.serializers import ProjectSerializer
 import os
 from django.conf import settings
+from .db_operations import update_project_tables, update_project_paragraphs
 
 
 @api_view(['GET'])
@@ -34,6 +35,7 @@ def test(request):
 
 
 @api_view(['GET'])
+@permission_classes((IsAuthenticated, ))
 def listVocabs(request):
     vocabs = get_vocab_list()
     results = VocabularySerializer(vocabs, many=True).data
@@ -41,6 +43,7 @@ def listVocabs(request):
 
 
 @api_view(['POST'])
+@permission_classes((IsAuthenticated, ))
 def extract(request):
     file = request.FILES['file']
     project_name = request.POST.get('project_name')
@@ -86,7 +89,7 @@ def extract(request):
             table_file = {
                 'path': table['filename'], 'filename': table['filename'], 'file_type': 'html'}
             csv_data = CsvProject(
-                columns=table['columns'], lines=table['lines'], table_file=table_file)
+                columns=table['columns'], lines=table['lines'], filename=table_file)
             tables_data.append(csv_data)
         html_data = HtmlProject(tables=tables_data)
         project.html_data = html_data
@@ -118,6 +121,9 @@ def preprocess(request):
         tables_selected = json.loads(request.POST.get('tables', 'nthg'))
         paragrahps_selected = json.loads(
             request.POST.get('paragraphs', 'nthg'))
+        tables_data = []
+        text_data = []
+        test_data = []
         for table in tables_selected:
             if (table['selected'] == True):
                 table['headers'] = preprocess_columns(table['headers'])
@@ -125,6 +131,8 @@ def preprocess(request):
             if paragraph['selected'] == True:
                 paragraph = preprocess_paragraph(
                     paragraph)
+        update_project_tables(project, tables_selected)
+        test_data = update_project_paragraphs(project, paragrahps_selected)
         resp = {'tables_selected': tables_selected,
                 'paragraphs_selected': paragrahps_selected}
     elif file_type == "text":

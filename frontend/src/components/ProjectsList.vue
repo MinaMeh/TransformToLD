@@ -112,15 +112,15 @@ export default {
 
   methods: {
     getAllProjects() {
-      console.log(this.$store.state.user.email)
+      console.log(this.$store.state.user.email);
       axios
         .get("http://127.0.0.1:8000/api/projects", {
-          params: {
-            user_email: this.$store.state.user.email
-          },
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `JWT ${this.$store.state.jwt}`
+          },
+          params: {
+            user_email: this.$store.state.user.email
           }
         })
         .then(response => {
@@ -131,7 +131,6 @@ export default {
         })
         .catch(error => console.log(error));
     },
-
     openModal(data) {
       console.log(data);
       this.modalData = data;

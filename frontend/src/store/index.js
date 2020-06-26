@@ -6,7 +6,6 @@ import Axios from "axios";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-
     state: {
         jwt: localStorage.getItem("t"),
         user: {
@@ -60,7 +59,12 @@ export default new Vuex.Store({
         },
     },
     mutations: {
-        updateStorage(state, { jwt, first_name, last_name, email }) {
+        updateStorage(state, {
+            jwt,
+            first_name,
+            last_name,
+            email
+        }) {
             localStorage.setItem("t", jwt);
             state.jwt = jwt;
             state.user.first_name = first_name;
@@ -165,34 +169,34 @@ export default new Vuex.Store({
             });
         },
         /*inspectToken() {
-                    const token = this.state.jwt;
-                    if (token) {
-                        const decodedData = jwt_decode(token);
-                        const expirationDate = decodedData.exp;
-                        const orig_iat = decodedData.orig_iat;
-                        console.log(decodedData);
-                        if (
-                            expirationDate - (Date.now() / 1000) < 1800 &&
-                            (Date.now() / 1000) - orig_iat < 628200) {
-                            this.dispatch("userLogin", {
-                                email: this.state.user.email,
-                                password: this.state.user.password,
-                            }).then(() => {
-                                this.$router.push({
-                                    name: "home"
+                        const token = this.state.jwt;
+                        if (token) {
+                            const decodedData = jwt_decode(token);
+                            const expirationDate = decodedData.exp;
+                            const orig_iat = decodedData.orig_iat;
+                            console.log(decodedData);
+                            if (
+                                expirationDate - (Date.now() / 1000) < 1800 &&
+                                (Date.now() / 1000) - orig_iat < 628200) {
+                                this.dispatch("userLogin", {
+                                    email: this.state.user.email,
+                                    password: this.state.user.password,
+                                }).then(() => {
+                                    this.$router.push({
+                                        name: "home"
+                                    });
                                 });
-                            });
-                        } else if (expirationDate - (Date.now() / 1000) < 1800) {
-                            this.$router.push({
-                                name: "login"
-                            });
-                        } else {
-                            this.$router.push({
-                                name: "login"
-                            });
+                            } else if (expirationDate - (Date.now() / 1000) < 1800) {
+                                this.$router.push({
+                                    name: "login"
+                                });
+                            } else {
+                                this.$router.push({
+                                    name: "login"
+                                });
+                            }
                         }
-                    }
-                },
-                */
+                    },
+                    */
     },
 });
