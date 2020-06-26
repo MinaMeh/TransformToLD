@@ -1,12 +1,19 @@
 <template>
   <v-dialog max-width="900px" v-model="dialog">
     <template v-slot:activator="{ on }">
-      <v-btn @click="newProject()" text class="success font-weight-bold" v-on="on">
+      <v-btn
+        @click="newProject()"
+        text
+        class="success font-weight-bold"
+        v-on="on"
+      >
         <v-icon medium class="mr-1">mdi-file-plus</v-icon>Add new project
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="font-weight-bold text--primary">Add a new project</v-card-title>
+      <v-card-title class="font-weight-bold text--primary"
+        >Add a new project</v-card-title
+      >
       <v-divider></v-divider>
       <v-card-text>
         <v-form class="px-3">
@@ -25,12 +32,6 @@
             placeholder="Describe your project"
             prepend-icon="mdi-file-document-edit"
           ></v-textarea>
-          <v-text-field
-            outlined
-            label="Licence"
-            v-model="$store.state.licence"
-            prepend-icon="mdi-file-certificate"
-          ></v-text-field>
           <v-row>
             <v-col cols="11" v-if="!link">
               <v-file-input
@@ -65,7 +66,10 @@
                 prepend-icon="mdi-file-document"
               ></v-text-field>
             </v-col>
-            <v-col cols="6" v-if="type == 'text/csv' || type == 'application/vnd.ms-excel'">
+            <v-col
+              cols="6"
+              v-if="type == 'text/csv' || type == 'application/vnd.ms-excel'"
+            >
               <v-text-field
                 outlined
                 label="Separator"
@@ -90,7 +94,12 @@
             </v-col>
           </v-row>
           <v-spacer></v-spacer>
-          <v-btn text class="font-weight-bold success" @click="saveProject()" :loading="loading">
+          <v-btn
+            text
+            class="font-weight-bold success"
+            @click="saveProject()"
+            :loading="loading"
+          >
             <v-icon>mdi-plus</v-icon>Create
           </v-btn>
         </v-form>
@@ -116,24 +125,23 @@ export default {
         id: null,
         project_name: "",
         description: "",
-        licence: "",
-        file_link: ""
+        file_link: "",
       },
       html: {
         tables: true,
-        paragraphs: true
+        paragraphs: true,
       },
       link: false,
       file: null,
       type: null,
       filename: "No file uploaded",
       csv: {
-        separator: ";"
+        separator: ";",
       },
       loading: false,
       dialog: false,
       snackbar: false,
-      snackbarText: ""
+      snackbarText: "",
     };
   },
   methods: {
@@ -148,25 +156,23 @@ export default {
       var project = {
         project_name: this.$store.state.project_name,
         description: this.$store.state.description,
-        licence: this.$store.state.licence,
         author: this.$store.state.user,
-        creation_date: new Date()
+        creation_date: new Date(),
       };
       formData.append("project", JSON.stringify(project));
       formData.append("file", this.$store.state.file_uploaded);
       formData.append("project_name", this.$store.state.project_name);
       formData.append("description", this.$store.state.description);
-      formData.append("licence", this.$store.state.licence);
       formData.append("separator", this.$store.state.csv.separator);
       formData.append("tables", this.$store.state.html.extract_tables);
       formData.append("paragraphs", this.$store.state.html.extract_paragraphs);
       axios
         .post("http://localhost:8000/extract/", formData, {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         })
-        .then(response => {
+        .then((response) => {
           console.log(response.data);
           this.project.id = response.data.id;
           this.$store.state.project_id = response.data.project_id;
@@ -199,7 +205,7 @@ export default {
           this.dialog = false;
           this.$router.push({ name: "transform" });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           console.log(error.response.data.msg);
           this.snackbar = true;
@@ -209,7 +215,7 @@ export default {
 
     newProject() {
       this.project = {};
-    }
-  }
+    },
+  },
 };
 </script>

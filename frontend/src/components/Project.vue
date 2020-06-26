@@ -5,7 +5,7 @@
       Project "{{ this.project.project_name }}" Details
     </h1>
     <v-divider></v-divider>
-    <v-card>
+    
       <v-row wrap>
         <v-col grow class="py-1 elevation-2">
           <v-tabs
@@ -61,21 +61,6 @@
                     <v-col sm="6" cols="6" class="py-0">
                       <h4 class="title font-weight-bold text--primary">
                         <v-icon class="text--primary title font-weight-bold"
-                          >mdi-file-certificate</v-icon
-                        >Licence :
-                      </h4>
-                    </v-col>
-                    <v-col
-                      sm="6"
-                      cols="6"
-                      class="text-left text--primary subtitle-1 py-0"
-                      >{{ this.project.licence }}</v-col
-                    >
-                  </v-row>
-                  <v-row class="mb-5 pb-2" align-center>
-                    <v-col sm="6" cols="6" class="py-0">
-                      <h4 class="title font-weight-bold text--primary">
-                        <v-icon class="text--primary title font-weight-bold"
                           >mdi-account-box</v-icon
                         >Created by :
                       </h4>
@@ -85,8 +70,8 @@
                       cols="6"
                       class="text-left text--primary subtitle-1 py-0"
                     >
-                      {{ this.project.author }}
-                      <!--{{this.project.author.last_name}} , {{ this.project.author.email }}-->
+                      {{ this.project.author.first_name }}
+                      {{this.project.author.last_name}} , {{ this.project.author.email }}
                     </v-col>
                   </v-row>
                   <v-row class="mb-5 pb-2" align-center>
@@ -140,34 +125,12 @@
                       >
                     </v-col>
                   </v-row>
-                  <v-row class="mb-5 pb-2" align-center>
-                    <v-col sm="6" cols="6" class="py-0">
-                      <h4 class="title font-weight-bold text--primary">
-                        <v-icon class="text--primary title font-weight-bold"
-                          >mdi-file-edit</v-icon
-                        >Edition historical :
-                      </h4>
-                    </v-col>
-                    <v-col
-                      sm="6"
-                      cols="6"
-                      class="text-left text--primary subtitle-1 py-0"
-                    >
-                      <v-btn
-                        style="{ cursor: 'pointer'}"
-                        text
-                        color="primary"
-                        @click="seeEditions()"
-                        >See historic of editions</v-btn
-                      >
-                    </v-col>
-                  </v-row>
                 </v-card-text>
               </v-card>
             </v-tab-item>
             <v-tab-item>
               <v-card
-                v-if="this.project.input_file == null"
+                v-if="this.project.input_file === null"
                 class="mx-auto"
                 max-width="500"
               >
@@ -178,17 +141,85 @@
                 </v-card-text>
               </v-card>
               <v-card
-                v-if="this.project.input_file == !null"
+                v-if="this.project.input_file !=null"
                 class="mx-auto"
-                max-width="500"
+                max-width="600"
               >
                 <v-card-text>
-                  <p class="headline text--primary">Open Data Input file :</p>
-                  <h4>
-                    <v-icon>mdi-file</v-icon>
-                    {{ this.project.input_file.filename }}
-                  </h4>
+                  <p class="display-1 text--primary">Open Data Input file :</p>
                   <v-divider></v-divider>
+                  <v-row class="mb-5 pb-2" align-center>
+                    <v-col sm="6" cols="6" class="py-0">
+                      <h4 class="title font-weight-bold">
+                        <v-icon class=" headline mr-2 text--primary"
+                          >mdi-file</v-icon
+                        >File name :
+                      </h4>
+                    </v-col>
+                    <v-col
+                      sm="6"
+                      cols="6"
+                      class="text-left text--primary subtitle-1 py-0"
+                    >
+                      {{ this.project.input_file.filename }}
+                    </v-col>
+                  </v-row>
+                  <v-row class="mb-5 pb-2" align-center>
+                    <v-col sm="6" cols="6" class="py-0">
+                      <h4 class="title font-weight-bold">
+                        <v-icon 
+                          v-if="this.project.input_file.file_type==='text/csv'" 
+                          class="headline mr-2 text--primary"
+                        >mdi-file-table</v-icon>
+                        <v-icon 
+                          v-if="this.project.input_file.file_type==='text/html'" 
+                          class="headline mr-2 text--primary"
+                        >mdi-file-code</v-icon>
+                        <v-icon 
+                          v-if="this.project.input_file.file_type==='text/plain'" 
+                          class="headline mr-2 text--primary"
+                        >mdi-file-document</v-icon>
+                        <v-icon 
+                          v-if="this.project.input_file.file_type==='application/pdf'" 
+                          class="headline mr-2 text--primary"
+                        >mdi-file-pdf</v-icon>
+                        <v-icon 
+                          v-if="this.project.input_file.file_type==='image/jpeg'" 
+                          class="headline mr-2 text--primary"
+                        >mdi-file-image</v-icon>
+                        <v-icon 
+                          v-if="this.project.input_file.file_type==='application/vnd.ms-excel'" 
+                          class="headline mr-2 text--primary"
+                        >mdi-file-excel </v-icon>
+                        File Type :
+                      </h4>
+                    </v-col>
+                    <v-col
+                      sm="6"
+                      cols="6"
+                      class="text-left text--primary subtitle-1 py-0"
+                    >
+                      {{ this.project.input_file.file_type }}
+                    </v-col>
+                  </v-row>
+
+                  <v-row class="mb-5 pb-2" align-center>
+                    <v-col sm="6" cols="6" class="py-0">
+                      <h4 class="title font-weight-bold">
+                        <v-icon class=" headline mr-2 text--primary"
+                          >mdi-file-find</v-icon
+                        >File Path :
+                      </h4>
+                    </v-col>
+                    <v-col
+                      sm="6"
+                      cols="6"
+                      class="text-left text--primary subtitle-1 py-0"
+                    >
+                      {{ this.project.input_file.path }}
+                    </v-col>
+                  </v-row>
+                  
                 </v-card-text>
               </v-card>
             </v-tab-item>
@@ -225,20 +256,6 @@
           </v-tabs-items>
         </v-col>
       </v-row>
-      <v-dialog v-model="dialogRead" width="500">
-        <v-card>
-          <v-card-title class="headline elevation-1" primary-title
-            >Editions</v-card-title
-          >
-          <v-card-text class="pa-5">list des editions</v-card-text>
-          <v-card-actions class="pa-5">
-            <v-btn class="ml-auto" @click="dialogRead = false" color="error"
-              >Close</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-card>
   </v-container>
 </template>
 
@@ -268,9 +285,6 @@ export default {
   },
 
   methods: {
-    seeEditions() {
-      this.dialogRead = true;
-    },
     seeInputFile() {
       this.tab++;
     },
@@ -282,8 +296,8 @@ export default {
         .get("http://127.0.0.1:8000/api/projects/" + id)
         .then((response) => {
           this.project = response.data;
-          console.log(response.data.input_file);
-          console.log(response.data.converted);
+          console.log(this.project.input_file.filename);
+          console.log(this.project.converted);
         })
         .catch((error) => console.log(error));
     },

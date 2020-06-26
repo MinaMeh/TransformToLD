@@ -21,15 +21,14 @@
             <v-col cols="12">
               <v-data-table
                 :headers="headers"
-                :items="$store.state.projects"
+                :items="projects"
                 sort-by="id"
                 class="elevation-1"
                 :search="search"
               >
                 <template v-slot:item.status="{ item }">
-                  <v-chip small :color="getColor(item.status)" dark>
-                    {{ item.status }}
-                  </v-chip>
+                  <v-chip v-if="item.status=false" small color="green" dark>{{ item.converted }}</v-chip>
+                  <v-chip v-if="item.status=true" small color="red" dark>{{ item.converted }}</v-chip>              
                 </template>
                 <template v-slot:item.author="{ item }">
                   <p>{{ item.author.email }}</p>
@@ -43,7 +42,6 @@
                       <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
                     </a>
                   </v-btn>
-
                   <ConfirmDeletion
                     v-if="modalVisible"
                     @close="modalVisible = false"
@@ -62,6 +60,15 @@
                     <v-icon dark>mdi-delete</v-icon>
                   </v-btn>
                 </template>
+                <template v-slot:no-data>
+                  <v-card class="mx-auto" max-width="500">
+                    <v-card-text>
+                      <p
+                        class="text-center font-weight-bold red--text mt-5"
+                      >There is no project yet!</p>
+                    </v-card-text>
+                  </v-card>
+                </template>
               </v-data-table>
             </v-col>
           </v-card-text>
@@ -78,8 +85,7 @@ import axios from "axios";
 export default {
   components: {
     Navbar,
-
-    ConfirmDeletion,
+    ConfirmDeletion
   },
   data: () => ({
     dialog: false,
@@ -91,13 +97,13 @@ export default {
       { text: "Project author", value: "author" },
       { text: "Creation date", value: "creation" },
       { text: "Conversion Status", value: "status" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Actions", value: "actions", sortable: false }
     ],
     snackbarDelete: false,
     deleteProjectConfirm: false,
-
     modalVisible: false,
     modalData: null,
+    projects: []
   }),
 
   mounted() {
@@ -108,17 +114,13 @@ export default {
     getAllProjects() {
       axios
         .get("http://127.0.0.1:8000/api/projects")
-        .then((response) => {
-          this.$store.state.projects = response.data;
-          console.log(this.$store.state.projects.length);
+        .then(response => {
+          this.projects = response.data;
+          console.log(this.projects.length);
           console.log(response.data);
           this.loading = false;
         })
-        .catch((error) => console.log(error));
-    },
-    getColor(status) {
-      if (status == "converted") return "green";
-      else return "red";
+        .catch(error => console.log(error));
     },
 
     openModal(data) {
@@ -126,7 +128,7 @@ export default {
       this.modalData = data;
       this.modalVisible = true;
       console.log(this.modalVisible);
-    },
-  },
+    }
+  }
 };
 </script>
