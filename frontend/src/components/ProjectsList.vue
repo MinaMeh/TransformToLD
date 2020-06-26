@@ -38,7 +38,17 @@
                   <p>{{ item.creation_date | formatDate }}</p>
                 </template>
                 <template v-slot:item.actions="{ item }">
-                  <v-btn text color="success" medium>
+                  <Project
+                    v-if="projectVisible"
+                    :item="projectData"
+                    :showProject="projectVisible"
+                  >
+                  </Project>
+                  <v-btn
+                    text
+                    color="success"
+                    medium
+                  >
                     <a v-bind:href="'/projects/' + item.id">
                       <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
                     </a>
@@ -75,11 +85,13 @@
 <script>
 import Navbar from "@/components/Navbar";
 import ConfirmDeletion from "@/components/DeleteProjectComponent";
+import Project from "@/components/Project";
 import axios from "axios";
 export default {
   components: {
     Navbar,
     ConfirmDeletion,
+    Project,
   },
   data: () => ({
     dialog: false,
@@ -98,6 +110,8 @@ export default {
 
     modalVisible: false,
     modalData: null,
+    projectVisible: false,
+    projectData: null,
   }),
 
   mounted() {
@@ -127,6 +141,7 @@ export default {
       this.modalVisible = true;
       console.log(this.modalVisible);
     },
+    
   },
 };
 </script>

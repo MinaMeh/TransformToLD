@@ -100,4 +100,6 @@ class Project(models.Model):
     intermediate_files = models.ArrayField(
         model_container=File, null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
+    converted = models.BooleanField(default=False)
+    converted_at = models.DateTimeField(auto_now=False)
     objects = models.DjongoManager()
