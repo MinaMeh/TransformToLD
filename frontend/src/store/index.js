@@ -20,6 +20,7 @@ export default new Vuex.Store({
         file_content: [],
         filename: "",
         progress: true,
+        project_id: "",
         project_name: "",
         description: "",
         projects: [],
@@ -163,34 +164,34 @@ export default new Vuex.Store({
             });
         },
         /*inspectToken() {
-                const token = this.state.jwt;
-                if (token) {
-                    const decodedData = jwt_decode(token);
-                    const expirationDate = decodedData.exp;
-                    const orig_iat = decodedData.orig_iat;
-                    console.log(decodedData);
-                    if (
-                        expirationDate - (Date.now() / 1000) < 1800 &&
-                        (Date.now() / 1000) - orig_iat < 628200) {
-                        this.dispatch("userLogin", {
-                            email: this.state.user.email,
-                            password: this.state.user.password,
-                        }).then(() => {
-                            this.$router.push({
-                                name: "home"
+                    const token = this.state.jwt;
+                    if (token) {
+                        const decodedData = jwt_decode(token);
+                        const expirationDate = decodedData.exp;
+                        const orig_iat = decodedData.orig_iat;
+                        console.log(decodedData);
+                        if (
+                            expirationDate - (Date.now() / 1000) < 1800 &&
+                            (Date.now() / 1000) - orig_iat < 628200) {
+                            this.dispatch("userLogin", {
+                                email: this.state.user.email,
+                                password: this.state.user.password,
+                            }).then(() => {
+                                this.$router.push({
+                                    name: "home"
+                                });
                             });
-                        });
-                    } else if (expirationDate - (Date.now() / 1000) < 1800) {
-                        this.$router.push({
-                            name: "login"
-                        });
-                    } else {
-                        this.$router.push({
-                            name: "login"
-                        });
+                        } else if (expirationDate - (Date.now() / 1000) < 1800) {
+                            this.$router.push({
+                                name: "login"
+                            });
+                        } else {
+                            this.$router.push({
+                                name: "login"
+                            });
+                        }
                     }
-                }
-            },
-            */
+                },
+                */
     },
 });
