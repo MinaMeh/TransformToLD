@@ -28,9 +28,7 @@
               >
                 <template v-slot:item.status="{ item }">
                   <v-chip small :color="getColor(item.status)" dark>
-                    {{
-                    item.status
-                    }}
+                    {{ item.status }}
                   </v-chip>
                 </template>
                 <template v-slot:item.author="{ item }">
@@ -80,7 +78,8 @@ import axios from "axios";
 export default {
   components: {
     Navbar,
-    ConfirmDeletion
+
+    ConfirmDeletion,
   },
   data: () => ({
     dialog: false,
@@ -92,13 +91,13 @@ export default {
       { text: "Project author", value: "author" },
       { text: "Creation date", value: "creation" },
       { text: "Conversion Status", value: "status" },
-      { text: "Actions", value: "actions", sortable: false }
+      { text: "Actions", value: "actions", sortable: false },
     ],
     snackbarDelete: false,
     deleteProjectConfirm: false,
 
     modalVisible: false,
-    modalData: null
+    modalData: null,
   }),
 
   mounted() {
@@ -109,13 +108,13 @@ export default {
     getAllProjects() {
       axios
         .get("http://127.0.0.1:8000/api/projects")
-        .then(response => {
+        .then((response) => {
           this.$store.state.projects = response.data;
           console.log(this.$store.state.projects.length);
           console.log(response.data);
           this.loading = false;
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
     },
     getColor(status) {
       if (status == "converted") return "green";
@@ -127,7 +126,7 @@ export default {
       this.modalData = data;
       this.modalVisible = true;
       console.log(this.modalVisible);
-    }
-  }
+    },
+  },
 };
 </script>

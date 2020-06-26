@@ -1,12 +1,18 @@
 
 from rest_meets_djongo import serializers
-from historique.models import Project, Author
+from historique.models import Project, Author, File
 
 
 class AuthorSerializer(serializers.DjongoModelSerializer):
     class Meta:
         model = Author
         fields = ('name', 'email', 'password')
+
+
+class FileSerializer(serializers.DjongoModelSerializer):
+    class Meta:
+        model = File
+        fields = ('path', 'filename', 'file_type')
 
 
 class ProjectSerializer(serializers.DjongoModelSerializer):
@@ -26,4 +32,5 @@ class ProjectSerializer(serializers.DjongoModelSerializer):
             'text_data',
             'html_data',
             'creation_date',
+            'converted',
         )
