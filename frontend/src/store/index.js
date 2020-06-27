@@ -1,11 +1,14 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import Axios from "axios";
+import createPersistedState from "vuex-persistedstate";
+
 //import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+    plugins: [createPersistedState()],
     state: {
         jwt: localStorage.getItem("t"),
         user: {
@@ -95,6 +98,8 @@ export default new Vuex.Store({
                             last_name: response.data.last_name,
                             email: response.data.email,
                         });
+
+
                         resolve();
                     })
                     .catch((err) => {
@@ -169,34 +174,34 @@ export default new Vuex.Store({
             });
         },
         /*inspectToken() {
-                        const token = this.state.jwt;
-                        if (token) {
-                            const decodedData = jwt_decode(token);
-                            const expirationDate = decodedData.exp;
-                            const orig_iat = decodedData.orig_iat;
-                            console.log(decodedData);
-                            if (
-                                expirationDate - (Date.now() / 1000) < 1800 &&
-                                (Date.now() / 1000) - orig_iat < 628200) {
-                                this.dispatch("userLogin", {
-                                    email: this.state.user.email,
-                                    password: this.state.user.password,
-                                }).then(() => {
-                                    this.$router.push({
-                                        name: "home"
-                                    });
-                                });
-                            } else if (expirationDate - (Date.now() / 1000) < 1800) {
-                                this.$router.push({
-                                    name: "login"
-                                });
-                            } else {
-                                this.$router.push({
-                                    name: "login"
-                                });
-                            }
-                        }
-                    },
-                    */
+                                const token = this.state.jwt;
+                                if (token) {
+                                    const decodedData = jwt_decode(token);
+                                    const expirationDate = decodedData.exp;
+                                    const orig_iat = decodedData.orig_iat;
+                                    console.log(decodedData);
+                                    if (
+                                        expirationDate - (Date.now() / 1000) < 1800 &&
+                                        (Date.now() / 1000) - orig_iat < 628200) {
+                                        this.dispatch("userLogin", {
+                                            email: this.state.user.email,
+                                            password: this.state.user.password,
+                                        }).then(() => {
+                                            this.$router.push({
+                                                name: "home"
+                                            });
+                                        });
+                                    } else if (expirationDate - (Date.now() / 1000) < 1800) {
+                                        this.$router.push({
+                                            name: "login"
+                                        });
+                                    } else {
+                                        this.$router.push({
+                                            name: "login"
+                                        });
+                                    }
+                                }
+                            },
+                            */
     },
 });

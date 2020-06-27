@@ -1,24 +1,34 @@
 <template>
   <v-dialog max-width="900px" v-model="dialog">
     <template v-slot:activator="{ on }">
-      <v-btn @click="newProject()" text class="success font-weight-bold" v-on="on">
+      <v-btn
+        @click="newProject()"
+        text
+        class="success font-weight-bold"
+        v-on="on"
+      >
         <v-icon medium class="mr-1">mdi-file-plus</v-icon>Add new project
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="font-weight-bold text--primary">Add a new project</v-card-title>
+      <v-card-title class="font-weight-bold text--primary"
+        >Add a new project</v-card-title
+      >
       <v-divider></v-divider>
       <v-card-text>
         <v-form class="px-3">
           <v-text-field
             outlined
             label="Project Name"
+            :rules="nameRules"
+            :counter="10"
             required
             v-model="$store.state.project_name"
             placeholder="Enter the name of your project"
             prepend-icon="mdi-file"
           ></v-text-field>
           <v-textarea
+            counter
             outlined
             label="Description"
             v-model="$store.state.description"
@@ -28,18 +38,25 @@
           <v-row>
             <v-col cols="11" v-if="!link">
               <v-file-input
+                show-size
+                accept="image/png, image/jpeg, text/html, text/plain, text/csv, 
+                application/pdf, application/vnd.ms-excel, application/msword, 
+                application/vnd.openxmlformats-officedocument.wordprocessingml.document "
                 outlined
                 required
                 label="File"
+                :rules="fileRules"
                 @change="uploadFile()"
                 placeholder="Choose a file"
                 v-model="file"
-                prepend-icon="mdi-file"
+                prepend-icon="mdi-file-link"
               ></v-file-input>
             </v-col>
             <v-col cols="11" v-if="link">
               <v-text-field
                 outlined
+                :rules="linkRules"
+                required
                 label="File Link"
                 placeholder=" File link"
                 prepend-icon="mdi-link"
@@ -59,13 +76,16 @@
                 prepend-icon="mdi-file-document"
               ></v-text-field>
             </v-col>
-            <v-col cols="6" v-if="type == 'text/csv' || type == 'application/vnd.ms-excel'">
+            <v-col
+              cols="6"
+              v-if="type == 'text/csv' || type == 'application/vnd.ms-excel'"
+            >
               <v-text-field
                 outlined
                 label="Separator"
                 placeholder=" example: ; , | ! "
                 v-model="$store.state.csv.separator"
-                prepend-icon="mdi-file-delimited"
+                prepend-icon="mdi-file-table"
               ></v-text-field>
             </v-col>
             <v-col cols="6" v-if="type == 'text/html'">
@@ -84,15 +104,20 @@
             </v-col>
           </v-row>
           <v-spacer></v-spacer>
-          <v-btn text class="font-weight-bold success" @click="saveProject()" :loading="loading">
+          <v-btn
+            text
+            class="font-weight-bold success"
+            @click="saveProject()"
+            :loading="loading"
+          >
             <v-icon>mdi-plus</v-icon>Create
           </v-btn>
         </v-form>
       </v-card-text>
     </v-card>
     <v-snackbar color="red" v-model="snackbar">
-      {{snackbarText}}
-      <v-btn text color="white" @click="snackbar=false">close</v-btn>
+      {{ snackbarText }}
+      <v-btn text color="white" @click="snackbar = false">close</v-btn>
     </v-snackbar>
   </v-dialog>
 </template>
@@ -100,7 +125,6 @@
 <script>
 import axios from "axios";
 import { validationMixin } from "vuelidate";
-
 export default {
   mixins: [validationMixin],
   name: "add-project",
@@ -110,23 +134,33 @@ export default {
         id: null,
         project_name: "",
         description: "",
-        file_link: ""
+        file_link: "",
       },
       html: {
         tables: true,
-        paragraphs: true
+        paragraphs: true,
       },
       link: false,
       file: null,
       type: null,
       filename: "No file uploaded",
       csv: {
-        separator: ";"
+        separator: ";",
       },
       loading: false,
       dialog: false,
       snackbar: false,
-      snackbarText: ""
+      snackbarText: "",
+      nameRules: [
+        (v) => !!v || "Project Name is required",
+        (v) => 
+          (v && v.length <= 10) ||
+          "Project Name must be less than 10 characters",
+      ],
+      fileRules: [(v) => !!v || "It is required to upload a file"],
+      linkRules: [
+        (v) => !!v || "It is required to enter the link of Open Data set",
+      ],
     };
   },
   methods: {
@@ -142,7 +176,7 @@ export default {
         project_name: this.$store.state.project_name,
         description: this.$store.state.description,
         author: this.$store.state.user,
-        creation_date: new Date()
+        creation_date: new Date(),
       };
       formData.append("project", JSON.stringify(project));
       formData.append("file", this.$store.state.file_uploaded);
@@ -155,10 +189,10 @@ export default {
         .post("http://localhost:8000/extract/", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: "JWT" + this.$store.state.jwt
-          }
+            Authorization: `JWT ${this.$store.state.jwt}`,
+          },
         })
-        .then(response => {
+        .then((response) => {
           console.log(response.data);
           this.project.id = response.data.id;
           this.$store.state.project_id = response.data.project_id;
@@ -191,7 +225,7 @@ export default {
           this.dialog = false;
           this.$router.push({ name: "transform" });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           console.log(error.response.data.msg);
           this.snackbar = true;
@@ -201,7 +235,7 @@ export default {
 
     newProject() {
       this.project = {};
-    }
-  }
+    },
+  },
 };
 </script>
