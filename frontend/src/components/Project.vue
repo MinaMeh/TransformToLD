@@ -210,11 +210,9 @@ export default {
       converted: false,
       dialogRead: false,
       activeSlide: null,
-
       project: {}
     };
   },
-
   methods: {
     seeInputFile() {
       this.tab++;
@@ -233,7 +231,6 @@ export default {
         .catch(error => console.log(error));
     }
   },
-
   mounted() {
     this.getProject(this.$route.params.id);
   }

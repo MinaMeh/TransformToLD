@@ -131,7 +131,6 @@ export default {
         })
         .catch(error => console.log(error));
     },
-
     openModal(data) {
       console.log(data);
       this.modalData = data;

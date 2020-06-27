@@ -48,7 +48,6 @@ def extract(request):
     file = request.FILES['file']
     project_name = request.POST.get('project_name')
     description = request.POST.get('description')
-    licence = request.POST.get('licence')
     separator = request.POST.get('separator')
     tables = True if request.POST.get('tables') == 'true' else False
     paragraphs = True if request.POST.get('paragraphs') == 'true' else False

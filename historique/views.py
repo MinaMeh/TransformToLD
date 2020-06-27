@@ -36,7 +36,7 @@ def projects_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-# @permission_classes((IsAuthenticated,))
+@permission_classes((IsAuthenticated,))
 def project_details(request, pk):
     try:
         project = Project.objects.get(pk=pk)
