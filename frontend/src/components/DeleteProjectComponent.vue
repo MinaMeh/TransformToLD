@@ -49,25 +49,6 @@ export default {
     this.refreshListProjects();
   },
   methods: {
-    refreshListProjects() {
-      axios
-        .get(
-          "http://127.0.0.1:8000/api/projects",
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `JWT ${this.$store.state.jwt}`,
-            },
-          },
-        )
-        .then((response) => {
-          this.$store.state.projects = response.data;
-          //console.log(this.$store.state.projects.length);
-          //console.log(response.data);
-          this.loading = false;
-        })
-        .catch((error) => console.log(error));
-    },
     deleteProject(project) {
       this.loadDelete = true;
       axios
@@ -89,7 +70,6 @@ export default {
           this.snackbarDelete = true;
           this.loadDelete = false;
           this.$emit("close");
-          this.refreshListProjects();
         })
         .catch((error) => console.log(error));
     },
