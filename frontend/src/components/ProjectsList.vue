@@ -27,8 +27,16 @@
                 :search="search"
               >
                 <template v-slot:item.status="{ item }">
-                  <v-chip v-if="item.status=false" small color="green" dark>{{ item.converted }}</v-chip>
-                  <v-chip v-if="item.status=true" small color="red" dark>{{ item.converted }}</v-chip>
+                  <v-chip
+                    v-if="(item.status = false)"
+                    small
+                    color="green"
+                    dark
+                    >{{ item.converted }}</v-chip
+                  >
+                  <v-chip v-if="(item.status = true)" small color="red" dark>{{
+                    item.converted
+                  }}</v-chip>
                 </template>
                 <template v-slot:item.author="{ item }">
                   <p>{{ item.author.email }}</p>
@@ -44,7 +52,7 @@
                   </v-btn>
                   <ConfirmDeletion
                     v-if="modalVisible"
-                    @close="modalVisible = false"
+                    @close="close()"
                     :item="modalData"
                     :confirmDelete="modalVisible"
                   ></ConfirmDeletion>
@@ -63,9 +71,9 @@
                 <template v-slot:no-data>
                   <v-card class="mx-auto" max-width="500">
                     <v-card-text>
-                      <p
-                        class="text-center font-weight-bold red--text mt-5"
-                      >There is no project yet!</p>
+                      <p class="text-center font-weight-bold red--text mt-5">
+                        There is no project yet!
+                      </p>
                     </v-card-text>
                   </v-card>
                 </template>
@@ -85,7 +93,7 @@ import axios from "axios";
 export default {
   components: {
     Navbar,
-    ConfirmDeletion
+    ConfirmDeletion,
   },
   data: () => ({
     dialog: false,
@@ -97,13 +105,13 @@ export default {
       { text: "Project author", value: "author" },
       { text: "Creation date", value: "creation" },
       { text: "Conversion Status", value: "status" },
-      { text: "Actions", value: "actions", sortable: false }
+      { text: "Actions", value: "actions", sortable: false },
     ],
     snackbarDelete: false,
     deleteProjectConfirm: false,
     modalVisible: false,
     modalData: null,
-    projects: []
+    projects: [],
   }),
 
   mounted() {
@@ -111,33 +119,36 @@ export default {
   },
 
   methods: {
+    close() {
+      this.modalVisible = false;
+      this.getAllProjects();
+    },
     getAllProjects() {
       console.log(this.$store.state.user.email);
       axios
         .get("http://127.0.0.1:8000/api/projects", {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `JWT ${this.$store.state.jwt}`
+            Authorization: `JWT ${this.$store.state.jwt}`,
           },
           params: {
-            user_email: this.$store.state.user.email
-          }
+            user_email: this.$store.state.user.email,
+          },
         })
-        .then(response => {
+        .then((response) => {
           this.projects = response.data;
           console.log(this.projects.length);
           console.log(response.data);
           this.loading = false;
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
     },
-
     openModal(data) {
       console.log(data);
       this.modalData = data;
       this.modalVisible = true;
       console.log(this.modalVisible);
-    }
-  }
+    },
+  },
 };
 </script>

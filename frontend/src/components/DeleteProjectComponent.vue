@@ -39,21 +39,19 @@ export default {
     this.refreshListProjects();
   },
   methods: {
-    refreshListProjects() {
-      axios
-        .get("http://127.0.0.1:8000/api/projects")
-        .then(response => {
-          this.$store.state.projects = response.data;
-          //console.log(this.$store.state.projects.length);
-          //console.log(response.data);
-          this.loading = false;
-        })
-        .catch(error => console.log(error));
-    },
     deleteProject(project) {
       this.loadDelete = true;
       axios
-        .delete(`http://127.0.0.1:8000/api/projects/` + project.id)
+        .delete(
+          `http://127.0.0.1:8000/api/projects/` + project.id,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `JWT ${this.$store.state.jwt}`
+            }
+          },
+          { params: { user_email: this.$store.state.user.email } }
+        )
         .then(response => {
           console.log("id = " + project.id);
           console.log(response.data);
@@ -62,7 +60,6 @@ export default {
           this.snackbarDelete = true;
           this.loadDelete = false;
           this.$emit("close");
-          this.refreshListProjects();
         })
         .catch(error => console.log(error));
     }
