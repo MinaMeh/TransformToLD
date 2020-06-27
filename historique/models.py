@@ -29,7 +29,7 @@ class AuthorForm(forms.ModelForm):
 class File(models.Model):
     path = models.TextField()
     filename = models.CharField(max_length=100)
-    file_type = models.CharField(max_length=10)
+    file_type = models.CharField(max_length=50)
 
     def create(self, validated_data):
         """

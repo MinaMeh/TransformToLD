@@ -153,7 +153,7 @@ export default {
       snackbarText: "",
       nameRules: [
         (v) => !!v || "Project Name is required",
-        (v) => 
+        (v) =>
           (v && v.length <= 10) ||
           "Project Name must be less than 10 characters",
       ],
