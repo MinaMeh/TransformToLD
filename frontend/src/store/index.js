@@ -98,8 +98,6 @@ export default new Vuex.Store({
                             last_name: response.data.last_name,
                             email: response.data.email,
                         });
-
-
                         resolve();
                     })
                     .catch((err) => {

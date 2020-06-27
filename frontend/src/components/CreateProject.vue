@@ -218,9 +218,7 @@ export default {
             this.$store.state.text.paragraph = response.data.results.paragraph;
             this.$store.state.text.sentences = response.data.results.sentences;
           }
-
           this.$store.state.progress = false;
-
           this.loading = false;
           this.dialog = false;
           this.$router.push({ name: "transform" });

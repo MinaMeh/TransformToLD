@@ -45,6 +45,10 @@
                       >SIGN IN</v-btn
                     >
                   </div>
+                  <v-snackbar color="red" :timeout="6000" top v-model="erreurSnackbar">
+                    {{ this.erreurSnackbarText }}
+                    <v-btn text color="white" @click="erreurSnackbar = false">Close</v-btn>
+                  </v-snackbar>
                 </v-col>
                 <v-col cols="12" md="4" class="primary accent-4">
                   <v-card-text class="white--text mt-11">
@@ -156,6 +160,9 @@ export default {
       last_name: "",
       password: "",
     },
+    erreurSnackbar: false,
+    erreurSnackbarText:
+      "Please check entered information ! If you don't have an account create one before Signin.",
     reg: /^(([^<>()\\.,;:\s@"]+(\.[^<>()\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/,
   }),
 
@@ -177,8 +184,9 @@ export default {
         .then(() => {
           this.$router.push({ name: "home" });
         })
-        .catch((err) => {
-          console.log(err);
+        .catch(() => {
+          //console.log(err);
+          this.erreurSnackbar = true;
         });
     },
     signup() {
