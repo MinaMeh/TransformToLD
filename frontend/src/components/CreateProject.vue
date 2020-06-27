@@ -136,6 +136,7 @@ export default {
       this.type = this.file.type;
     },
     saveProject() {
+      console.log("user id", this.$store.state.user_id);
       this.loading = true;
       var formData = new FormData();
       var project = {
@@ -146,6 +147,7 @@ export default {
       };
       formData.append("project", JSON.stringify(project));
       formData.append("file", this.$store.state.file_uploaded);
+      formData.append("user_id", this.$store.state.user_id);
       formData.append("project_name", this.$store.state.project_name);
       formData.append("description", this.$store.state.description);
       formData.append("separator", this.$store.state.csv.separator);

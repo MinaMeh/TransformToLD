@@ -3,13 +3,23 @@
     <v-row no-gutters class="mt-12">
       <v-col cols="12">
         <h1>Vocabularies</h1>
+        <v-row>
+          <v-col cols="2" class="mt-3" align="left" justify="left">
+            <v-btn @click="addAllVocabs()" color="success">Add All</v-btn>
+          </v-col>
+          <v-col cols="2" class="mt-3" align="left" justify="left">
+            <v-btn @click="deleteAllVocabs()" color="error">Delete All</v-btn>
+          </v-col>
+        </v-row>
         <v-card flat>
           <v-chip
             color="primary"
             class="ma-1"
             v-for="(vocab,index) in selectedVocabs"
             :key="index"
-          >{{vocab}}</v-chip>
+            close
+            @click:close="deleteVocab(vocab)"
+          >{{vocab.prefix}}</v-chip>
         </v-card>
       </v-col>
     </v-row>
@@ -18,7 +28,7 @@
         <v-card flat>
           <v-card-title>
             <v-row>
-              <v-col cols="10">
+              <v-col cols="12">
                 <v-text-field
                   v-model="search"
                   prepend-icon="mdi-magnify"
@@ -27,10 +37,6 @@
                   hide-details
                   class="mb-5"
                 ></v-text-field>
-              </v-col>
-
-              <v-col cols="2" class="mt-3" align="left" justify="left">
-                <v-btn @click="addAllVocabs()" color="success">Add All</v-btn>
               </v-col>
             </v-row>
           </v-card-title>
@@ -43,14 +49,7 @@
                   <a v-bind:href="row.item.uri" target="__">{{row.item.uri}}</a>
                 </td>
                 <td>
-                  <v-btn
-                    class="mx-2"
-                    fab
-                    dark
-                    small
-                    color="green"
-                    @click="addVocab(row.item.prefix)"
-                  >
+                  <v-btn class="mx-2" fab dark small color="green" @click="addVocab(row.item)">
                     <v-icon dark>mdi-plus</v-icon>
                   </v-btn>
                 </td>
@@ -108,7 +107,7 @@ export default {
     addVocab: function(vocab) {
       var exist = false;
       for (var voc in this.selectedVocabs) {
-        if (this.selectedVocabs[voc] == vocab) {
+        if (this.selectedVocabs[voc].prefix == vocab.prefix) {
           exist = true;
         }
       }
@@ -119,11 +118,17 @@ export default {
     },
     addAllVocabs() {
       for (var voc in this.vocabs) {
-        this.addVocab(this.vocabs[voc].prefix);
+        this.addVocab(this.vocabs[voc]);
       }
     },
+    deleteAllVocabs() {
+      this.selectedVocabs = [];
+      this.$store.state.vocabs = [];
+    },
+
     deleteVocab: function(vocab) {
       this.selectedVocabs.splice(vocab, 1);
+      this.$store.state.vocabs.splice(vocab, 1);
     }
   },
   watch: {
@@ -149,6 +154,7 @@ export default {
   },
 
   mounted() {
+    this.$store.state.vocabs = [];
     axios
       .get("http://127.0.0.1:8000/vocabs/")
       .then(response => {

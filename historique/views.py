@@ -1,17 +1,25 @@
+import shutil
+from django.conf import settings
 from django.shortcuts import render
-
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from historique.models import Project, Author
+from historique.models import Project, Author, Header
 from historique.serializers import ProjectSerializer, AuthorSerializer
 
 
+@api_view(['POST'])
+def test(request):
+    header = JSONParser().parse(request)
+    Header.objects.create(**header)
+    return Response(header)
+
+
 @api_view(['GET', 'POST', 'DELETE'])
-@permission_classes((IsAuthenticated,))
+# @permission_classes((IsAuthenticated,))
 def projects_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
@@ -56,5 +64,7 @@ def project_details(request, pk):
         return JsonResponse(project_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
+        directory = settings.MEDIA_URL+project.project_name
+        shutil.rmtree(directory)
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)

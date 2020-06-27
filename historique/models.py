@@ -57,6 +57,7 @@ class Header(models.Model):
     combinaison = models.ListField(null=True, blank=True, default=[])
     translated = models.CharField(max_length=20, null=True, blank=True)
     selected = models.BooleanField(default=False)
+    objects = models.DjongoManager()
 
     def create(self, validated_data):
         """
@@ -68,6 +69,7 @@ class Header(models.Model):
 class Vocabulary(models.Model):
     prefix = models.CharField(max_length=10)
     uri = models.CharField(max_length=255)
+    title = models.CharField(max_length=50)
 
     def create(self, validated_data):
         """
@@ -96,9 +98,11 @@ class CsvProject(models.Model):
 
 
 class TextProject(models.Model):
+    id = models.IntegerField(default=0, primary_key=True)
+
     triplets = models.ArrayField(
         model_container=Triplet, null=True, blank=True)
-    terms = models.ArrayField(model_container=Header, null=True, blank=True)
+    terms = models.ArrayField(model_container=Triplet, null=True, blank=True)
     p_file = models.EmbeddedField(model_container=File, null=True, blank=True)
 
     def create(self, validated_data):
@@ -123,7 +127,7 @@ class HtmlProject(models.Model):
 
 class Project(models.Model):
     project_name = models.CharField(
-        max_length=70, blank=False, default='', unique=True)
+        max_length=70, blank=False, default='')
     description = models.TextField(null=True)
     vocabularies = models.ArrayField(
         model_container=Vocabulary, null=True, blank=True)

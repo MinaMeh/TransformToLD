@@ -20,11 +20,11 @@ from rest_framework.permissions import IsAuthenticated
 from transformToLD.models import MyUser
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
-from historique.models import Project, CsvProject, HtmlProject, TextProject
+from historique.models import *
 from historique.serializers import ProjectSerializer
 import os
 from django.conf import settings
-from .db_operations import update_project_tables, update_project_paragraphs
+from .db_operations import *
 
 
 @api_view(['GET'])
@@ -35,7 +35,7 @@ def test(request):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
+# @permission_classes((IsAuthenticated, ))
 def listVocabs(request):
     vocabs = get_vocab_list()
     results = VocabularySerializer(vocabs, many=True).data
@@ -43,19 +43,21 @@ def listVocabs(request):
 
 
 @api_view(['POST'])
-@permission_classes((IsAuthenticated, ))
+# @permission_classes((IsAuthenticated, ))
 def extract(request):
     file = request.FILES['file']
     project_name = request.POST.get('project_name')
     description = request.POST.get('description')
     licence = request.POST.get('licence')
     separator = request.POST.get('separator')
+    user_id = request.POST.get("user_id")
     tables = True if request.POST.get('tables') == 'true' else False
     paragraphs = True if request.POST.get('paragraphs') == 'true' else False
     project = json.loads(request.POST.get("project"))
-    directory = settings.MEDIA_URL+project["project_name"]
+    directory = "{}/{}/{}".format(settings.MEDIA_URL,
+                                  user_id, project["project_name"])
     try:
-        os.mkdir(directory)
+        os.makedirs(directory)
     except FileExistsError:
         return Response({"msg": "project already exists"}, status=status.HTTP_400_BAD_REQUEST)
     fs = FileSystemStorage(location=directory)
@@ -117,6 +119,7 @@ def preprocess(request):
     if file_type == "csv":
         columns_selected = json.loads(request.POST.get('columns', 'nthg'))
         headers = preprocess_columns(columns_selected)
+        update_csv_project(project, headers=headers)
         resp = {'columns_selected': columns_selected, "headers": headers}
     elif file_type == 'html':
         tables_selected = json.loads(request.POST.get('tables', 'nthg'))
@@ -132,8 +135,9 @@ def preprocess(request):
             if paragraph['selected'] == True:
                 paragraph = preprocess_paragraph(
                     paragraph)
-        update_project_tables(project, tables_selected)
-        test_data = update_project_paragraphs(project, paragrahps_selected)
+        update_project_tables(project, tables=tables_selected)
+        test_data = update_project_paragraphs(
+            project, paragraphs=paragrahps_selected)
         resp = {'tables_selected': tables_selected,
                 'paragraphs_selected': paragrahps_selected}
     elif file_type == "text":
@@ -153,7 +157,17 @@ def select_vocabs(request):
 @api_view(['POST'])
 def explore(request):
     file_type = request.POST.get("file_type")
-    list_vocabs = json.loads(request.POST.get("vocabs"))
+    list_vocabs = []
+    project_id = request.POST.get("project_id")
+    vocabs = json.loads(request.POST.get("vocabs"))
+    project_vocabs = []
+    project = Project.objects.get(pk=project_id)
+    for v in vocabs:
+        vocab = Vocabulary(prefix=v['prefix'], uri=v["uri"], title=v['title'])
+        project_vocabs.append(vocab)
+        list_vocabs.append(v["prefix"])
+    project.vocabularies = project_vocabs
+    project.save()
     if file_type == "csv":
         cols = json.loads(request.POST.get('columns'))
         terms = []
@@ -186,15 +200,26 @@ def explore(request):
 def convert(request):
     file_type = request.POST.get("file_type")
     file_name = request.POST.get("file_name")
+    project_id = request.POST.get("project_id")
+    project = Project.objects.get(pk=project_id)
     if file_type == "csv":
         terms = json.loads(request.POST.get("terms"))
+        for term in terms:
+            headers = project.csv_data.headers
+            for head in headers:
+                if head.name == term['property']:
+                    if term["term"]["uri"]:
+                        head.term = term["term"]["uri"]
+            project.save()
         delimiter = request.POST.get("delimiter")
         lines = convert_csv(file_name, delimiter, terms)
+        update_csv_project(project, triplets=lines)
         return Response(lines)
     if file_type == "text":
         terms = json.loads(request.POST.get("terms"))
         triplets = json.loads(request.POST.get("triplets"))
         lines = convert_text(triplets, terms)
+        update_text_project(project, terms=lines, triplets=triplets)
         return Response(lines)
     if file_type == "html":
         tables = json.loads(request.POST.get("tables"))
@@ -206,6 +231,8 @@ def convert(request):
             line["id"] = table['id']
             line['triplets'] = convert_html(table)
             tables_triplets.append(line)
+            update_project_tables(
+                project, triplets=tables_triplets, headers=tables)
         for paragraph in paragraphs:
             triplets = paragraph['triplets']
             terms = paragraph['terms']
@@ -213,7 +240,7 @@ def convert(request):
             line['id'] = paragraph["id"]
             line["triplets"] = convert_text(triplets, terms)
             paragraphs_triplets.append(line)
-
+            update_project_paragraphs(project, terms=paragraphs_triplets)
         return Response({"tables": tables_triplets, 'paragraphs': paragraphs_triplets})
 
 

@@ -22,11 +22,12 @@ def convert_text(triplets, terms):
     for term in terms:
         terms_dict[term['property']] = term['term']['uri']
     for triplet in triplets:
-        line = dict()
-        line["subject"] = domaine_name + triplet["subject"]
-        line["predicate"] = terms_dict[triplet["predicate"]]
-        line["object"] = triplet['object']
-        lines.append(line)
+        if triplet["selected"]:
+            line = dict()
+            line["subject"] = domaine_name + triplet["subject"]
+            line["predicate"] = terms_dict[triplet["predicate"]]
+            line["object"] = triplet['object']
+            lines.append(line)
     return lines
 
 
