@@ -35,9 +35,6 @@ export default {
     };
   },
 
-  mounted() {
-    this.refreshListProjects();
-  },
   methods: {
     deleteProject(project) {
       this.loadDelete = true;
@@ -55,7 +52,6 @@ export default {
         .then(response => {
           console.log("id = " + project.id);
           console.log(response.data);
-          console.log(this.$store.state.projects.length);
           this.deleteProjectConfirm = false;
           this.snackbarDelete = true;
           this.loadDelete = false;

@@ -11,6 +11,7 @@ export default new Vuex.Store({
   plugins: [createPersistedState()],
   state: {
     jwt: localStorage.getItem("t"),
+    user_id: localStorage.getItem("user_id"),
     user: {
       first_name: localStorage.getItem("first_name"),
       last_name: localStorage.getItem("last_name"),
@@ -62,15 +63,17 @@ export default new Vuex.Store({
     },
   },
   mutations: {
-    updateStorage(state, { jwt, first_name, last_name, email }) {
+    updateStorage(state, { jwt, first_name, last_name, email, user_id }) {
       localStorage.setItem("t", jwt);
       state.jwt = jwt;
       state.user.first_name = first_name;
       state.user.last_name = last_name;
       state.user.email = email;
-      localStorage.getItem("first_name", first_name);
-      localStorage.getItem("last_name", last_name);
-      localStorage.getItem("email", email);
+      state.user_id = user_id;
+      localStorage.setItem("first_name", first_name);
+      localStorage.setItem("last_name", last_name);
+      localStorage.setItem("email", email);
+      localStorage.setItem("user_id", user_id);
     },
     removeToken(state) {
       localStorage.removeItem("t");
@@ -92,6 +95,7 @@ export default new Vuex.Store({
               first_name: response.data.first_name,
               last_name: response.data.last_name,
               email: response.data.email,
+              user_id: response.data.user_id,
             });
             resolve();
           })
@@ -161,6 +165,7 @@ export default new Vuex.Store({
             first_name: response.data.first_name,
             last_name: response.data.last_name,
             email: response.data.email,
+            user_id: response.data.user_id,
           });
           resolve();
         });

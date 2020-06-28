@@ -33,4 +33,6 @@ class ProjectSerializer(serializers.DjongoModelSerializer):
             'html_data',
             'creation_date',
             'converted',
+            'vocabularies',
+            'user_id'
         )
