@@ -1,19 +1,12 @@
 <template>
   <v-dialog max-width="900px" v-model="dialog">
     <template v-slot:activator="{ on }">
-      <v-btn
-        @click="newProject()"
-        text
-        class="success font-weight-bold"
-        v-on="on"
-      >
+      <v-btn @click="newProject()" text class="success font-weight-bold" v-on="on">
         <v-icon medium class="mr-1">mdi-file-plus</v-icon>Add new project
       </v-btn>
     </template>
     <v-card>
-      <v-card-title class="font-weight-bold text--primary"
-        >Add a new project</v-card-title
-      >
+      <v-card-title class="font-weight-bold text--primary">Add a new project</v-card-title>
       <v-divider></v-divider>
       <v-card-text>
         <v-form class="px-3">
@@ -39,9 +32,7 @@
             <v-col cols="11" v-if="!link">
               <v-file-input
                 show-size
-                accept="image/png, image/jpeg, text/html, text/plain, text/csv, 
-                application/pdf, application/vnd.ms-excel, application/msword, 
-                application/vnd.openxmlformats-officedocument.wordprocessingml.document "
+                accept="image/png, image/jpeg, text/html, text/plain, text/csv, application/pdf, application/vnd.ms-excel, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 outlined
                 required
                 label="File"
@@ -76,10 +67,7 @@
                 prepend-icon="mdi-file-document"
               ></v-text-field>
             </v-col>
-            <v-col
-              cols="6"
-              v-if="type == 'text/csv' || type == 'application/vnd.ms-excel'"
-            >
+            <v-col cols="6" v-if="type == 'text/csv' || type == 'application/vnd.ms-excel'">
               <v-text-field
                 outlined
                 label="Separator"
@@ -104,12 +92,7 @@
             </v-col>
           </v-row>
           <v-spacer></v-spacer>
-          <v-btn
-            text
-            class="font-weight-bold success"
-            @click="saveProject()"
-            :loading="loading"
-          >
+          <v-btn text class="font-weight-bold success" @click="saveProject()" :loading="loading">
             <v-icon>mdi-plus</v-icon>Create
           </v-btn>
         </v-form>
@@ -134,33 +117,33 @@ export default {
         id: null,
         project_name: "",
         description: "",
-        file_link: "",
+        file_link: ""
       },
       html: {
         tables: true,
-        paragraphs: true,
+        paragraphs: true
       },
       link: false,
       file: null,
       type: null,
       filename: "No file uploaded",
       csv: {
-        separator: ";",
+        separator: ";"
       },
       loading: false,
       dialog: false,
       snackbar: false,
       snackbarText: "",
       nameRules: [
-        (v) => !!v || "Project Name is required",
-        (v) =>
+        v => !!v || "Project Name is required",
+        v =>
           (v && v.length <= 10) ||
-          "Project Name must be less than 10 characters",
+          "Project Name must be less than 10 characters"
       ],
-      fileRules: [(v) => !!v || "It is required to upload a file"],
+      fileRules: [v => !!v || "It is required to upload a file"],
       linkRules: [
-        (v) => !!v || "It is required to enter the link of Open Data set",
-      ],
+        v => !!v || "It is required to enter the link of Open Data set"
+      ]
     };
   },
   methods: {
@@ -177,7 +160,8 @@ export default {
         project_name: this.$store.state.project_name,
         description: this.$store.state.description,
         author: this.$store.state.user,
-        creation_date: new Date(),
+        user_id: this.$store.state.user_id,
+        creation_date: new Date()
       };
       formData.append("project", JSON.stringify(project));
       formData.append("file", this.$store.state.file_uploaded);
@@ -191,10 +175,10 @@ export default {
         .post("http://localhost:8000/extract/", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `JWT ${this.$store.state.jwt}`,
-          },
+            Authorization: `JWT ${this.$store.state.jwt}`
+          }
         })
-        .then((response) => {
+        .then(response => {
           console.log(response.data);
           this.project.id = response.data.id;
           this.$store.state.project_id = response.data.project_id;
@@ -225,17 +209,18 @@ export default {
           this.dialog = false;
           this.$router.push({ name: "transform" });
         })
-        .catch((error) => {
+        .catch(error => {
           console.log(error);
           console.log(error.response.data.msg);
           this.snackbar = true;
+          this.loading = false;
           this.snackbarText = error.response.data.msg;
         });
     },
 
     newProject() {
       this.project = {};
-    },
-  },
+    }
+  }
 };
 </script>

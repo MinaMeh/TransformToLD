@@ -128,6 +128,7 @@ class HtmlProject(models.Model):
 class Project(models.Model):
     project_name = models.CharField(
         max_length=70, blank=False, default='')
+    user_id = models.IntegerField()
     description = models.TextField(null=True)
     vocabularies = models.ArrayField(
         model_container=Vocabulary, null=True, blank=True)

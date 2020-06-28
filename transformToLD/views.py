@@ -53,8 +53,8 @@ def extract(request):
     tables = True if request.POST.get('tables') == 'true' else False
     paragraphs = True if request.POST.get('paragraphs') == 'true' else False
     project = json.loads(request.POST.get("project"))
-    directory = "{}/{}/{}".format(settings.MEDIA_URL,
-                                  user_id, project["project_name"])
+    directory = "{}{}/{}".format(settings.MEDIA_URL,
+                                 user_id, project["project_name"])
     try:
         os.makedirs(directory)
     except FileExistsError:

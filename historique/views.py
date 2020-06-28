@@ -23,9 +23,9 @@ def test(request):
 def projects_list(request):
     if request.method == 'GET':
         projects = Project.objects.all()
-        email = request.GET.get('user_email', None)
+        user_id = request.GET.get('user_id', None)
         projects = projects.filter(
-            author={'email': email})
+            user_id=user_id)
         projects_serializer = ProjectSerializer(projects, many=True)
         return JsonResponse(projects_serializer.data, safe=False)
 
@@ -64,7 +64,8 @@ def project_details(request, pk):
         return JsonResponse(project_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        directory = settings.MEDIA_URL+project.project_name
+        directory = "{}{}/{}".format(settings.MEDIA_URL,
+                                     project.user_id, project.project_name)
         shutil.rmtree(directory)
         project.delete()
         return JsonResponse({'message': 'Project was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
