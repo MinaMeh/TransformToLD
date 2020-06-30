@@ -1,35 +1,105 @@
 from historique.models import *
 
 
-def update_project_tables(project, tables):
-    csv_projects = []
-    for table in tables:
-        headers = []
-        for header in table["headers"]:
-            hdr = Header(name=header['name'], selected=header["selected"])
-            hdr.translated = table.get("translated", None)
-            hdr.combinaison = table.get("combinaison", [])
+def update_project_tables(project, tables=None, triplets=None, headers=None):
+    if tables:
+        csv_projects = []
+        for table in tables:
+            hdrs = []
+            for header in table["headers"]:
+                hdr = Header(name=header['name'], selected=header["selected"])
+                hdr.translated = header.get("translated", 'test')
+                hdr.combinaison = header.get("combinaison", [])
+                hdrs.append(hdr)
+            csv_prj = CsvProject(id=table['id'], selected=table['selected'],
+                                 lines=table["lines"], columns=table['columns'], headers=hdrs)
+            csv_projects.append(csv_prj)
+        project.html_data.tables = csv_projects
+    if headers:
+        for table in project.html_data.tables:
+            for tr_table in headers:
+                if tr_table["id"] == table.id:
+                    for term in tr_table['terms']:
+                        hdrs = table.headers
+                        for head in hdrs:
+                            if head.name == term['property']:
+                                if term["term"]["uri"]:
+                                    head.term = term["term"]["uri"]
 
-            headers.append(hdr)
-        csv_prj = CsvProject(id=table['id'], selected=table['selected'],
-                             lines=table["lines"], columns=table['columns'], headers=headers)
-        csv_projects.append(csv_prj)
-    project.html_data.tables = csv_projects
+    if triplets:
+        for table in project.html_data.tables:
+            triplets_list = []
+            for tr_table in triplets:
+                if tr_table["id"] == table.id:
+                    for tr in tr_table['triplets']:
+                        triplet = Triplet(
+                            subject=tr["subject"], object=tr['object'], predicate=tr['predicate'])
+                        triplets_list.append(triplet)
+                    table.triplets = triplets_list
     project.save()
 
 
-def update_project_paragraphs(project, paragraphs):
-    text_projects = []
+def update_project_paragraphs(project, paragraphs=None, terms=None):
+    if paragraphs:
+        text_projects = []
+        for paragraph in paragraphs:
+            triplets = []
+            for sentence in paragraph['sentences']:
+                sentence_triplets = sentence.get("triplets", [])
+                if sentence_triplets != []:
+                    for tr in sentence_triplets:
+                        triplet = Triplet(
+                            subject=tr["subject"], object=tr['object'], predicate=tr['predicate'], selected=tr['selected'])
+                        triplets.append(triplet)
+            text_projects.append(TextProject(triplets=triplets))
+        project.html_data.paragraphs = text_projects
+    if terms:
+        for paragraph in project.html_data.paragraphs:
+            triplets_list = []
+            for tr_table in terms:
+                if tr_table["id"] == paragraph.id:
+                    for tr in tr_table['triplets']:
+                        triplet = Triplet(
+                            subject=tr["subject"], object=tr['object'], predicate=tr['predicate'])
+                        triplets_list.append(triplet)
+                    paragraph.terms = triplets_list
 
-    for paragraph in paragraphs:
-        triplets = []
-        for sentence in paragraph['sentences']:
-            sentence_triplets = sentence.get("triplets", [])
-            if sentence_triplets != []:
-                for tr in sentence_triplets:
-                    triplet = Triplet(
-                        subject=tr["subject"], object=tr['object'], predicate=tr['predicate'], selected=tr['selected'])
-                    triplets.append(triplet)
-        text_projects.append(TextProject(triplets=triplets))
-    project.html_data.paragraphs = text_projects
+    project.save()
+
+
+def update_csv_project(project, headers=None, triplets=None):
+    if headers:
+        hdrs = []
+        for header in headers:
+            hdr = Header(name=header['name'], selected=header["selected"])
+            hdr.translated = header.get("translated", 'test')
+            hdr.combinaison = header.get("combinaison", [])
+            hdrs.append(hdr)
+        project.csv_data.headers = hdrs
+    if triplets:
+        triples = []
+        for triplet in triplets:
+            trpl = Triplet(
+                subject=triplet["subject"], object=triplet['object'], predicate=triplet['predicate'])
+            triples.append(trpl)
+        project.csv_data.triplets = triples
+    project.save()
+
+
+def update_text_project(project, terms=None, triplets=None):
+    if triplets:
+        triplets_list = []
+        for tr in triplets:
+            triplet = Triplet(
+                subject=tr["subject"], object=tr['object'], predicate=tr['predicate'])
+            triplet.selected = True if tr["selected"] == True else False
+            triplets_list.append(triplet)
+        project.text_data = TextProject(triplets=triplets_list)
+    if terms:
+        triples = []
+        for triplet in terms:
+            trpl = Triplet(
+                subject=triplet["subject"], object=triplet['object'], predicate=triplet['predicate'])
+            triples.append(trpl)
+        project.text_data.terms = triples
     project.save()

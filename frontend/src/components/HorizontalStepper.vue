@@ -250,9 +250,7 @@ export default {
             sentence
           ) {
             sentence.triplets.forEach(function(triplet) {
-              if (triplet.selected) {
-                triplets.push(triplet);
-              }
+              triplets.push(triplet);
             });
           });
           terms = [];

@@ -1,13 +1,9 @@
 <template>
   <v-dialog v-model="confirmDelete" width="600">
     <v-card>
-      <v-card-title class="headline pt-8" primary-title>
-        Confirm Deletion of {{ item.project_name }}
-      </v-card-title>
+      <v-card-title class="headline pt-8" primary-title>Confirm Deletion of {{ item.project_name }}</v-card-title>
       <v-divider></v-divider>
-      <v-card-text class="pl-8 font-weight-bold">
-        are you sure ? You want to delete this project ?
-      </v-card-text>
+      <v-card-text class="pl-8 font-weight-bold">are you sure ? You want to delete this project ?</v-card-text>
       <v-card-actions class="pa-5">
         <v-btn
           dark
@@ -16,18 +12,12 @@
           @click="deleteProject(item)"
           @projectDeleted="snackbarDelete = true"
           :loading="loadDelete"
-        >
-          Delete</v-btn
-        >
-        <v-btn @click="deleteProjectConfirm = false" dark color="primary">
-          Cancel
-        </v-btn>
+        >Delete</v-btn>
+        <v-btn @click="deleteProjectConfirm = false" dark color="primary">Cancel</v-btn>
       </v-card-actions>
-      <v-snackbar v-model="snackbarDelete" :timeout="4000" bottom color="error"
-        ><span>Project Deleted successfully</span>
-        <v-btn text color="white" @click="snackbarDelete = false">
-          Close
-        </v-btn>
+      <v-snackbar v-model="snackbarDelete" :timeout="4000" bottom color="error">
+        <span>Project Deleted successfully</span>
+        <v-btn text color="white" @click="snackbarDelete = false">Close</v-btn>
       </v-snackbar>
     </v-card>
   </v-dialog>
@@ -41,13 +31,10 @@ export default {
   data() {
     return {
       snackbarDelete: false,
-      loadDelete: false,
+      loadDelete: false
     };
   },
 
-  mounted() {
-    this.refreshListProjects();
-  },
   methods: {
     deleteProject(project) {
       this.loadDelete = true;
@@ -57,22 +44,21 @@ export default {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `JWT ${this.$store.state.jwt}`,
-            },
+              Authorization: `JWT ${this.$store.state.jwt}`
+            }
           },
           { params: { user_email: this.$store.state.user.email } }
         )
-        .then((response) => {
+        .then(response => {
           console.log("id = " + project.id);
           console.log(response.data);
-          console.log(this.$store.state.projects.length);
           this.deleteProjectConfirm = false;
           this.snackbarDelete = true;
           this.loadDelete = false;
           this.$emit("close");
         })
-        .catch((error) => console.log(error));
-    },
-  },
+        .catch(error => console.log(error));
+    }
+  }
 };
 </script>

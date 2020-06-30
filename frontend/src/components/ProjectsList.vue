@@ -26,21 +26,14 @@
                 class="elevation-1"
                 :search="search"
               >
-                <template v-slot:item.status="{ item }">
-                  <v-chip
-                    v-if="(item.status = false)"
-                    small
-                    color="green"
-                    dark
-                    >{{ item.converted }}</v-chip
-                  >
-                  <v-chip v-if="(item.status = true)" small color="red" dark>{{
-                    item.converted
-                  }}</v-chip>
+                <template v-slot:item.converted="{ item }">
+                  <v-chip v-if="(item.converted == false)" small color="red" dark>Not converted</v-chip>
+                  <v-chip v-if="(item.converted == true)" small color="green" dark>Converted</v-chip>
                 </template>
-                <template v-slot:item.author="{ item }">
-                  <p>{{ item.author.email }}</p>
+                <template v-slot:item.input="{ item }">
+                  <v-chip color="primary">{{item.input_file.file_type}}</v-chip>
                 </template>
+
                 <template v-slot:item.creation="{ item }">
                   <p>{{ item.creation_date | formatDate }}</p>
                 </template>
@@ -71,9 +64,9 @@
                 <template v-slot:no-data>
                   <v-card class="mx-auto" max-width="500">
                     <v-card-text>
-                      <p class="text-center font-weight-bold red--text mt-5">
-                        There is no project yet!
-                      </p>
+                      <p
+                        class="text-center font-weight-bold red--text mt-5"
+                      >There is no project yet!</p>
                     </v-card-text>
                   </v-card>
                 </template>
@@ -93,7 +86,7 @@ import axios from "axios";
 export default {
   components: {
     Navbar,
-    ConfirmDeletion,
+    ConfirmDeletion
   },
   data: () => ({
     dialog: false,
@@ -102,16 +95,16 @@ export default {
     headers: [
       { text: "Id", value: "id", align: "start", sortable: true },
       { text: "Project Name", value: "project_name" },
-      { text: "Project author", value: "author" },
+      { text: "Input File Type", value: "input" },
       { text: "Creation date", value: "creation" },
-      { text: "Conversion Status", value: "status" },
-      { text: "Actions", value: "actions", sortable: false },
+      { text: "Status", value: "converted" },
+      { text: "Actions", value: "actions", sortable: false }
     ],
     snackbarDelete: false,
     deleteProjectConfirm: false,
     modalVisible: false,
     modalData: null,
-    projects: [],
+    projects: []
   }),
 
   mounted() {
@@ -129,26 +122,26 @@ export default {
         .get("http://127.0.0.1:8000/api/projects", {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `JWT ${this.$store.state.jwt}`,
+            Authorization: `JWT ${this.$store.state.jwt}`
           },
           params: {
-            user_email: this.$store.state.user.email,
-          },
+            user_id: this.$store.state.user_id
+          }
         })
-        .then((response) => {
+        .then(response => {
           this.projects = response.data;
           console.log(this.projects.length);
           console.log(response.data);
           this.loading = false;
         })
-        .catch((error) => console.log(error));
+        .catch(error => console.log(error));
     },
     openModal(data) {
       console.log(data);
       this.modalData = data;
       this.modalVisible = true;
       console.log(this.modalVisible);
-    },
-  },
+    }
+  }
 };
 </script>
