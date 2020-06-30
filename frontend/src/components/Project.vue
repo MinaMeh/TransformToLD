@@ -106,11 +106,11 @@
                       <v-icon class="headline mr-2 text--primary">mdi-file</v-icon>File name :
                     </h4>
                   </v-col>
-                  <v-col
-                    sm="6"
-                    cols="6"
-                    class="text-left text--primary subtitle-1 py-0"
-                  >{{ this.project.input_file.filename }}</v-col>
+                  <v-col sm="6" cols="6" class="text-left text--primary subtitle-1 py-0">
+                    <a
+                      @click.prevent="getFile(project.input_file)"
+                    >{{ this.project.input_file.filename }}</a>
+                  </v-col>
                 </v-row>
                 <v-row class="mb-5 pb-2" align-center>
                   <v-col sm="6" cols="6" class="py-0">
@@ -157,19 +157,6 @@
                     class="text-left text--primary subtitle-1 py-0"
                   >{{ this.project.input_file.file_type }}</v-col>
                 </v-row>
-
-                <v-row class="mb-5 pb-2" align-center>
-                  <v-col sm="6" cols="6" class="py-0">
-                    <h4 class="title font-weight-bold">
-                      <v-icon class="headline mr-2 text--primary">mdi-file-find</v-icon>File Path :
-                    </h4>
-                  </v-col>
-                  <v-col
-                    sm="6"
-                    cols="6"
-                    class="text-left text--primary subtitle-1 py-0"
-                  >{{ this.project.input_file.path }}</v-col>
-                </v-row>
               </v-card-text>
             </v-card>
           </v-tab-item>
@@ -181,19 +168,27 @@
                 >The input Dataset is not converted yet !</p>
               </v-card-text>
             </v-card>
-            <v-card v-if="this.project.converted == true" class="mx-auto" max-width="500">
+            <v-card v-if="this.project.converted == true" class="mx-auto">
+              <p class="headline text--primary">Linked Data Output file :</p>
+
               <v-card-text>
-                <p class="headline text--primary">Linked Data Output file :</p>
-                <h4>
-                  <v-icon>mdi-file</v-icon>fileRDF
-                </h4>
-                <v-divider></v-divider>
-                <p class="font-weight-bold">
-                  The conversion is finished at :
-                  {{ this.project.converted_at }}
-                </p>
+                <v-data-table :headers="headers" :items="project.output_files">
+                  <template v-slot:item.created_at="{ item }">{{item.created_at |formatDate}}</template>
+                  <template v-slot:item.filename="{ item }">
+                    <a @click.prevent="getFile(item)">{{ item.filename }}</a>
+                  </template>
+                </v-data-table>
               </v-card-text>
+              <v-card-actions>
+                <v-btn color="primary" @click="chooseOutput=true">Convert to another format</v-btn>
+              </v-card-actions>
             </v-card>
+            <ChooseFormat
+              v-if="chooseOutput"
+              :chooseOutput="chooseOutput"
+              @convert="convert"
+              @close="close()"
+            ></ChooseFormat>
           </v-tab-item>
           <v-tab-item>
             <CsvComponent
@@ -221,25 +216,33 @@ import Navbar from "@/components/Navbar";
 import CsvComponent from "@/components/show/CsvComponent";
 import TextComponent from "@/components/show/TextComponent";
 import HtmlComponent from "@/components/show/HtmlComponent";
-
+import ChooseFormat from "@/components/modals/ChooseFormat";
 import axios from "axios";
 export default {
   components: {
     Navbar,
     CsvComponent,
     TextComponent,
-    HtmlComponent
+    HtmlComponent,
+    ChooseFormat
   },
   data: () => {
     return {
       projects: [],
       tab: 0,
+      chooseOutput: false,
       tabs: [
         { name: "Details", icon: "  mdi-file-document" },
         { name: "Source File", icon: " mdi-file-download" },
         { name: "Resulted Files", icon: " mdi-file-move " },
         { name: "Project Parameters", icon: "mdi-file-cog" }
       ],
+      headers: [
+        { text: "File", value: "filename" },
+        { text: "Format", value: "file_type" },
+        { text: "Creation date", value: "created_at" }
+      ],
+
       converted: false,
       dialogRead: false,
       activeSlide: null,
@@ -259,6 +262,35 @@ export default {
     seeOutputFile() {
       this.tab = this.tab + 2;
     },
+    getFile(file) {
+      console.log(file);
+      axios
+        .get("http://localhost:8000/getFile", {
+          params: {
+            file_path: file.path
+          }
+        })
+        .then(response => {
+          var data = [];
+          if (Array.isArray(response.data)) {
+            response.data.forEach(element => {
+              data.push(element);
+            });
+            data = JSON.stringify(data);
+            console.log(data);
+          } else {
+            data = response.data;
+          }
+          var fileURL = window.URL.createObjectURL(new Blob([data]));
+          var fileLink = document.createElement("a");
+
+          fileLink.href = fileURL;
+          fileLink.setAttribute("download", file.filename);
+          document.body.appendChild(fileLink);
+
+          fileLink.click();
+        });
+    },
     getProject(id) {
       axios
         .get("http://127.0.0.1:8000/api/projects/" + id, {
@@ -273,6 +305,25 @@ export default {
           console.log(this.project.converted);
         })
         .catch(error => console.log(error));
+    },
+    convert(value) {
+      var formdata = new FormData();
+      formdata.append("project_id", this.project.id);
+      formdata.append("format", value);
+      axios
+        .post("http://localhost:8000/translate/", formdata)
+        .then(response => {
+          console.log(response.data);
+          this.close();
+          this.getProject(this.$route.params.id);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      console.log(value);
+    },
+    close() {
+      this.chooseOutput = false;
     }
   },
   mounted() {

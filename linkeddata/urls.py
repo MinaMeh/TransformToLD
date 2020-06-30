@@ -17,10 +17,12 @@ urlpatterns = [
     path('explore/', views.explore),
     path('vocabs/', views.select_vocabs),
     path('convert/', views.convert),
+    path('document/', views.document),
+    path('translate/', views.rdf_translate),
     path('api/token/', obtain_jwt_token, name='token_obtain_pair'),
     path('api/token/refresh/', refresh_jwt_token, name='token_refresh'),
     path('register/', views.register),
-    path('test/', views.test),
+    path('getFile/', views.get_file),
     path('searchProperty/', views.search_property),
     url(r'^', include('historique.urls'))
 ]
