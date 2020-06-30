@@ -17,7 +17,14 @@ export default new Vuex.Store({
       last_name: localStorage.getItem("last_name"),
       email: localStorage.getItem("email"),
     },
-    properties: [],
+    metadata: {
+      creator:
+        localStorage.getItem("first_name") + localStorage.getItem("last_name"),
+      license: "",
+      description: "",
+      title: "",
+      subject: "",
+    },
     vocabs: [],
     file_type: null,
     file_uploaded: "",

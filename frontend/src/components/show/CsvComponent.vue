@@ -23,7 +23,7 @@
         </v-row>
       </v-tab-item>
       <v-tab-item>
-        <v-card>
+        <v-card max-width="600">
           <v-card-title>
             <h2>Headers</h2>
           </v-card-title>
