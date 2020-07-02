@@ -16,6 +16,7 @@
           <v-btn text @click="error=false">close</v-btn>
         </v-snackbar>
       </v-col>
+      <ChooseFormat v-if="modal" :chooseOutput="modal" @convert="convert" @close="modal=false"></ChooseFormat>
     </v-row>
   </v-container>
 </template>
@@ -30,14 +31,19 @@ import ConvertComponent from "./ConvertComponent.vue";
 import ExploreComponent from "./ExploreComponent.vue";
 import DocumentComponent from "./DocumentComponent.vue";
 import ExtractComponent from "./ExtractComponent";
+import ChooseFormat from "@/components/modals/ChooseFormat";
+
 export default {
   components: {
-    HorizontalStepper
+    HorizontalStepper,
+    ChooseFormat
   },
   data() {
     return {
       error: false,
       errorMsg: "",
+      selectedFormat: "",
+      modal: false,
       demoSteps: [
         {
           icon: "data_usage",
@@ -319,9 +325,31 @@ export default {
             this.errorMsg = error.response.data.msg;
           });
       }
+      if (currentStep.name == "fifth") {
+        next();
+      }
+      if (currentStep.name == "sixth") {
+        this.modal = true;
+      }
     },
     alert() {
       alert("finished");
+    },
+    convert(format) {
+      var formData5 = new FormData();
+      console.log("project_id" + this.$store.state.project_id);
+      formData5.append("metadata", JSON.stringify(this.$store.state.metadata));
+      formData5.append("project_id", this.$store.state.project_id);
+      formData5.append("format", format);
+      axios
+        .post("http://localhost:8000/document/", formData5)
+        .then(response => {
+          console.log(response.data);
+          this.$router.push("/projects/" + this.$store.state.project_id);
+        })
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };

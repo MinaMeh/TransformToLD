@@ -18,6 +18,7 @@ from transformToLD.models import Project
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
 from transformToLD.models import MyUser
+from .Helpers.document import document_project, translate_file
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
 from historique.models import *
@@ -25,16 +26,20 @@ from historique.serializers import ProjectSerializer
 import os
 from django.conf import settings
 from .db_operations import *
+from wsgiref.util import FileWrapper
 
 
 @api_view(['GET'])
-def test(request):
-    fs = FileSystemStorage(settings.MEDIA_URL+"/test")
-    test = fs.url("test_k9HX35L.csv")
-    return Response(test)
+def get_file(request):
+    filepath = request.GET.get("file_path")
+    file = open(filepath)
+    response = HttpResponse(FileWrapper(file))
+    response['Content-Disposition'] = 'attachment; filename="%s"' % 'test.html'
+
+    return response
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 # @permission_classes((IsAuthenticated, ))
 def listVocabs(request):
     vocabs = get_vocab_list()
@@ -42,7 +47,7 @@ def listVocabs(request):
     return Response(results)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 # @permission_classes((IsAuthenticated, ))
 def extract(request):
     file = request.FILES['file']
@@ -109,7 +114,7 @@ def extract(request):
     return Response(resp)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 def preprocess(request):
     file_type = request.POST.get('file_type')
     project_id = request.POST.get('project_id')
@@ -146,14 +151,14 @@ def preprocess(request):
     return Response(resp)
 
 
-@api_view(['GET'])
+@ api_view(['GET'])
 def select_vocabs(request):
     vocabs = get_vocab_list()
     results = VocabularySerializer(vocabs, many=True).data
     return Response(results)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 def explore(request):
     file_type = request.POST.get("file_type")
     list_vocabs = []
@@ -195,7 +200,7 @@ def explore(request):
         return Response(paragraph)
 
 
-@api_view(['POST'])
+@ api_view(['POST'])
 def convert(request):
     file_type = request.POST.get("file_type")
     file_name = request.POST.get("file_name")
@@ -211,7 +216,7 @@ def convert(request):
                         head.term = term["term"]["uri"]
             project.save()
         delimiter = request.POST.get("delimiter")
-        lines = convert_csv(file_name, delimiter, terms)
+        lines = convert_csv(project, file_name, delimiter, terms)
         update_csv_project(project, triplets=lines)
         return Response(lines)
     if file_type == "text":
@@ -243,14 +248,33 @@ def convert(request):
         return Response({"tables": tables_triplets, 'paragraphs': paragraphs_triplets})
 
 
-@api_view(['POST'])
+@ api_view(["POST"])
+def document(request):
+    project_id = request.POST.get("project_id")
+    metadata = json.loads(request.POST.get("metadata"))
+    format = request.POST.get("format")
+    project = Project.objects.get(pk=project_id)
+    document_project(project, metadata, format)
+    return Response({'success': "success"})
+
+
+@api_view(["POST"])
+def rdf_translate(request):
+    format = request.POST.get("format")
+    project_id = request.POST.get("project_id")
+    project = Project.objects.get(pk=project_id)
+    translate_file(project, format)
+    return Response({"msg": "success"})
+
+
+@ api_view(['POST'])
 def search_property(request):
     term = request.POST.get("term")
     vocab_list = get_vocab(term)
     return Response(vocab_list)
 
 
-@api_view(["POST"])
+@ api_view(["POST"])
 def register(request):
     body_unicode = request.body.decode('utf-8')
     data = json.loads(body_unicode)
