@@ -30,6 +30,7 @@ class File(models.Model):
     path = models.TextField()
     filename = models.CharField(max_length=100)
     file_type = models.CharField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def create(self, validated_data):
         """
@@ -129,7 +130,7 @@ class Project(models.Model):
     project_name = models.CharField(
         max_length=70, blank=False, default='')
     user_id = models.IntegerField()
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, blank=True)
     vocabularies = models.ArrayField(
         model_container=Vocabulary, null=True, blank=True)
     licence = models.CharField(

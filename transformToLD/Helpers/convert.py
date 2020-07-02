@@ -1,10 +1,15 @@
 import pandas as pd
+from rdflib import Graph, Literal, RDF, URIRef, Namespace
+
+from django.conf import settings
 
 
-def convert_csv(file_name, delimiter, terms):
+def convert_csv(project, file_name, delimiter, terms):
     file = pd.read_csv("media/"+file_name, delimiter=delimiter)
     lines = []
-    domain_name = "localhost/dataset/#"
+    domain_name = "http://localhost/{}/".format(
+        project.project_name.replace(' ', "_"))
+    vocabs = project.vocabularies
     for index, row in file.iterrows():
         for term in terms:
             line = dict()
@@ -43,3 +48,11 @@ def convert_html(table):
             line['object'] = row[term['property']]
             lines.append(line)
     return lines
+
+
+def create_graph(vocabularies, namespace="http://localhost/"):
+    g = Graph()
+    n = Namespace(namespace)
+    for vocab in vocabularies:
+        g.bind(vocab.prefix, vocab.uri)
+    return g

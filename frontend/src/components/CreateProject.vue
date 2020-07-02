@@ -20,14 +20,6 @@
             placeholder="Enter the name of your project"
             prepend-icon="mdi-file"
           ></v-text-field>
-          <v-textarea
-            counter
-            outlined
-            label="Description"
-            v-model="$store.state.description"
-            placeholder="Describe your project"
-            prepend-icon="mdi-file-document-edit"
-          ></v-textarea>
           <v-row>
             <v-col cols="11" v-if="!link">
               <v-file-input
