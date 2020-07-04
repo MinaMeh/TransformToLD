@@ -98,8 +98,8 @@
 </template>
 
 <script>
-import axios from "axios";
 import { validationMixin } from "vuelidate";
+import operations from "@/services/OperationsService";
 export default {
   mixins: [validationMixin],
   name: "add-project",
@@ -147,58 +147,11 @@ export default {
     saveProject() {
       console.log("user id", this.$store.state.user_id);
       this.loading = true;
-      var formData = new FormData();
-      var project = {
-        project_name: this.$store.state.project_name,
-        description: this.$store.state.description,
-        author: this.$store.state.user,
-        user_id: this.$store.state.user_id,
-        creation_date: new Date()
-      };
-      formData.append("project", JSON.stringify(project));
-      formData.append("file", this.$store.state.file_uploaded);
-      formData.append("user_id", this.$store.state.user_id);
-      formData.append("project_name", this.$store.state.project_name);
-      formData.append("description", this.$store.state.description);
-      formData.append("separator", this.$store.state.csv.separator);
-      formData.append("tables", this.$store.state.html.extract_tables);
-      formData.append("paragraphs", this.$store.state.html.extract_paragraphs);
-      axios
-        .post("http://localhost:8000/extract/", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `JWT ${this.$store.state.jwt}`
-          }
-        })
+      operations
+        .extract(this.$store)
         .then(response => {
-          console.log(response.data);
-          this.project.id = response.data.id;
-          this.$store.state.project_id = response.data.project_id;
-          this.$store.state.filename = response.data.filename;
-          this.$store.state.file_type = response.data.type;
-          this.$store.state.size = response.data.size;
-
-          if (response.data.type == "csv") {
-            this.$store.state.csv.headers = response.data.results.headers;
-            this.$store.state.csv.columns = response.data.results.columns;
-            this.$store.state.csv.lines = response.data.results.lines;
-          }
-          if (response.data.type == "html") {
-            this.$store.state.html.tables = response.data.results.tables;
-            this.$store.state.html.paragraphs =
-              response.data.results.paragraphs;
-            this.$store.state.html.num_paragraphs =
-              response.data.results.num_paragraphs;
-            this.$store.state.html.num_tables =
-              response.data.results.num_tables;
-          }
-          if (response.data.type == "text") {
-            this.$store.state.text.paragraph = response.data.results.paragraph;
-            this.$store.state.text.sentences = response.data.results.sentences;
-          }
-          this.$store.state.progress = false;
+          console.log(response);
           this.loading = false;
-          this.dialog = false;
           this.$router.push({ name: "transform" });
         })
         .catch(error => {

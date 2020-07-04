@@ -32,7 +32,7 @@
   </v-dialog>
 </template>
 <script>
-import axios from "axios";
+import instance from "@/services/MainService";
 export default {
   props: ["prop", "active"],
   data() {
@@ -53,8 +53,8 @@ export default {
       var formData = new FormData();
       formData.append("term", this.search);
       console.log(this.search);
-      axios
-        .post("http://127.0.0.1:8000/searchProperty/", formData)
+      instance
+        .post("searchProperty/", formData)
         .then(response => {
           console.log(response.data);
           this.properties = response.data;

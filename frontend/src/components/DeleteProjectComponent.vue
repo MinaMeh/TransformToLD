@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import instance from "@/services/MainService";
 export default {
   props: ["item", "confirmDelete"],
 
@@ -38,9 +38,9 @@ export default {
   methods: {
     deleteProject(project) {
       this.loadDelete = true;
-      axios
+      instance
         .delete(
-          `http://127.0.0.1:8000/api/projects/` + project.id,
+          `api/projects/` + project.id,
           {
             headers: {
               "Content-Type": "multipart/form-data",
