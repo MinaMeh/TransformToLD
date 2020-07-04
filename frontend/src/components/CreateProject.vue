@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import instance from "@/services/MainService";
 import { validationMixin } from "vuelidate";
 export default {
   mixins: [validationMixin],
@@ -163,8 +163,8 @@ export default {
       formData.append("separator", this.$store.state.csv.separator);
       formData.append("tables", this.$store.state.html.extract_tables);
       formData.append("paragraphs", this.$store.state.html.extract_paragraphs);
-      axios
-        .post("http://localhost:8000/extract/", formData, {
+      instance
+        .post("extract/", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `JWT ${this.$store.state.jwt}`

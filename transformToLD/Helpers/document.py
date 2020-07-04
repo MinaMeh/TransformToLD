@@ -42,8 +42,8 @@ def document_project(project, metadata, format):
 def create_triplets(triplets):
     triplets_list = []
     for triple in triplets:
-        s = URIRef(triple.subject)
-        p = URIRef(triple.predicate)
+        s = URIRef(triple.subject.replace(" ", ''))
+        p = URIRef(triple.predicate.replace(" ", ""))
         o = Literal(triple.object)
         triplets_list.append((s, p, o))
     return triplets_list
@@ -62,8 +62,7 @@ def create_metadata(project, metadata):
         o = Literal(license)
         triplets.append((s, p, o))
     creator = metadata.get('creator', None)
-
-    if hasattr(metadata, 'creator'):
+    if creator:
         p = DCTERMS.creator
         o = Literal(creator)
         triplets.append((s, p, o))

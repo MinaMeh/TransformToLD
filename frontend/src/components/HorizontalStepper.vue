@@ -22,7 +22,7 @@
 </template>
 <script>
 import HorizontalStepper from "vue-stepper";
-import axios from "axios";
+import instance from "@/services/MainService";
 
 // This components will have the content for each stepper step.
 import PreprocessComponent from "./PreprocessComponent";
@@ -149,8 +149,8 @@ export default {
           );
         }
 
-        axios
-          .post("http://localhost:8000/preprocess/", formData_2)
+        instance
+          .post("preprocess/", formData_2)
           .then(response => {
             console.log(response.data);
             console.log("before", this.$store.state.progress);
@@ -212,8 +212,8 @@ export default {
           );
         }
 
-        axios
-          .post("http://localhost:8000/explore/", formData3)
+        instance
+          .post("explore/", formData3)
           .then(response => {
             console.log(response.data);
             if (this.$store.state.file_type == "csv") {
@@ -301,8 +301,8 @@ export default {
           formData4.append("tables", JSON.stringify(tables));
           formData4.append("paragraphs", JSON.stringify(paragraphs));
         }
-        axios
-          .post("http://localhost:8000/convert/", formData4)
+        instance
+          .post("convert/", formData4)
           .then(response => {
             this.$store.state.progress = false;
             console.log(response.data);
@@ -341,8 +341,8 @@ export default {
       formData5.append("metadata", JSON.stringify(this.$store.state.metadata));
       formData5.append("project_id", this.$store.state.project_id);
       formData5.append("format", format);
-      axios
-        .post("http://localhost:8000/document/", formData5)
+      instance
+        .post("document/", formData5)
         .then(response => {
           console.log(response.data);
           this.$router.push("/projects/" + this.$store.state.project_id);

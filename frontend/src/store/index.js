@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Axios from "axios";
+import instance from "@/services/MainService";
 import createPersistedState from "vuex-persistedstate";
 import routes from "../routes";
 
@@ -92,10 +92,11 @@ export default new Vuex.Store({
     userLogin(context, userData) {
       console.log(userData);
       return new Promise((resolve, reject) => {
-        Axios.post("http://localhost:8000/api/token/", {
-          email: userData.email,
-          password: userData.password,
-        })
+        instance
+          .post("/api/token/", {
+            email: userData.email,
+            password: userData.password,
+          })
           .then((response) => {
             console.log(response.data);
             context.commit("updateStorage", {
@@ -124,7 +125,7 @@ export default new Vuex.Store({
     /*
     refreshToken(context, userData) {
       return new Promise((resolve) =>
-        Axios.post("http://localhost:8000/api/token/refresh/", {
+        instance.post("api/token/refresh/", {
           token: this.state.accessToken,
         }).then((response) => {
           console.log(response.data);
@@ -141,9 +142,10 @@ export default new Vuex.Store({
     },*/
     refreshToken(context, token) {
       return new Promise((resolve) => {
-        Axios.post("http://localhost:8000/api/token/refresh/", {
-          token: token,
-        })
+        instance
+          .post("api/token/refresh/", {
+            token: token,
+          })
           .then((response) => {
             console.log("refresh token", response.data);
             context.commit("updateStorage", {
@@ -165,7 +167,7 @@ export default new Vuex.Store({
             token: this.state.jwt
         }
         return new Promise((resolve, reject) => {
-            Axios.post("http://localhost:8000/api/token/refresh/",
+            instance.post("api/token/refresh/",
                 payload
             ).then((response) => {
                 console.log(response.data);
@@ -180,22 +182,24 @@ export default new Vuex.Store({
 
     userRegister(context, userData) {
       return new Promise((resolve) => {
-        Axios.post("http://localhost:8000/register/", {
-          email: userData.email,
-          password: userData.password,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-        }).then((response) => {
-          console.log(response.data);
-          context.commit("updateStorage", {
-            jwt: response.data.token,
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            email: response.data.email,
-            user_id: response.data.user_id,
+        instance
+          .post("register/", {
+            email: userData.email,
+            password: userData.password,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+          })
+          .then((response) => {
+            console.log(response.data);
+            context.commit("updateStorage", {
+              jwt: response.data.token,
+              first_name: response.data.first_name,
+              last_name: response.data.last_name,
+              email: response.data.email,
+              user_id: response.data.user_id,
+            });
+            resolve();
           });
-          resolve();
-        });
       });
     },
     inspectToken() {

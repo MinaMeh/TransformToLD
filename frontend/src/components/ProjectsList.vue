@@ -91,7 +91,8 @@
 <script>
 import Navbar from "@/components/Navbar";
 import ConfirmDeletion from "@/components/DeleteProjectComponent";
-import axios from "axios";
+//import axios from "axios";
+import instance from "@/services/MainService";
 export default {
   components: {
     Navbar,
@@ -127,8 +128,8 @@ export default {
     },
     getAllProjects() {
       console.log(this.$store.state.user.email);
-      axios
-        .get("http://127.0.0.1:8000/api/projects", {
+      instance
+        .get("/api/projects", {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `JWT ${this.$store.state.jwt}`
