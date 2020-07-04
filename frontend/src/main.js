@@ -7,28 +7,28 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import "@fortawesome/fontawesome-free/js/all.js";
 import vuetify from "./plugins/vuetify";
 
-import router from "./routes";
+import router from "@/router";
 
-import moment from 'moment';
+import moment from "moment";
 
-Vue.filter('formatDate', function(value) {
-    if (value) {
-        return moment(String(value)).format('MMMM Do YYYY, h:mm:ss a')
-    }
+Vue.filter("formatDate", function(value) {
+  if (value) {
+    return moment(String(value)).format("MMMM Do YYYY, h:mm:ss a");
+  }
 });
 
 Vue.config.productionTip = false;
 Vue.component("text-highlight", TextHighlight);
-/*
+
 store
-    .dispatch("inspectToken")
-    .then(() => {
-        console.log(store.accessToken);
-    })
-    .catch((err) => {
-        console.log(err);
-    });
-*/
+  .dispatch("inspectToken")
+  .then(() => {
+    console.log(store.accessToken);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
 new Vue({
   router,
   store,

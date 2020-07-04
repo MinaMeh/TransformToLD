@@ -35,8 +35,30 @@
               <template v-slot:item.term="{ item }">
                 <a v-bind:href="item.term">{{item.term}}</a>
               </template>
+              <template v-slot:item.actions="{ item }">
+                <v-btn
+                  color="primary"
+                  dark
+                  class="mx-2"
+                  text
+                  @click.stop="modalVisible = true"
+                  @click="openModal(item)"
+                >
+                  <v-icon dark>mdi-pencil-box</v-icon>
+                </v-btn>
+              </template>
             </v-data-table>
+            <EditTerm
+              v-if="modal"
+              :modal="modal"
+              :term="selectedTerm"
+              @edit="edit"
+              @close="modal=false"
+            ></EditTerm>
           </v-card-text>
+          <v-card-actions>
+            <v-btn color="primary">Save and Reconvert</v-btn>
+          </v-card-actions>
         </v-card>
       </v-tab-item>
       <v-tab-item>
@@ -63,7 +85,7 @@
 
 <script>
 import { ripple } from "vuetify/lib/directives";
-
+import EditTerm from "@/components/modals/EditTerm";
 export default {
   props: {
     vocabularies: Array,
@@ -73,9 +95,12 @@ export default {
   directives: {
     ripple
   },
+  components: { EditTerm },
 
   data() {
     return {
+      modal: false,
+      selectedTerm: "",
       tab: null,
       vocabsHeaders: [
         { text: "Prefix", value: "prefix" },
@@ -85,7 +110,8 @@ export default {
       headersHeaders: [
         { text: "", value: "selected" },
         { text: "Name", value: "name" },
-        { text: "Term", value: "term" }
+        { text: "Term", value: "term" },
+        { text: "Actions", value: "actions" }
       ],
       tripletsHeaders: [
         { text: "Subject", value: "subject" },
@@ -93,6 +119,17 @@ export default {
         { text: "Object", value: "object" }
       ]
     };
+  },
+  methods: {
+    openModal(data) {
+      this.selectedTerm = data;
+      this.modal = true;
+    },
+    edit(value) {
+      console.log(value);
+      this.modal = false;
+      this.$emit("editTerm", value);
+    }
   }
 };
 </script>

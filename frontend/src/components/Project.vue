@@ -196,6 +196,7 @@
               :vocabularies="this.project.vocabularies"
               :headers="this.project.csv_data.headers"
               :triplets="this.project.csv_data.triplets"
+              @editTerm="editCsvTerm"
             ></CsvComponent>
             <TextComponent
               v-if="this.project.text_data!=null"
@@ -217,7 +218,7 @@ import CsvComponent from "@/components/show/CsvComponent";
 import TextComponent from "@/components/show/TextComponent";
 import HtmlComponent from "@/components/show/HtmlComponent";
 import ChooseFormat from "@/components/modals/ChooseFormat";
-import axios from "axios";
+import instance from "@/services/MainService";
 export default {
   components: {
     Navbar,
@@ -264,8 +265,8 @@ export default {
     },
     getFile(file) {
       console.log(file);
-      axios
-        .get("http://localhost:8000/getFile", {
+      instance
+        .get("getFile", {
           params: {
             file_path: file.path
           }
@@ -292,8 +293,8 @@ export default {
         });
     },
     getProject(id) {
-      axios
-        .get("http://127.0.0.1:8000/api/projects/" + id, {
+      instance
+        .get("api/projects/" + id, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `JWT ${this.$store.state.jwt}`
@@ -310,8 +311,8 @@ export default {
       var formdata = new FormData();
       formdata.append("project_id", this.project.id);
       formdata.append("format", value);
-      axios
-        .post("http://localhost:8000/translate/", formdata)
+      instance
+        .post("translate/", formdata)
         .then(response => {
           console.log(response.data);
           this.close();
@@ -324,6 +325,13 @@ export default {
     },
     close() {
       this.chooseOutput = false;
+    },
+    editCsvTerm(value) {
+      this.project.csv_data.headers.forEach(term => {
+        if (term.name == value.name) {
+          term.term = value.term;
+        }
+      });
     }
   },
   mounted() {

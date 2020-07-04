@@ -1,9 +1,10 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import Axios from "axios";
+import instance from "@/services/MainService";
 import createPersistedState from "vuex-persistedstate";
+import routes from "@/router";
 
-//import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
 
@@ -91,10 +92,11 @@ export default new Vuex.Store({
     userLogin(context, userData) {
       console.log(userData);
       return new Promise((resolve, reject) => {
-        Axios.post("http://localhost:8000/api/token/", {
-          email: userData.email,
-          password: userData.password,
-        })
+        instance
+          .post("/api/token/", {
+            email: userData.email,
+            password: userData.password,
+          })
           .then((response) => {
             console.log(response.data);
             context.commit("updateStorage", {
@@ -120,32 +122,52 @@ export default new Vuex.Store({
         });
       }
     },
-
-    // refreshToken(context, userData) {
-    //   return new Promise((resolve) =>
-    //     Axios.post("http://localhost:8000/api/token/refresh/", {
-    //       token: this.state.accessToken,
-    //     }).then((response) => {
-    //       console.log(response.data);
-    //       context.commit("updateStorage", {
-    //         accessToken: response.data.token,
-    //         first_name: response.data.first_name,
-    //         last_name: response.data.last_name,
-    //         email: response.data.email,
-    //       });
-    //       resolve();
-    //     });
-    //     )
-    //   );
-    // },
-
+    /*
+    refreshToken(context, userData) {
+      return new Promise((resolve) =>
+        instance.post("api/token/refresh/", {
+          token: this.state.accessToken,
+        }).then((response) => {
+          console.log(response.data);
+          context.commit("updateStorage", {
+            accessToken: response.data.token,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            email: response.data.email,
+          });
+          resolve();
+        });
+        )
+      );
+    },*/
+    refreshToken(context, token) {
+      return new Promise((resolve) => {
+        instance
+          .post("api/token/refresh/", {
+            token: token,
+          })
+          .then((response) => {
+            console.log("refresh token", response.data);
+            context.commit("updateStorage", {
+              jwt: response.data.token,
+              first_name: response.data.first_name,
+              last_name: response.data.last_name,
+              email: response.data.email,
+            });
+            resolve();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    },
     /*        refreshToken(context) {
         //console.log(userData);
         const payload = {
             token: this.state.jwt
         }
         return new Promise((resolve, reject) => {
-            Axios.post("http://localhost:8000/api/token/refresh/",
+            instance.post("api/token/refresh/",
                 payload
             ).then((response) => {
                 console.log(response.data);
@@ -160,53 +182,39 @@ export default new Vuex.Store({
 
     userRegister(context, userData) {
       return new Promise((resolve) => {
-        Axios.post("http://localhost:8000/register/", {
-          email: userData.email,
-          password: userData.password,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-        }).then((response) => {
-          console.log(response.data);
-          context.commit("updateStorage", {
-            jwt: response.data.token,
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            email: response.data.email,
-            user_id: response.data.user_id,
+        instance
+          .post("register/", {
+            email: userData.email,
+            password: userData.password,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+          })
+          .then((response) => {
+            console.log(response.data);
+            context.commit("updateStorage", {
+              jwt: response.data.token,
+              first_name: response.data.first_name,
+              last_name: response.data.last_name,
+              email: response.data.email,
+              user_id: response.data.user_id,
+            });
+            resolve();
           });
-          resolve();
-        });
       });
     },
-    /*inspectToken() {
-                                const token = this.state.jwt;
-                                if (token) {
-                                    const decodedData = jwt_decode(token);
-                                    const expirationDate = decodedData.exp;
-                                    const orig_iat = decodedData.orig_iat;
-                                    console.log(decodedData);
-                                    if (
-                                        expirationDate - (Date.now() / 1000) < 1800 &&
-                                        (Date.now() / 1000) - orig_iat < 628200) {
-                                        this.dispatch("userLogin", {
-                                            email: this.state.user.email,
-                                            password: this.state.user.password,
-                                        }).then(() => {
-                                            this.$router.push({
-                                                name: "home"
-                                            });
-                                        });
-                                    } else if (expirationDate - (Date.now() / 1000) < 1800) {
-                                        this.$router.push({
-                                            name: "login"
-                                        });
-                                    } else {
-                                        this.$router.push({
-                                            name: "login"
-                                        });
-                                    }
-                                }
-                            },
-                            */
+    inspectToken() {
+      const token = this.state.jwt;
+      if (token) {
+        const decodedData = jwt_decode(token);
+        const expirationDate = decodedData.exp;
+        console.log("state jwt ", this.state.jwt);
+        console.log("decoded data ", decodedData);
+        if (expirationDate * 1000 < Date.now()) {
+          routes.push({
+            name: "login",
+          });
+        }
+      }
+    },
   },
 });
