@@ -85,6 +85,11 @@ export default new Vuex.Store({
     },
     removeToken(state) {
       localStorage.removeItem("t");
+      localStorage.removeItem("first_name");
+      localStorage.removeItem("last_name");
+      localStorage.removeItem("email");
+      localStorage.removeItem("user_id");
+
       state.jwt = null;
     },
   },
@@ -196,7 +201,7 @@ export default new Vuex.Store({
               first_name: response.data.first_name,
               last_name: response.data.last_name,
               email: response.data.email,
-              user_id: response.data.user_id,
+              user_id: response.data.id,
             });
             resolve();
           });
