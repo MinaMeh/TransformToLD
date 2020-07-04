@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import instance from "@/services/MainService";
 import createPersistedState from "vuex-persistedstate";
-import routes from "../routes";
+import routes from "@/router";
 
 import jwt_decode from "jwt-decode";
 
