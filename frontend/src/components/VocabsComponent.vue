@@ -76,7 +76,7 @@
 </template>
 <script>
 import { validationMixin } from "vuelidate";
-import axios from "axios";
+import instance from "@/services/MainService";
 
 export default {
   props: ["clickedNext", "currentStep"],
@@ -155,12 +155,13 @@ export default {
 
   mounted() {
     this.$store.state.vocabs = [];
-    axios
-      .get("http://127.0.0.1:8000/vocabs/" ,{
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `JWT ${this.$store.state.jwt}`,
-          }})
+    instance
+      .get("vocabs/", {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `JWT ${this.$store.state.jwt}`
+        }
+      })
       .then(response => {
         this.vocabs = response.data;
         console.log(this.vocabs.length);
