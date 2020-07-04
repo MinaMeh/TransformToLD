@@ -20,29 +20,38 @@
           <v-card-text>
             <v-col cols="12">
               <v-data-table
+                dense
                 :headers="headers"
                 :items="projects"
                 sort-by="id"
                 class="elevation-1"
                 :search="search"
+                @click:row="goToproject"
               >
                 <template v-slot:item.converted="{ item }">
-                  <v-chip v-if="(item.converted == false)" small color="red" dark>Not converted</v-chip>
-                  <v-chip v-if="(item.converted == true)" small color="green" dark>Converted</v-chip>
+                  <v-chip
+                    class="mt-2"
+                    v-if="(item.converted == false)"
+                    small
+                    color="red"
+                    dark
+                  >Not converted</v-chip>
+                  <v-chip
+                    class="mt-2"
+                    v-if="(item.converted == true)"
+                    small
+                    color="green"
+                    dark
+                  >Converted</v-chip>
                 </template>
                 <template v-slot:item.input="{ item }">
-                  <v-chip color="primary">{{item.input_file.file_type}}</v-chip>
+                  <v-chip class="mt-2" small color="primary">{{item.input_file.file_type}}</v-chip>
                 </template>
 
                 <template v-slot:item.creation="{ item }">
                   <p>{{ item.creation_date | formatDate }}</p>
                 </template>
                 <template v-slot:item.actions="{ item }">
-                  <v-btn text color="success" medium>
-                    <a v-bind:href="'/projects/' + item.id">
-                      <v-icon color="info" medium class="mr-2">mdi-eye</v-icon>
-                    </a>
-                  </v-btn>
                   <ConfirmDeletion
                     v-if="modalVisible"
                     @close="close()"
@@ -141,6 +150,10 @@ export default {
       this.modalData = data;
       this.modalVisible = true;
       console.log(this.modalVisible);
+    },
+    goToproject(value) {
+      console.log("id", value.id);
+      this.$router.push("/projects/" + value.id);
     }
   }
 };
