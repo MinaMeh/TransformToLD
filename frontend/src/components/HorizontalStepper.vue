@@ -22,7 +22,8 @@
 </template>
 <script>
 import HorizontalStepper from "vue-stepper";
-import instance from "@/services/MainService";
+import ChooseFormat from "@/components/modals/ChooseFormat";
+import operations from "@/services/OperationsService";
 
 // This components will have the content for each stepper step.
 import PreprocessComponent from "./PreprocessComponent";
@@ -31,7 +32,6 @@ import ConvertComponent from "./ConvertComponent.vue";
 import ExploreComponent from "./ExploreComponent.vue";
 import DocumentComponent from "./DocumentComponent.vue";
 import ExtractComponent from "./ExtractComponent";
-import ChooseFormat from "@/components/modals/ChooseFormat";
 
 export default {
   components: {
@@ -119,55 +119,10 @@ export default {
     beforeNextStep({ currentStep }, next) {
       this.$store.state.progress = true;
       if (currentStep.name == "first") {
-        this.$store.state.progress = true;
-
-        var formData_2 = new FormData();
-        formData_2.append("project_id", this.$store.state.project_id);
-        formData_2.append("file_type", this.$store.state.file_type);
-
-        if (this.$store.state.file_type == "csv") {
-          formData_2.append(
-            "columns",
-            JSON.stringify(this.$store.state.csv.headers)
-          );
-        }
-
-        if (this.$store.state.file_type == "html") {
-          formData_2.append(
-            "tables",
-            JSON.stringify(this.$store.state.html.tables)
-          );
-          formData_2.append(
-            "paragraphs",
-            JSON.stringify(this.$store.state.html.paragraphs)
-          );
-        }
-        if (this.$store.state.file_type == "text") {
-          formData_2.append(
-            "paragraph",
-            JSON.stringify(this.$store.state.text)
-          );
-        }
-
-        instance
-          .post("preprocess/", formData_2)
+        operations
+          .preprocess(this.$store)
           .then(response => {
-            console.log(response.data);
-            console.log("before", this.$store.state.progress);
-            this.$store.state.progress = false;
-            console.log("after", this.$store.state.progress);
-
-            if (this.$store.state.file_type == "csv") {
-              this.$store.state.csv.headers = response.data.headers;
-            }
-            if (this.$store.state.file_type == "html") {
-              this.$store.state.html.tables = response.data.tables_selected;
-              this.$store.state.html.paragraphs =
-                response.data.paragraphs_selected;
-            }
-            if (this.$store.state.file_type == "text") {
-              this.$store.state.text.paragraph = response.data;
-            }
+            console.log(response);
             next();
           })
           .catch(error => {
@@ -177,146 +132,28 @@ export default {
           });
       }
       if (currentStep.name == "second") {
-        console.log(currentStep.component);
         next();
       }
 
       if (currentStep.name == "third") {
-        this.$store.state.progress = true;
-
-        var formData3 = new FormData();
-        formData3.append("file_type", this.$store.state.file_type);
-        formData3.append("vocabs", JSON.stringify(this.$store.state.vocabs));
-        formData3.append("project_id", this.$store.state.project_id);
-
-        if (this.$store.state.file_type == "csv") {
-          formData3.append(
-            "columns",
-            JSON.stringify(this.$store.state.csv.headers)
-          );
-        }
-        if (this.$store.state.file_type == "html") {
-          formData3.append(
-            "tables",
-            JSON.stringify(this.$store.state.html.tables)
-          );
-          formData3.append(
-            "paragraphs",
-            JSON.stringify(this.$store.state.html.paragraphs)
-          );
-        }
-        if (this.$store.state.file_type == "text") {
-          formData3.append(
-            "paragraph",
-            JSON.stringify(this.$store.state.text.paragraph)
-          );
-        }
-
-        instance
-          .post("explore/", formData3)
+        operations
+          .explore(this.$store)
           .then(response => {
-            console.log(response.data);
-            if (this.$store.state.file_type == "csv") {
-              this.$store.state.csv.terms = response.data.terms;
-              console.log(response.data);
-            }
-            if (this.$store.state.file_type == "html") {
-              this.$store.state.html.tables = response.data.tables;
-              this.$store.state.html.paragraphs = response.data.paragraphs;
-            }
-            if (this.$store.state.file_type == "text") {
-              this.$store.state.text.paragraph = response.data;
-            }
-
-            this.$store.state.progress = false;
+            console.log(response);
             next();
           })
           .catch(error => {
             console.log(error);
+
             this.error = true;
             this.errorMsg = error.response.data.msg;
           });
       }
       if (currentStep.name == "fourth") {
-        var formData4 = new FormData();
-        formData4.append("file_type", this.$store.state.file_type);
-        formData4.append("project_id", this.$store.state.project_id);
-        formData4.append("file_name", this.$store.state.filename);
-        if (this.$store.state.file_type == "csv") {
-          formData4.append("delimiter", this.$store.state.csv.separator);
-          var terms = [];
-          this.$store.state.csv.terms.forEach(function(term) {
-            terms.push({ property: term.property, term: term.selected });
-          });
-          formData4.append("terms", JSON.stringify(terms));
-        }
-        if (this.$store.state.file_type == "text") {
-          var triplets = [];
-          this.$store.state.text.paragraph.sentences.forEach(function(
-            sentence
-          ) {
-            sentence.triplets.forEach(function(triplet) {
-              triplets.push(triplet);
-            });
-          });
-          terms = [];
-          this.$store.state.text.paragraph.terms.forEach(function(term) {
-            terms.push({ property: term.property, term: term.selected });
-          });
-          formData4.append("terms", JSON.stringify(terms));
-          formData4.append("triplets", JSON.stringify(triplets));
-        }
-        if (this.$store.state.file_type == "html") {
-          var tables = [];
-          this.$store.state.html.tables.forEach(function(table) {
-            if (table.selected) {
-              var filename = table.filename;
-              var id = table.id;
-              var terms = [];
-              table.terms.forEach(function(term) {
-                terms.push({ property: term.property, term: term.selected });
-              });
-              tables.push({ filename: filename, id: id, terms: terms });
-            }
-          });
-          var paragraphs = [];
-          this.$store.state.html.paragraphs.forEach(function(paragraph) {
-            if (paragraph.selected) {
-              var id = paragraph.id;
-              var terms = [];
-              var triplets = [];
-              paragraph.terms.forEach(function(term) {
-                terms.push({ property: term.property, term: term.selected });
-              });
-              paragraph.sentences.forEach(function(sentence) {
-                sentence.triplets.forEach(function(triplet) {
-                  if (triplet.selected) triplets.push(triplet);
-                });
-              });
-
-              paragraphs.push({ id: id, terms: terms, triplets: triplets });
-            }
-          });
-
-          formData4.append("tables", JSON.stringify(tables));
-          formData4.append("paragraphs", JSON.stringify(paragraphs));
-        }
-        instance
-          .post("convert/", formData4)
+        operations
+          .convert(this.$store)
           .then(response => {
-            this.$store.state.progress = false;
-            console.log(response.data);
-            if (this.$store.state.file_type == "csv") {
-              this.$store.state.csv.triplets = response.data;
-            }
-            if (this.$store.state.file_type == "text") {
-              this.$store.state.text.triplets = response.data;
-            }
-            if (this.$store.state.file_type == "html") {
-              this.$store.state.html.tables_triplets = response.data.tables;
-              this.$store.state.html.paragraphs_triplets =
-                response.data.paragraphs;
-            }
+            console.log(response);
             next();
           })
           .catch(error => {
@@ -336,13 +173,8 @@ export default {
       alert("finished");
     },
     convert(format) {
-      var formData5 = new FormData();
-      console.log("project_id" + this.$store.state.project_id);
-      formData5.append("metadata", JSON.stringify(this.$store.state.metadata));
-      formData5.append("project_id", this.$store.state.project_id);
-      formData5.append("format", format);
-      instance
-        .post("document/", formData5)
+      operations
+        .document(this.$store, format)
         .then(response => {
           console.log(response.data);
           this.$router.push("/projects/" + this.$store.state.project_id);

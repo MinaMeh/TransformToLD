@@ -91,7 +91,6 @@
 <script>
 import Navbar from "@/components/Navbar";
 import ConfirmDeletion from "@/components/DeleteProjectComponent";
-//import axios from "axios";
 import instance from "@/services/MainService";
 export default {
   components: {
