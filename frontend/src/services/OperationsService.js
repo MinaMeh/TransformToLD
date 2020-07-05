@@ -50,7 +50,6 @@ export default {
             store.state.text.sentences = response.data.results.sentences;
           }
 
-          store.state.progress = false;
           resolve(response);
         })
         .catch((error) => {
@@ -60,8 +59,6 @@ export default {
   },
   preprocess(store) {
     return new Promise((resolve, reject) => {
-      store.state.progress = true;
-
       var formData = new FormData();
       formData.append("project_id", store.state.project_id);
       formData.append("file_type", store.state.file_type);
@@ -85,7 +82,6 @@ export default {
         .post("preprocess/", formData)
         .then((response) => {
           console.log(response.data);
-          store.state.progress = false;
 
           if (store.state.file_type == "csv") {
             store.state.csv.headers = response.data.headers;
@@ -107,8 +103,6 @@ export default {
   },
   explore(store) {
     return new Promise((resolve, reject) => {
-      store.state.progress = true;
-
       var formData = new FormData();
       formData.append("file_type", store.state.file_type);
       formData.append("vocabs", JSON.stringify(store.state.vocabs));
@@ -147,7 +141,6 @@ export default {
             store.state.text.paragraph = response.data;
           }
 
-          store.state.progress = false;
           resolve(response);
         })
         .catch((error) => {
@@ -241,7 +234,6 @@ export default {
       instance
         .post("convert/", formData)
         .then((response) => {
-          store.state.progress = false;
           console.log(response.data);
           if (store.state.file_type == "csv") {
             store.state.csv.triplets = response.data;
