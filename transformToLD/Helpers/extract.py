@@ -122,4 +122,3 @@ def get_sentences(paragraph, model="en_core_web_sm"):
         sentence['text'] = sent.text
         sentences.append(sentence)
     return sentences
-
