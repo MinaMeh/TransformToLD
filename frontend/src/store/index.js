@@ -20,7 +20,9 @@ export default new Vuex.Store({
     },
     metadata: {
       creator:
-        localStorage.getItem("first_name") + localStorage.getItem("last_name"),
+        localStorage.getItem("first_name") +
+        "  " +
+        localStorage.getItem("last_name"),
       license: "",
       description: "",
       title: "",

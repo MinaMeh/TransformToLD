@@ -34,11 +34,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item>
         <v-col cols="12">
-          <v-card
-            v-for="table in $store.state.html.tables"
-            :key="table.id"
-            class="mt-3"
-          >
+          <v-card v-for="table in $store.state.html.tables" :key="table.id" class="mt-3">
             <v-card-title>
               <v-checkbox
                 v-model="table.selected"
@@ -133,17 +129,9 @@
                   <v-row>
                     <v-col cols="12">
                       <h4 class="text-center">Sentences</h4>
-                      <v-expansion-panels>
-                        <v-expansion-panel
-                          v-for="(sentence, i) in paragraph.sentences"
-                          :key="i"
-                        >
-                          <v-expansion-panel-header>{{
-                            sentence.text
-                          }}</v-expansion-panel-header>
-                          <v-expansion-panel-content></v-expansion-panel-content>
-                        </v-expansion-panel>
-                      </v-expansion-panels>
+                      <v-data-table :headers="headersText" :items="paragraph.sentences">
+                        <template v-slot:item.id="{item}">#{{paragraph.sentences.indexOf(item)+1}}</template>
+                      </v-data-table>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -171,10 +159,14 @@ export default {
 
       headers: [
         { text: "Add", value: "Add" },
-        { text: "Header", value: "header", sortable: true },
+        { text: "Header", value: "header", sortable: true }
       ],
+      headersText: [
+        { text: "id", value: "id" },
 
-      content: null,
+        { text: "Sentence", value: "text" }
+      ],
+      content: null
     };
   },
   watch: {
@@ -186,12 +178,12 @@ export default {
           this.$emit("can-continue", { value: false });
         }
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   methods: {
     toggleTable: function(table_id) {
-      var tables = this.$store.state.html.tables.filter((table) => {
+      var tables = this.$store.state.html.tables.filter(table => {
         if (table.id == table_id) return table;
       });
       for (var header in tables[0].headers) {
@@ -218,7 +210,7 @@ export default {
     },
     close() {
       console.log("Dialog closed");
-    },
+    }
   },
   mounted() {
     this.content = this.$store.state.file_content;
@@ -227,6 +219,6 @@ export default {
     } else {
       this.$emit("can-continue", { value: false });
     }
-  },
+  }
 };
 </script>

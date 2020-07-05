@@ -10,12 +10,9 @@
             <v-row>
               <v-col cols="12">
                 <h4 class="text-center">Sentences</h4>
-                <v-expansion-panels>
-                  <v-expansion-panel v-for="(sentence,i) in sentences" :key="i">
-                    <v-expansion-panel-header>{{sentence.text}}</v-expansion-panel-header>
-                    <v-expansion-panel-content></v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-expansion-panels>
+                <v-data-table :headers="headers" :items="sentences">
+                  <template v-slot:item.id="{item}">#{{sentences.indexOf(item)+1}}</template>
+                </v-data-table>
               </v-col>
             </v-row>
           </v-card-text>
@@ -34,8 +31,9 @@ export default {
       paragraphs: null,
       queries: [],
       headers: [
-        { text: "Entity", value: "Entity" },
-        { text: "Class", value: "Class" }
+        { text: "id", value: "id" },
+
+        { text: "Sentence", value: "text" }
       ]
     };
   },
