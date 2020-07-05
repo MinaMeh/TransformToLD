@@ -9,7 +9,6 @@
           @active-step="isStepActive"
           @stepper-finished="alert"
           @before-next-step="beforeNextStep"
-          @clicking-back="$store.state.progress=false"
         ></horizontal-stepper>
         <v-snackbar v-model="error" color="red">
           {{errorMsg}}
@@ -118,48 +117,63 @@ export default {
     },
     beforeNextStep({ currentStep }, next) {
       this.$store.state.progress = true;
+      console.log("progress", this.$store.state.progress);
       if (currentStep.name == "first") {
         operations
           .preprocess(this.$store)
           .then(response => {
             console.log(response);
+            this.$store.state.progress = false;
             next();
           })
           .catch(error => {
             console.log(error);
             this.error = true;
             this.errorMsg = error.response.data.msg;
+            this.$store.state.progress = false;
           });
       }
       if (currentStep.name == "second") {
+        this.$store.state.progress = false;
+
         next();
       }
 
       if (currentStep.name == "third") {
+        this.$store.state.progress = true;
+
         operations
           .explore(this.$store)
           .then(response => {
             console.log(response);
+            this.$store.state.progress = false;
+
             next();
           })
           .catch(error => {
             console.log(error);
+            this.$store.state.progress = false;
 
             this.error = true;
             this.errorMsg = error.response.data.msg;
           });
       }
       if (currentStep.name == "fourth") {
+        this.$store.state.progress = true;
+
         operations
           .convert(this.$store)
           .then(response => {
             console.log(response);
+            this.$store.state.progress = false;
+
             next();
           })
           .catch(error => {
             console.log(error);
             this.error = true;
             this.errorMsg = error.response.data.msg;
+            this.$store.state.progress = false;
           });
       }
       if (currentStep.name == "fifth") {
@@ -177,10 +191,13 @@ export default {
         .document(this.$store, format)
         .then(response => {
           console.log(response.data);
+          this.$store.state.progress = false;
+
           this.$router.push("/projects/" + this.$store.state.project_id);
         })
         .catch(error => {
           console.log(error);
+          this.$store.state.progress = false;
         });
     }
   }

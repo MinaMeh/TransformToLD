@@ -2,6 +2,7 @@ import lxml.html as lh
 from bs4 import BeautifulSoup as bs
 import spacy
 import pandas as pd
+import textrazor
 
 
 def extract_text_data(file):
@@ -115,10 +116,19 @@ def get_sentences(paragraph, model="en_core_web_sm"):
     Extracts the sentences of a given paragraph
     '''
     sentences = []
-    nlp = spacy.load(model)
-    doc = nlp(paragraph)
-    for sent in doc.sents:
+    textrazor.api_key = "4599791ae63e2fb4f39d911a2145db56469b306ba8fbd6eda53e65ce"
+
+    client = textrazor.TextRazor(extractors=['entities', 'relations'])
+    response = client.analyze(paragraph)
+    for sent in response.sentences():
         sentence = dict()
-        sentence['text'] = sent.text
+        sentence['text'] = concatenate(sent.words)
         sentences.append(sentence)
     return sentences
+
+
+def concatenate(word_list):
+    term = ""
+    for word in word_list:
+        term += " " + word.token
+    return term

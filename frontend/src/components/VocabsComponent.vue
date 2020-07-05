@@ -2,6 +2,16 @@
   <v-container>
     <v-row no-gutters class="mt-12">
       <v-col cols="12">
+        <v-progress-linear
+          v-if="$store.state.progress"
+          class="mt-10"
+          indeterminate
+          color="light-blue"
+          height="10"
+          value="10"
+          striped
+        ></v-progress-linear>
+
         <h1>Vocabularies</h1>
         <v-row>
           <v-col cols="2" class="mt-3" align="left" justify="left">
