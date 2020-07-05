@@ -10,7 +10,8 @@ def document_project(project, metadata, format):
     triplets = create_metadata(project, metadata)
     if project.html_data:
         for table in project.html_data.tables:
-            triplets += create_triplets(table.triplets)
+            if table.selected:
+                triplets += create_triplets(table.triplets)
         for paragraph in project.html_data.paragraphs:
             triplets += create_triplets(paragraph.terms)
     if project.csv_data:
