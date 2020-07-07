@@ -1,6 +1,6 @@
 
 from rest_meets_djongo import serializers
-from historique.models import Project, Author, File
+from historique.models import Project, Author, File, Propriety, RdfClass
 
 
 class AuthorSerializer(serializers.DjongoModelSerializer):
@@ -34,5 +34,27 @@ class ProjectSerializer(serializers.DjongoModelSerializer):
             'creation_date',
             'converted',
             'vocabularies',
+            'metadata',
+            'properties',
             'user_id'
+        )
+
+
+class PropertySerializer(serializers.DjongoModelSerializer):
+    class Meta:
+        model = Propriety
+        fields = (
+            'label',
+            'comment',
+            'subPropertyOf'
+        )
+
+
+class ClassSerializer(serializers.DjongoModelSerializer):
+    class Meta:
+        model = RdfClass
+        fields = (
+            'label',
+            'comment',
+            'subClassOf'
         )

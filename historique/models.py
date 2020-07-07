@@ -39,6 +39,20 @@ class File(models.Model):
         return File.objects.create(**validated_data)
 
 
+class Propriety(models.Model):
+    label = models.CharField(max_length=30)
+    comment = models.TextField()
+    subPropertyOf = models.TextField(null=True, blank=True)
+    uri = models.CharField(max_length=255)
+
+
+class RdfClass(models.Model):
+    label = models.CharField(max_length=30)
+    comment = models.TextField()
+    subClassOf = models.TextField(null=True, blank=True)
+    uri = models.CharField(max_length=255)
+
+
 class Triplet(models.Model):
     subject = models.CharField(max_length=255)
     predicate = models.CharField(max_length=255)
@@ -79,6 +93,15 @@ class Vocabulary(models.Model):
         return Vocabulary.objects.create(**validated_data)
 
 
+class MetaData(models.Model):
+    creator = models.CharField(max_length=255)
+    createdAt = models.DateField()
+    subject = models.CharField(max_length=255)
+    description = models.TextField()
+    license = models.CharField(max_length=255)
+    title = models.CharField(max_length=255)
+
+
 class CsvProject(models.Model):
     id = models.IntegerField(default=0, primary_key=True)
     separator = models.CharField(max_length=3, null=True, blank=True)
@@ -89,6 +112,10 @@ class CsvProject(models.Model):
         model_container=Triplet, null=True, blank=True)
     filename = models.EmbeddedField(
         model_container=File, null=True, blank=True)
+    headers_id = models.ArrayField(
+        model_container=Header, default=[], null=True, blank=True)
+    row_class = models.EmbeddedField(
+        model_container=RdfClass, null=True, blank=True)
     selected = models.BooleanField(null=True,  blank=True, default=False)
 
     def create(self, validated_data):
@@ -156,6 +183,10 @@ class Project(models.Model):
         model_container=File, null=True, blank=True)
     intermediate_files = models.ArrayField(
         model_container=File, null=True, blank=True)
+    properties = models.ArrayField(
+        model_container=Propriety, null=True, blank=True)
+    metadata = models.EmbeddedField(
+        model_container=MetaData, null=True, blank=True)
     creation_date = models.DateTimeField(auto_now_add=True)
     converted = models.BooleanField(default=False)
     converted_at = models.DateTimeField(auto_now=False)

@@ -59,16 +59,11 @@
 </template>
 
 <script>
-import { ripple } from "vuetify/lib/directives";
-
 export default {
   props: {
     vocabularies: Array,
     terms: Array,
     triplets: Array
-  },
-  directives: {
-    ripple
   },
 
   data() {
