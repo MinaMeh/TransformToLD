@@ -163,6 +163,12 @@ export default {
             term: term.selected,
           });
         });
+        formData.append("rowClass", JSON.stringify(store.state.csv.rowClass));
+        var headersId = [];
+        store.state.csv.headersId.forEach((header) => {
+          headersId.push(header.property);
+        });
+        formData.append("headersId", JSON.stringify(headersId));
         formData.append("terms", JSON.stringify(terms));
       }
       if (store.state.file_type == "text") {
@@ -199,6 +205,8 @@ export default {
               filename: filename,
               id: id,
               terms: terms,
+              rowId: table.rowId,
+              rowClass: table.rowClass,
             });
           }
         });

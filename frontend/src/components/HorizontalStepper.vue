@@ -116,7 +116,6 @@ export default {
       });
     },
     beforeNextStep({ currentStep }, next) {
-      this.$store.state.progress = true;
       console.log("progress", this.$store.state.progress);
       if (currentStep.name == "first") {
         operations
