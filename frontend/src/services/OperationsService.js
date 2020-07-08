@@ -205,6 +205,8 @@ export default {
               filename: filename,
               id: id,
               terms: terms,
+              rowId: table.rowId,
+              rowClass: table.rowClass,
             });
           }
         });

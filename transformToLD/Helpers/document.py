@@ -16,13 +16,15 @@ def document_project(project, metadata, format):
         create_metadata(project, metadata, output_file, format, g)
         create_properties(project, output_file, format, g)
         if project.html_data:
+            create_html_classes(project, g)
             for table in project.html_data.tables:
                 if table.selected:
                     create_triplets(table.triplets, project,
                                     output_file, format, g)
             for paragraph in project.html_data.paragraphs:
-                create_triplets(paragraph.terms, project,
-                                output_file, format, g)
+                if paragraph.terms:
+                    create_triplets(paragraph.terms, project,
+                                    output_file, format, g)
         if project.csv_data:
             create_triplets(project.csv_data.triplets,
                             project, output_file, format, g)
@@ -72,12 +74,13 @@ def create_properties(project, output_file, format, g):
 def create_triplets(triplets, project, output_file, format, g):
     triplets_list = []
     ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
+    print("id= "+str(project.id))
+    print(triplets)
 
     for triple in triplets:
         s = URIRef(triple.subject.replace(" ", ''))
         if "http" not in triple.predicate:
             triple.predicate = ns+triple.predicate.split(":")[-1]
-        print(triple.predicate)
         p = URIRef(triple.predicate.replace(" ", ""))
         o = Literal(triple.object)
         triplets_list.append((s, p, o))
@@ -104,6 +107,29 @@ def create_class(project, g):
             p = RDFS.subClassOf
             o = URIRef(rdf_class.subClassOf)
             g.add((s, p, o))
+
+
+def create_html_classes(project, g):
+    ns = "http://localhost/{}/".format(
+        project.project_name.replace(" ", "_"))
+    for table in project.html_data.tables:
+        if hasattr(table.row_class, "label"):
+            triplets = []
+            rdf_class = table.row_class
+            s = URIRef(ns+rdf_class.label)
+            p = RDF.type
+            o = RDFS.Class
+            g.add((s, p, o))
+            p = RDFS.label
+            o = Literal(rdf_class.label)
+            g.add((s, p, o))
+            p = RDFS.comment
+            o = Literal(rdf_class.comment)
+            g.add((s, p, o))
+            if rdf_class.subClassOf:
+                p = RDFS.subClassOf
+                o = URIRef(rdf_class.subClassOf)
+                g.add((s, p, o))
 
 
 def create_metadata(project, metadata, output_file, format, g):

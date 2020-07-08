@@ -13,11 +13,7 @@
                 v-model="$store.state.csv.rowClass.prefixedName"
                 label="Select a class"
                 return-object
-              >
-                <template v-slot:default>
-                  <a href>{{rowClass}}</a>
-                </template>
-              </v-text-field>
+              ></v-text-field>
             </v-col>
             <v-col cols="3">
               <v-tooltip bottom>

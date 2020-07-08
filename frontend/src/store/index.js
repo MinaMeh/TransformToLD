@@ -2,7 +2,6 @@ import Vue from "vue";
 import Vuex from "vuex";
 import instance from "@/services/MainService";
 import routes from "@/router";
-
 import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
@@ -80,6 +79,7 @@ export default new Vuex.Store({
       state.user.last_name = last_name;
       state.user.email = email;
       state.user_id = user_id;
+      state.creator = first_name + " " + last_name;
       localStorage.setItem("first_name", first_name);
       localStorage.setItem("last_name", last_name);
       localStorage.setItem("email", email);
