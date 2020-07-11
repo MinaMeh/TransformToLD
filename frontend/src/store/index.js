@@ -1,15 +1,12 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import instance from "@/services/MainService";
-import createPersistedState from "vuex-persistedstate";
 import routes from "@/router";
-
 import jwt_decode from "jwt-decode";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  plugins: [createPersistedState()],
   state: {
     jwt: localStorage.getItem("t"),
     user_id: localStorage.getItem("user_id"),
@@ -21,7 +18,7 @@ export default new Vuex.Store({
     metadata: {
       creator:
         localStorage.getItem("first_name") +
-        "  " +
+        " " +
         localStorage.getItem("last_name"),
       license: "",
       description: "",
@@ -33,7 +30,7 @@ export default new Vuex.Store({
     file_uploaded: "",
     file_content: [],
     filename: "",
-    progress: true,
+    progress: false,
     project_id: "",
     project_name: "",
     description: "",
@@ -54,6 +51,8 @@ export default new Vuex.Store({
       columns: 0,
       terms: [],
       triplets: [],
+      rowClass: "",
+      headersId: [],
     },
     size: 0,
     html: {
@@ -80,6 +79,7 @@ export default new Vuex.Store({
       state.user.last_name = last_name;
       state.user.email = email;
       state.user_id = user_id;
+      state.creator = first_name + " " + last_name;
       localStorage.setItem("first_name", first_name);
       localStorage.setItem("last_name", last_name);
       localStorage.setItem("email", email);

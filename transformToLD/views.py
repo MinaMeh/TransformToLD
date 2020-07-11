@@ -22,7 +22,7 @@ from .Helpers.document import document_project, translate_file
 # Create your views here.
 from rest_framework_jwt.settings import api_settings
 from historique.models import *
-from historique.serializers import ProjectSerializer
+from historique.serializers import ProjectSerializer, PropertySerializer, ClassSerializer
 import os
 from django.conf import settings
 from .db_operations import *
@@ -208,6 +208,12 @@ def convert(request):
     project = Project.objects.get(pk=project_id)
     if file_type == "csv":
         terms = json.loads(request.POST.get("terms"))
+        row_class = json.loads(request.POST.get("rowClass"))
+        headers_id = json.loads(request.POST.get("headersId"))
+        if headers_id:
+            project.csv_data.headers_id = [
+                Header(name=header) for header in headers_id]
+            project.save()
         for term in terms:
             headers = project.csv_data.headers
             for head in headers:
@@ -216,7 +222,8 @@ def convert(request):
                         head.term = term["term"]["uri"]
             project.save()
         delimiter = request.POST.get("delimiter")
-        lines = convert_csv(project, file_name, delimiter, terms)
+        lines = convert_csv(project, file_name, delimiter,
+                            terms, headers_id, row_class)
         update_csv_project(project, triplets=lines)
         return Response(lines)
     if file_type == "text":
@@ -272,6 +279,52 @@ def search_property(request):
     term = request.POST.get("term")
     vocab_list = get_vocab(term)
     return Response(vocab_list)
+
+
+@ api_view(['POST'])
+def search_class(request):
+    term = request.POST.get("term")
+    vocab_list = get_vocab(term, term_type="class")
+    return Response(vocab_list)
+
+
+@ api_view(['POST'])
+def create_property(request):
+    prop = json.loads(request.POST.get("prop"))
+    project_id = request.POST.get("project_id")
+    project = Project.objects.get(pk=project_id)
+    property_serializer = PropertySerializer(data=prop)
+    if property_serializer.is_valid():
+        properiety = Propriety(
+            label=prop["label"], comment=prop["comment"], subPropertyOf=prop['subPropertyOf'])
+        if project.properties == None:
+            project.properties = [properiety]
+        else:
+            project.properties.append(properiety)
+        project.save()
+    else:
+        return Response({"msg": property_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    prop = {'term': properiety.label,
+            "prefixedName": "dataset:"+properiety.label, 'uri': "dataset:"+properiety.label}
+    return Response(prop)
+
+
+@ api_view(['POST'])
+def create_class(request):
+    rdf_class = json.loads(request.POST.get("class"))
+    project_id = request.POST.get("project_id")
+    project = Project.objects.get(pk=project_id)
+    class_serializer = ClassSerializer(data=rdf_class)
+    if class_serializer.is_valid():
+        new_class = RdfClass(
+            label=rdf_class["label"], comment=rdf_class["comment"], subClassOf=rdf_class['subClassOf'])
+        project.csv_data.row_class = new_class
+        project.save()
+    else:
+        return Response({"msg": class_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+    prop = {'term': new_class.label,
+            "prefixedName": "dataset:"+new_class.label, "class": rdf_class}
+    return Response(prop)
 
 
 @ api_view(["POST"])

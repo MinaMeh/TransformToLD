@@ -84,16 +84,12 @@
 </template>
 
 <script>
-import { ripple } from "vuetify/lib/directives";
 import EditTerm from "@/components/modals/EditTerm";
 export default {
   props: {
     vocabularies: Array,
     triplets: Array,
     headers: Array
-  },
-  directives: {
-    ripple
   },
   components: { EditTerm },
 

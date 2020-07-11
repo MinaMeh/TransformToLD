@@ -24,6 +24,10 @@ urlpatterns = [
     path('register/', views.register),
     path('getFile/', views.get_file),
     path('searchProperty/', views.search_property),
+    path('searchClass/', views.search_class),
+    path('createProperty/', views.create_property),
+    path('createClass/', views.create_class),
+
     url(r'^', include('historique.urls'))
 ]
 

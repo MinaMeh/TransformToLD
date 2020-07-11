@@ -13,7 +13,7 @@
           @projectDeleted="snackbarDelete = true"
           :loading="loadDelete"
         >Delete</v-btn>
-        <v-btn @click="deleteProjectConfirm = false" dark color="primary">Cancel</v-btn>
+        <v-btn @click="$emit('close')" dark color="primary">Cancel</v-btn>
       </v-card-actions>
       <v-snackbar v-model="snackbarDelete" :timeout="4000" bottom color="error">
         <span>Project Deleted successfully</span>

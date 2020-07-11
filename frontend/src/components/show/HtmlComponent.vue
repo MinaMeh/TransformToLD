@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import { ripple } from "vuetify/lib/directives";
 import CsvComponent from "@/components/show/CsvComponent";
 import TextComponent from "@/components/show/TextComponent";
 
@@ -58,9 +57,6 @@ export default {
   },
   props: {
     project: Object
-  },
-  directives: {
-    ripple
   },
 
   data() {
