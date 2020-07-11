@@ -33,9 +33,6 @@ class File(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return File.objects.create(**validated_data)
 
 
@@ -46,9 +43,6 @@ class Triplet(models.Model):
     selected = models.BooleanField(default=True)
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return Triplet.objects.create(**validated_data)
 
 
@@ -61,9 +55,6 @@ class Header(models.Model):
     objects = models.DjongoManager()
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return Header.objects.create(**validated_data)
 
 
@@ -73,9 +64,6 @@ class Vocabulary(models.Model):
     title = models.CharField(max_length=50)
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return Vocabulary.objects.create(**validated_data)
 
 
@@ -92,9 +80,7 @@ class CsvProject(models.Model):
     selected = models.BooleanField(null=True,  blank=True, default=False)
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
+
         return CsvProject.objects.create(**validated_data)
 
 
@@ -107,9 +93,6 @@ class TextProject(models.Model):
     p_file = models.EmbeddedField(model_container=File, null=True, blank=True)
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return TextProject.objects.create(**validated_data)
 
 
@@ -120,10 +103,27 @@ class HtmlProject(models.Model):
         model_container=TextProject, null=True, blank=True)
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return HtmlProject.objects.create(**validated_data)
+
+
+class ImageProject(models.Model):
+    tables = models.ArrayField(
+        model_container=CsvProject, null=True, blank=True)
+    paragraphs = models.ArrayField(
+        model_container=TextProject, null=True, blank=True)
+
+    def create(self, validated_data):
+        return ImageProject.objects.create(**validated_data)
+
+
+class PDFProject(models.Model):
+    tables = models.ArrayField(
+        model_container=CsvProject, null=True, blank=True)
+    paragraphs = models.ArrayField(
+        model_container=TextProject, null=True, blank=True)
+
+    def create(self, validated_data):
+        return PDFProject.objects.create(**validated_data)
 
 
 class Project(models.Model):
@@ -162,7 +162,4 @@ class Project(models.Model):
     objects = models.DjongoManager()
 
     def create(self, validated_data):
-        """
-        Create and return a new `Author` instance, given the validated data.
-        """
         return Project.objects.create(**validated_data)

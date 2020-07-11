@@ -31,6 +31,7 @@ class ProjectSerializer(serializers.DjongoModelSerializer):
             'csv_data',
             'text_data',
             'html_data',
+            
             'creation_date',
             'converted',
             'vocabularies',
