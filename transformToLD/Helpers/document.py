@@ -1,32 +1,39 @@
-from rdflib import Graph, Literal, RDF, URIRef, Namespace, DCTERMS
+from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS
 from datetime import datetime
 from django.conf import settings
-from historique.models import File
+from historique.models import File, MetaData, Triplet
 
 
 def document_project(project, metadata, format):
     ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
     g = create_graph(project.vocabularies, ns)
-    triplets = create_metadata(project, metadata)
-    if project.html_data:
-        for table in project.html_data.tables:
-            if table.selected:
-                triplets += create_triplets(table.triplets)
-        for paragraph in project.html_data.paragraphs:
-            triplets += create_triplets(paragraph.terms)
-    if project.csv_data:
-        triplets += create_triplets(project.csv_data.triplets)
-    if project.text_data:
-        triplets += create_triplets(project.text_data.terms)
-    for triple in triplets:
-        g.add(triple)
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
         project.project_name, format, datetime.now(), "outputfile.rdf")
     path = directory+filename
-    with open(path, "w") as output_file:
+    with open(path, "a") as output_file:
+        create_metadata(project, metadata, output_file, format, g)
+        create_properties(project, output_file, format, g)
+        if project.html_data:
+            create_html_classes(project, g)
+            for table in project.html_data.tables:
+                if table.selected:
+                    create_triplets(table.triplets, project,
+                                    output_file, format, g)
+            for paragraph in project.html_data.paragraphs:
+                if paragraph.terms:
+                    create_triplets(paragraph.terms, project,
+                                    output_file, format, g)
+        if project.csv_data:
+            create_triplets(project.csv_data.triplets,
+                            project, output_file, format, g)
+            create_class(project, g)
+        if project.text_data:
+            create_triplets(project.text_data.terms,
+                            project, output_file, format, g)
         output_file.write(g.serialize(format=format).decode("utf-8"))
+
     output = File(path=path, filename=filename,
                   file_type="rdf/"+format, created_at=datetime.now())
     outputs = []
@@ -40,17 +47,92 @@ def document_project(project, metadata, format):
     project.save()
 
 
-def create_triplets(triplets):
+def create_properties(project, output_file, format, g):
+    triplets = []
+    ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
+
+    if project.properties:
+        for prop in project.properties:
+            s = URIRef(ns+prop.label)
+            p = RDF.type
+            o = RDF.Property
+            triplets.append((s, p, o))
+            p = RDFS.label
+            o = Literal(prop.label)
+            triplets.append((s, p, o))
+            p = RDFS.comment
+            o = Literal(prop.comment)
+            triplets.append((s, p, o))
+            if prop.subPropertyOf:
+                p = RDFS.subPropertyOf
+                o = URIRef(prop.subPropertyOf)
+                triplets.append((s, p, o))
+    for triplet in triplets:
+        g.add(triplet)
+
+
+def create_triplets(triplets, project, output_file, format, g):
     triplets_list = []
+    ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
+    print("id= "+str(project.id))
+    print(triplets)
+
     for triple in triplets:
         s = URIRef(triple.subject.replace(" ", ''))
+        if "http" not in triple.predicate:
+            triple.predicate = ns+triple.predicate.split(":")[-1]
         p = URIRef(triple.predicate.replace(" ", ""))
         o = Literal(triple.object)
         triplets_list.append((s, p, o))
-    return triplets_list
+    for triplet in triplets_list:
+        g.add(triplet)
 
 
-def create_metadata(project, metadata):
+def create_class(project, g):
+    ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
+    if hasattr(project.csv_data.row_class, "label"):
+        triplets = []
+        rdf_class = project.csv_data.row_class
+        s = URIRef(ns+rdf_class.label)
+        p = RDF.type
+        o = RDFS.Class
+        g.add((s, p, o))
+        p = RDFS.label
+        o = Literal(rdf_class.label)
+        g.add((s, p, o))
+        p = RDFS.comment
+        o = Literal(rdf_class.comment)
+        g.add((s, p, o))
+        if rdf_class.subClassOf:
+            p = RDFS.subClassOf
+            o = URIRef(rdf_class.subClassOf)
+            g.add((s, p, o))
+
+
+def create_html_classes(project, g):
+    ns = "http://localhost/{}/".format(
+        project.project_name.replace(" ", "_"))
+    for table in project.html_data.tables:
+        if hasattr(table.row_class, "label"):
+            triplets = []
+            rdf_class = table.row_class
+            s = URIRef(ns+rdf_class.label)
+            p = RDF.type
+            o = RDFS.Class
+            g.add((s, p, o))
+            p = RDFS.label
+            o = Literal(rdf_class.label)
+            g.add((s, p, o))
+            p = RDFS.comment
+            o = Literal(rdf_class.comment)
+            g.add((s, p, o))
+            if rdf_class.subClassOf:
+                p = RDFS.subClassOf
+                o = URIRef(rdf_class.subClassOf)
+                g.add((s, p, o))
+
+
+def create_metadata(project, metadata, output_file, format, g):
     triplets = []
     s = URIRef(
         "https://localhost/{}".format(project.project_name.replace(" ", "_")))
@@ -85,7 +167,11 @@ def create_metadata(project, metadata):
         p = DCTERMS.description
         o = Literal(description)
         triplets.append((s, p, o))
-    return triplets
+    project.metadata = MetaData(creator=creator, createdAt=datetime.now(
+    ).date(), description=description, title=title, subject=subject, license=license)
+    project.save()
+    for triplet in triplets:
+        g.add(triplet)
 
 
 def create_graph(vocabularies, namespace="http://localhost/"):

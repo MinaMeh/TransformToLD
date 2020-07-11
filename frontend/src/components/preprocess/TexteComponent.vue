@@ -20,13 +20,8 @@
   </v-container>
 </template>
 <script>
-import { ripple } from "vuetify/lib/directives";
-
 export default {
   components: {},
-  directives: {
-    ripple
-  },
 
   data() {
     return {

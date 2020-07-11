@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="active">
     <v-card>
-      <v-card-title>search a property {{prop.property}}</v-card-title>
+      <v-card-title>search a class</v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
@@ -18,7 +18,7 @@
             </v-btn>
 
             <v-col cols="12">
-              <v-data-table :headers="headers" :items="properties" @click:row="test"></v-data-table>
+              <v-data-table :headers="headers" :items="classes" @click:row="save"></v-data-table>
             </v-col>
           </v-row>
         </v-container>
@@ -34,7 +34,7 @@
 <script>
 import instance from "@/services/MainService";
 export default {
-  props: ["prop", "active"],
+  props: ["rowClass", "active", "table"],
   data() {
     return {
       search: "",
@@ -45,7 +45,8 @@ export default {
         { text: "Type", value: "type" },
         { text: "Score", value: "score" }
       ],
-      properties: []
+      classes: [],
+      row: ""
     };
   },
   methods: {
@@ -54,19 +55,20 @@ export default {
       formData.append("term", this.search);
       console.log(this.search);
       instance
-        .post("searchProperty/", formData)
+        .post("searchClass/", formData)
         .then(response => {
           console.log(response.data);
-          this.properties = response.data;
+          this.classes = response.data;
         })
         .catch(error => console.log(error));
     },
-    test: function(value) {
-      console.log(value);
-      this.prop.result.push(value);
-      this.prop.selected = value;
-      console.log("this prop selected", this.prop.selected);
-      this.$emit("close");
+    save: function(value) {
+      console.log(this.table);
+      this.table.rowClass = value;
+      this.table.rowClass.new = false;
+
+      console.log(this.table);
+      this.$emit("closeClass");
     }
   }
 };

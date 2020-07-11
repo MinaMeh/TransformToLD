@@ -5,6 +5,7 @@ def update_project_tables(project, tables=None, triplets=None, headers=None):
     if tables:
         csv_projects = []
         for table in tables:
+            print(table)
             hdrs = []
             for header in table["headers"]:
                 hdr = Header(name=header['name'], selected=header["selected"])
@@ -19,6 +20,20 @@ def update_project_tables(project, tables=None, triplets=None, headers=None):
         for table in project.html_data.tables:
             for tr_table in headers:
                 if tr_table["id"] == table.id:
+                    rdf_class = tr_table.get("rowClass", None)
+                    if rdf_class:
+                        if rdf_class["new"]:
+                            new_class = RdfClass(
+                                label=rdf_class["label"], comment=rdf_class["comment"], subClassOf=rdf_class['subClassOf'])
+                        else:
+                            new_class = RdfClass(uri=rdf_class["uri"])
+                        table.row_class = new_class
+                    headers_id = tr_table.get("rowId", None)
+                    if headers_id:
+                        h_ids = [Header(name=h["property"])
+                                 for h in headers_id]
+                        table.headers_id = h_ids
+
                     for term in tr_table['terms']:
                         hdrs = table.headers
                         for head in hdrs:
