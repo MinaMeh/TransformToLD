@@ -117,7 +117,6 @@ class TextProject(models.Model):
     triplets = models.ArrayField(
         model_container=Triplet, null=True, blank=True)
     terms = models.ArrayField(model_container=Triplet, null=True, blank=True)
-    p_file = models.EmbeddedField(model_container=File, null=True, blank=True)
 
     def create(self, validated_data):
         return TextProject.objects.create(**validated_data)
@@ -157,11 +156,8 @@ class Project(models.Model):
     project_name = models.CharField(
         max_length=70, blank=False, default='')
     user_id = models.IntegerField()
-    description = models.TextField(null=True, blank=True)
     vocabularies = models.ArrayField(
         model_container=Vocabulary, null=True, blank=True)
-    licence = models.CharField(
-        max_length=100, blank=False, null=True, default='')
     author = models.EmbeddedField(
         model_container=Author,
         model_form_class=AuthorForm,

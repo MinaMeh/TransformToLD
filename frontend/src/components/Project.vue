@@ -31,18 +31,7 @@
                     class="text-left text--primary subtitle-1 py-0"
                   >{{ this.project.project_name }}</v-col>
                 </v-row>
-                <v-row class="mb-5 pb-2" align-center>
-                  <v-col sm="6" cols="6" class="py-0">
-                    <h4 class="title font-weight-bold text--primary">
-                      <v-icon class="text--primary title font-weight-bold">mdi-file-document-edit</v-icon>Description :
-                    </h4>
-                  </v-col>
-                  <v-col
-                    sm="6"
-                    cols="6"
-                    class="text-left text--primary subtitle-1 py-0"
-                  >{{ this.project.description }}</v-col>
-                </v-row>
+
                 <v-row class="mb-5 pb-2" align-center>
                   <v-col sm="6" cols="6" class="py-0">
                     <h4 class="title font-weight-bold text--primary">

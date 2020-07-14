@@ -2,6 +2,7 @@ from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS
 from datetime import datetime
 from django.conf import settings
 from historique.models import File, MetaData, Triplet
+import time
 
 
 def document_project(project, metadata, format):
@@ -10,7 +11,7 @@ def document_project(project, metadata, format):
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
-        project.project_name, format, datetime.now(), "outputfile.rdf")
+        project.project_name, format, time.time(), 'outputfile.rdf')
     path = directory+filename
     with open(path, "a") as output_file:
         create_metadata(project, metadata, output_file, format, g)
@@ -190,13 +191,13 @@ def translate_file(project, format):
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
-        project.project_name, format, datetime.now(), "outputfile.rdf")
+        project.project_name, format, time.time(), 'outputfile.rdf')
     path = directory+filename
     with open(path, "w") as output_file:
         output_file.write(g.serialize(format=format).decode("utf-8"))
 
     output = File(path=path, filename=filename,
-                  file_type="rdf/"+format, created_at=datetime.now())
+                  file_type="rdf/"+format, created_at=time.time())
     outputs = []
     if project.output_files:
         for o in project.output_files:
