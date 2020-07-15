@@ -82,7 +82,10 @@ def create_triplets(triplets, project, output_file, format, g):
         if "http" not in triple.predicate:
             triple.predicate = ns+triple.predicate.split(":")[-1]
         p = URIRef(triple.predicate.replace(" ", ""))
-        o = Literal(triple.object)
+        if 'http' in triple.object:
+            o = URIRef(triple.object)
+        else:
+            o = Literal(triple.object)
         triplets_list.append((s, p, o))
     for triplet in triplets_list:
         g.add(triplet)
@@ -177,6 +180,9 @@ def create_metadata(project, metadata, output_file, format, g):
 def create_graph(vocabularies, namespace="http://localhost/"):
     g = Graph()
     n = Namespace(namespace)
+    g.bind("dataset", n)
+    g.bind("dcterms", DCTERMS)
+
     for vocab in vocabularies:
         g.bind(vocab.prefix, vocab.uri)
     return g
