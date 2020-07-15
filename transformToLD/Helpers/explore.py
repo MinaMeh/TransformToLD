@@ -16,13 +16,15 @@ def get_vocab(term, list_vocabs=None, term_type="property"):
     data = r.json()
     for element in data["results"]:
         if (list_vocabs == None):
-            vocab = Property(term, element["prefixedName"][0], element['vocabulary.prefix']
-                             [0], element['uri'][0], element['type'], element['score'])
-            vocab_list.append(vocab.to_dict())
+            if element["type"] == term_type:
+                vocab = Property(term, element["prefixedName"][0], element['vocabulary.prefix']
+                                 [0], element['uri'][0], element['type'], element['score'])
+                vocab_list.append(vocab.to_dict())
         elif (element['vocabulary.prefix'][0] in list_vocabs):
-            vocab = Property(term, element["prefixedName"][0], element['vocabulary.prefix']
-                             [0], element['uri'][0], element['type'], element['score'])
-            vocab_list.append(vocab.to_dict())
+            if element["type"] == term_type:
+                vocab = Property(term, element["prefixedName"][0], element['vocabulary.prefix']
+                                 [0], element['uri'][0], element['type'], element['score'])
+                vocab_list.append(vocab.to_dict())
     return vocab_list
 
 

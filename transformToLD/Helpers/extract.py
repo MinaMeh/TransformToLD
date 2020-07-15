@@ -103,7 +103,7 @@ def get_paragraphs_sentences(paragraphs):
         result = dict()
         result['paragraph'] = paragraph
         result['id'] = i
-        result['selected'] = False
+        result['selected'] = True
 
         i += 1
         result['sentences'] = get_sentences(paragraph)
