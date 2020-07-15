@@ -197,7 +197,7 @@ def translate_file(project, format):
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
         project.project_name, format, datetime.now(), "outputfile.rdf")
-    path = directory+filename
+    path = directory+filename.replace(":", "_")
     with open(path, "w") as output_file:
         output_file.write(g.serialize(format=format).decode("utf-8"))
 
