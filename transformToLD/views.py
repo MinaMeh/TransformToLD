@@ -229,7 +229,7 @@ def convert(request):
     if file_type == "text":
         terms = json.loads(request.POST.get("terms"))
         triplets = json.loads(request.POST.get("triplets"))
-        lines = convert_text(triplets, terms)
+        lines = convert_text(triplets, terms, project)
         update_text_project(project, terms=lines, triplets=triplets)
         return Response(lines)
     if file_type == "html":

@@ -2,7 +2,6 @@ from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS
 from datetime import datetime
 from django.conf import settings
 from historique.models import File, MetaData, Triplet
-import time
 
 
 def document_project(project, metadata, format):
@@ -11,7 +10,7 @@ def document_project(project, metadata, format):
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
-        project.project_name, format, time.time(), 'outputfile.rdf')
+        project.project_name, format, datetime.now(), "outputfile.rdf")
     path = directory+filename
     with open(path, "a") as output_file:
         create_metadata(project, metadata, output_file, format, g)
@@ -83,7 +82,10 @@ def create_triplets(triplets, project, output_file, format, g):
         if "http" not in triple.predicate:
             triple.predicate = ns+triple.predicate.split(":")[-1]
         p = URIRef(triple.predicate.replace(" ", ""))
-        o = Literal(triple.object)
+        if 'http' in triple.object:
+            o = URIRef(triple.object)
+        else:
+            o = Literal(triple.object)
         triplets_list.append((s, p, o))
     for triplet in triplets_list:
         g.add(triplet)
@@ -178,6 +180,9 @@ def create_metadata(project, metadata, output_file, format, g):
 def create_graph(vocabularies, namespace="http://localhost/"):
     g = Graph()
     n = Namespace(namespace)
+    g.bind("dataset", n)
+    g.bind("dcterms", DCTERMS)
+
     for vocab in vocabularies:
         g.bind(vocab.prefix, vocab.uri)
     return g
@@ -191,13 +196,13 @@ def translate_file(project, format):
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
-        project.project_name, format, time.time(), 'outputfile.rdf')
-    path = directory+filename
+        project.project_name, format, datetime.now(), "outputfile.rdf")
+    path = directory+filename.replace(":", "_")
     with open(path, "w") as output_file:
         output_file.write(g.serialize(format=format).decode("utf-8"))
 
     output = File(path=path, filename=filename,
-                  file_type="rdf/"+format, created_at=time.time())
+                  file_type="rdf/"+format, created_at=datetime.now())
     outputs = []
     if project.output_files:
         for o in project.output_files:
