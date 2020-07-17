@@ -6,7 +6,8 @@ from historique.models import RdfClass
 
 
 def convert_csv(project, file_name, delimiter, terms, headers_id=None, row_class=None):
-    file = pd.read_csv("media/"+file_name, delimiter=delimiter)
+    file = pd.read_csv(project.input_file.path, delimiter=delimiter)
+    file.fillna('')
     lines = []
     domain_name = "http://localhost/{}/".format(
         project.project_name.replace(' ', "_"))
@@ -41,9 +42,11 @@ def convert_csv(project, file_name, delimiter, terms, headers_id=None, row_class
     return lines
 
 
-def convert_text(triplets, terms):
+def convert_text(triplets, terms, project):
     lines = []
     terms_dict = dict()
+    domaine_name = "http://localhost/{}/".format(
+        project.project_name.replace(" ", "_"))
     domaine_name = "http://localhost/dataset/"
     for term in terms:
         terms_dict[term['property']] = term['term']['uri']

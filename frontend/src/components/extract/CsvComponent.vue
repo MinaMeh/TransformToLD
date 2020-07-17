@@ -7,7 +7,7 @@
             <h2>Statistics</h2>
           </v-card-title>
           <v-card-text>
-            <v-simple-table>
+            <v-simple-table dense>
               <tr>
                 <th>Size of the file</th>
                 <td>{{$store.state.size}} Bytes</td>
@@ -30,15 +30,15 @@
           <v-card-title>
             <h2>Table columns</h2>
             <v-card-text>
-              <v-data-table :headers="headers" :items="$store.state.csv.headers">
+              <v-data-table dense :headers="headers" :items="$store.state.csv.headers">
                 <template v-slot:item="header">
                   <tr>
                     <td>
-                      <v-checkbox
+                      <v-simple-checkbox
                         v-model="header.item.selected"
                         :id="String(header.item.name)"
                         :value="header.item.selected"
-                      ></v-checkbox>
+                      ></v-simple-checkbox>
                     </td>
                     <td>
                       <div class="mt-5 headline">
