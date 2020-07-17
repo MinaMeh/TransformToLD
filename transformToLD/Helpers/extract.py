@@ -1,8 +1,16 @@
 import lxml.html as lh
 from bs4 import BeautifulSoup as bs
-import spacy
 import pandas as pd
 import textrazor
+
+Datatypes = {
+    "int64": "xsd:int",
+    "float64": "xsd:float",
+    "object": "xsd:string",
+    "bool": "xsd:boolean",
+    "datetime64": "xsd:date",
+    "category": "xsd:string",
+}
 
 
 def extract_text_data(file):
@@ -26,6 +34,7 @@ def extract_csv_data(csv_file, separator=";"):
     for col in cols:
         head = {}
         head['name'] = col
+        head["type"] = Datatypes[str(file.dtypes[col])]
         head['selected'] = False
         headers.append(head)
     lines = file.shape[0]

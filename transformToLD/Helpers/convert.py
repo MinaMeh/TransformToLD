@@ -6,8 +6,8 @@ from historique.models import RdfClass
 
 
 def convert_csv(project, file_name, delimiter, terms, headers_id=None, row_class=None):
-    file = pd.read_csv(project.input_file.path, delimiter=delimiter)
-    file.fillna('')
+    file = pd.read_csv(project.input_file.path, delimiter=delimiter,)
+    file.fillna('not mentionned', inplace=True)
     lines = []
     domain_name = "http://localhost/{}/".format(
         project.project_name.replace(' ', "_"))

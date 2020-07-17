@@ -34,11 +34,12 @@
                 <template v-slot:item="header">
                   <tr>
                     <td>
-                      <v-simple-checkbox
+                      <v-checkbox
+                        class="mt-3"
                         v-model="header.item.selected"
                         :id="String(header.item.name)"
                         :value="header.item.selected"
-                      ></v-simple-checkbox>
+                      ></v-checkbox>
                     </td>
                     <td>
                       <div class="mt-5 headline">
@@ -61,6 +62,9 @@
                           </template>
                         </v-edit-dialog>
                       </div>
+                    </td>
+                    <td>
+                      <v-select :items="datatypes" v-model="header.item.type"></v-select>
                     </td>
                   </tr>
                 </template>
@@ -87,7 +91,15 @@ export default {
 
       headers: [
         { text: "Add", value: "Add" },
-        { text: "Header", value: "name", sortable: false }
+        { text: "Header", value: "name", sortable: false },
+        { type: "Data Type", value: "type" }
+      ],
+      datatypes: [
+        "xsd:int",
+        "xsd:float",
+        "xsd:string",
+        "xsd:boolean",
+        "xsd:date"
       ]
     };
   },

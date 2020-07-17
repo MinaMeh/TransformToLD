@@ -91,7 +91,7 @@ export default {
             store.state.html.paragraphs = response.data.paragraphs_selected;
           }
           if (store.state.file_type == "text") {
-            store.state.text.paragraph = response.data;
+            store.state.text.paragraph = response.data.data;
           }
           resolve(response);
         })
@@ -138,7 +138,7 @@ export default {
             store.state.html.paragraphs = response.data.paragraphs;
           }
           if (store.state.file_type == "text") {
-            store.state.text.paragraph = response.data;
+            store.state.text.paragraph = response.data.data;
           }
 
           resolve(response);
@@ -244,10 +244,10 @@ export default {
         .then((response) => {
           console.log(response.data);
           if (store.state.file_type == "csv") {
-            store.state.csv.triplets = response.data;
+            store.state.csv.triplets = response.data.data;
           }
           if (store.state.file_type == "text") {
-            store.state.text.triplets = response.data;
+            store.state.text.triplets = response.data.data;
           }
           if (store.state.file_type == "html") {
             store.state.html.tables_triplets = response.data.tables;

@@ -2,7 +2,6 @@ from googletrans import Translator
 from transformToLD.Classes.classes import Tag
 import textrazor
 
-import spacy
 import inflection
 TYPE_MAPPING = {
     "PER": "person",
@@ -75,42 +74,42 @@ def get_class(entity):
     return TYPE_MAPPING[entity]
 
 
-def get_entities(paragraph, model='xx_ent_wiki_sm'):
-    '''
-    extract the entities of the paragraph "paragraph" using the model "model" and map it to classes of the vocabularies 
-    present in the list "vocabs_list"
-    '''
-    nlp = spacy.load(model)
-    doc = nlp(paragraph)
-    entities = [Tag(X.text, get_class(X.label_)).to_dict()
-                for X in doc.ents]
-    return entities
+# def get_entities(paragraph, model='xx_ent_wiki_sm'):
+#     '''
+#     extract the entities of the paragraph "paragraph" using the model "model" and map it to classes of the vocabularies
+#     present in the list "vocabs_list"
+#     '''
+#     nlp = spacy.load(model)
+#     doc = nlp(paragraph)
+#     entities = [Tag(X.text, get_class(X.label_)).to_dict()
+#                 for X in doc.ents]
+#     return entities
 
 
-def get_sentences(paragraph, model="en_core_web_sm"):
-    '''
-    Extracts the sentences of a given paragraph
-    '''
-    sentences = []
-    nlp = spacy.load(model)
-    doc = nlp(paragraph)
-    for sent in doc.sents:
-        sentences.append(sent.text)
-    return sentences
+# def get_sentences(paragraph, model="en_core_web_sm"):
+#     '''
+#     Extracts the sentences of a given paragraph
+#     '''
+#     sentences = []
+#     nlp = spacy.load(model)
+#     doc = nlp(paragraph)
+#     for sent in doc.sents:
+#         sentences.append(sent.text)
+#     return sentences
 
 
-def tagging_sentence(sentence, model="en_core_web_sm"):
-    '''
-    tags a sentence grammaticaly
-    '''
-    tags = get_entities(sentence)
-    nlp = spacy.load("en_core_web_sm")
-    doc = nlp(sentence)
+# def tagging_sentence(sentence, model="en_core_web_sm"):
+#     '''
+#     tags a sentence grammaticaly
+#     '''
+#     tags = get_entities(sentence)
+#     nlp = spacy.load("en_core_web_sm")
+#     doc = nlp(sentence)
 
-    for token in doc:
-        if (token.pos_ == "VERB"):
-            tags.append(Tag(token.text, token.pos_).to_dict())
-    return tags
+#     for token in doc:
+#         if (token.pos_ == "VERB"):
+#             tags.append(Tag(token.text, token.pos_).to_dict())
+#     return tags
 
 
 def preprocess_paragraph(paragraph):

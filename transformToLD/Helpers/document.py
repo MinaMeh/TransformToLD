@@ -1,4 +1,4 @@
-from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS
+from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS, XSD
 from datetime import datetime
 from django.conf import settings
 from historique.models import File, MetaData, Triplet
@@ -11,8 +11,8 @@ def document_project(project, metadata, format):
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}_{}".format(
         project.project_name, format, datetime.now(), "outputfile.rdf")
-    path = directory+filename
-    with open(path, "a") as output_file:
+    path = directory+filename.replace(':', "_")
+    with open(path, "w") as output_file:
         create_metadata(project, metadata, output_file, format, g)
         create_properties(project, output_file, format, g)
         if project.html_data:
@@ -85,7 +85,7 @@ def create_triplets(triplets, project, output_file, format, g):
         if 'http' in triple.object:
             o = URIRef(triple.object)
         else:
-            o = Literal(triple.object)
+            o = Literal(triple.object, datatype=XSD.int)
         triplets_list.append((s, p, o))
     for triplet in triplets_list:
         g.add(triplet)
