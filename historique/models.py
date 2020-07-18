@@ -57,6 +57,7 @@ class Triplet(models.Model):
     subject = models.CharField(max_length=255)
     predicate = models.CharField(max_length=255)
     object = models.CharField(max_length=255)
+    object_type = models.CharField(max_length=20)
     selected = models.BooleanField(default=True)
 
     def create(self, validated_data):
@@ -108,8 +109,8 @@ class CsvProject(models.Model):
     lines = models.IntegerField()
     columns = models.IntegerField()
     headers = models.ArrayField(model_container=Header, null=True, blank=True)
-    triplets = models.ArrayField(
-        model_container=Triplet, null=True, blank=True)
+    triplets = models.EmbeddedField(
+        model_container=File, null=True, blank=True)
     filename = models.EmbeddedField(
         model_container=File, null=True, blank=True)
     headers_id = models.ArrayField(
@@ -128,9 +129,9 @@ class CsvProject(models.Model):
 class TextProject(models.Model):
     id = models.IntegerField(default=0, primary_key=True)
 
-    triplets = models.ArrayField(
-        model_container=Triplet, null=True, blank=True)
-    terms = models.ArrayField(model_container=Triplet, null=True, blank=True)
+    triplets = models.EmbeddedField(
+        model_container=File, null=True, blank=True)
+    terms = models.EmbeddedField(model_container=File, null=True, blank=True)
     p_file = models.EmbeddedField(model_container=File, null=True, blank=True)
 
     def create(self, validated_data):

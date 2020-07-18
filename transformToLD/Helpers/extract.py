@@ -92,7 +92,8 @@ def get_tables_content(tables, file):
         for header in file_content.columns:
             head = dict()
             name = header
-            head = {"name": name, "selected": False}
+            h_type = Datatypes[str(file_content.dtypes[header])]
+            head = {"name": name, "selected": False, "type": h_type}
             headers.append(head)
         tables_content['headers'] = headers
         tables_content['columns'] = len(headers)

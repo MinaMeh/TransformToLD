@@ -59,7 +59,7 @@
                   </tr>
                 </v-simple-table>
               </v-col>
-              <v-col col="9">
+              <v-col col="12">
                 <v-data-table :headers="headers" :items="table.headers">
                   <template v-slot:item="header">
                     <tr>
@@ -92,6 +92,9 @@
                             </template>
                           </v-edit-dialog>
                         </div>
+                      </td>
+                      <td>
+                        <v-select :items="datatypes" v-model="header.item.type"></v-select>
                       </td>
                     </tr>
                   </template>
@@ -159,14 +162,22 @@ export default {
 
       headers: [
         { text: "Add", value: "Add" },
-        { text: "Header", value: "header", sortable: true }
+        { text: "Header", value: "header", sortable: true },
+        { text: "Type", value: "type" }
       ],
       headersText: [
         { text: "id", value: "id" },
 
         { text: "Sentence", value: "text" }
       ],
-      content: null
+      content: null,
+      datatypes: [
+        "xsd:int",
+        "xsd:float",
+        "xsd:string",
+        "xsd:boolean",
+        "xsd:date"
+      ]
     };
   },
   watch: {

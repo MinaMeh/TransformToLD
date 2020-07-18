@@ -151,6 +151,7 @@ export default {
   convert(store) {
     return new Promise((resolve, reject) => {
       var formData = new FormData();
+      console.log("here");
       formData.append("file_type", store.state.file_type);
       formData.append("project_id", store.state.project_id);
       formData.append("file_name", store.state.filename);
@@ -161,6 +162,7 @@ export default {
           terms.push({
             property: term.property,
             term: term.selected,
+            type: term.type,
           });
         });
         formData.append("rowClass", JSON.stringify(store.state.csv.rowClass));
@@ -183,6 +185,7 @@ export default {
           terms.push({
             property: term.property,
             term: term.selected,
+            type: term.type,
           });
         });
         formData.append("terms", JSON.stringify(terms));
@@ -199,6 +202,7 @@ export default {
               terms.push({
                 property: term.property,
                 term: term.selected,
+                type: term.type,
               });
             });
             tables.push({

@@ -1,6 +1,9 @@
 from googletrans import Translator
 from transformToLD.Classes.classes import Tag
 import textrazor
+from django.conf import settings
+import csv
+from datetime import datetime
 
 import inflection
 TYPE_MAPPING = {
@@ -112,12 +115,23 @@ def get_class(entity):
 #     return tags
 
 
-def preprocess_paragraph(paragraph):
+def preprocess_paragraph(project, paragraph, id=None):
     textrazor.api_key = "4599791ae63e2fb4f39d911a2145db56469b306ba8fbd6eda53e65ce"
     client = textrazor.TextRazor(extractors=['entities', 'relations'])
     # client.set_entity_freebase_type_filters(["/organization/organization"])
     client.set_entity_dbpedia_type_filters(["Company", "Person"])
-
+    directory = "{}{}/{}/".format(settings.MEDIA_URL,
+                                  project.user_id, project.project_name)
+    if id:
+        filename = "{}_{}_{}_{}".format(
+            project.project_name, "realtions_file", 'paragraph', id)
+    else:
+        filename = "{}_{}".format(project.project_name, "triplets_file")
+    file_path = directory+filename
+    triplet_file = open(file_path, "w")
+    writer = csv.DictWriter(triplet_file, fieldnames=[
+                            "subject", "predicate", "object", "selected"])
+    writer.writeheader()
     for sentence in paragraph["sentences"]:
         relations = []
         response = client.analyze(sentence['text'])
@@ -131,6 +145,7 @@ def preprocess_paragraph(paragraph):
                 else:
                     rel['object'] = concatenate(param.param_words)
             relations.append(rel)
+            writer.writerow(rel)
         sentence['triplets'] = relations
     return paragraph
 

@@ -1,11 +1,12 @@
 from historique.models import *
+from django.conf import settings
+from datetime import datetime
 
 
 def update_project_tables(project, tables=None, triplets=None, headers=None):
     if tables:
         csv_projects = []
         for table in tables:
-            print(table)
             hdrs = []
             for header in table["headers"]:
                 hdr = Header(name=header['name'], selected=header["selected"])
@@ -43,14 +44,13 @@ def update_project_tables(project, tables=None, triplets=None, headers=None):
 
     if triplets:
         for table in project.html_data.tables:
-            triplets_list = []
-            for tr_table in triplets:
-                if tr_table["id"] == table.id:
-                    for tr in tr_table['triplets']:
-                        triplet = Triplet(
-                            subject=tr["subject"], object=tr['object'], predicate=tr['predicate'])
-                        triplets_list.append(triplet)
-                    table.triplets = triplets_list
+            directory = "{}{}/{}/".format(settings.MEDIA_URL,
+                                          project.user_id, project.project_name)
+            filename = "{}_{}_{}".format(
+                project.project_name, "triplets_file", table.id)
+            file_path = directory+filename
+            table.triplets = File(path=file_path, filename=filename,
+                                  file_type="csv", created_at=datetime.now())
     project.save()
 
 
@@ -58,26 +58,24 @@ def update_project_paragraphs(project, paragraphs=None, terms=None):
     if paragraphs:
         text_projects = []
         for paragraph in paragraphs:
-            triplets = []
-            for sentence in paragraph['sentences']:
-                sentence_triplets = sentence.get("triplets", [])
-                if sentence_triplets != []:
-                    for tr in sentence_triplets:
-                        triplet = Triplet(
-                            subject=tr["subject"], object=tr['object'], predicate=tr['predicate'], selected=tr['selected'])
-                        triplets.append(triplet)
+            directory = "{}{}/{}/".format(settings.MEDIA_URL,
+                                          project.user_id, project.project_name)
+            filename = "{}_{}_{}_{}".format(
+                project.project_name, "realtions_file", 'paragraph', paragraph['id'])
+            file_path = directory+filename
+            triplets = File(path=file_path, filename=filename,
+                            file_type="csv", created_at=datetime.now())
             text_projects.append(TextProject(triplets=triplets))
         project.html_data.paragraphs = text_projects
     if terms:
         for paragraph in project.html_data.paragraphs:
-            triplets_list = []
-            for tr_table in terms:
-                if tr_table["id"] == paragraph.id:
-                    for tr in tr_table['triplets']:
-                        triplet = Triplet(
-                            subject=tr["subject"], object=tr['object'], predicate=tr['predicate'])
-                        triplets_list.append(triplet)
-                    paragraph.terms = triplets_list
+            directory = "{}{}/{}/".format(settings.MEDIA_URL,
+                                          project.user_id, project.project_name)
+            filename = "{}_{}_{}_{}".format(
+                project.project_name, "triplets_file", 'paragraph', paragraph.id)
+            file_path = directory+filename
+            paragraph.terms = File(path=file_path, filename=filename,
+                                   file_type="csv", created_at=datetime.now())
 
     project.save()
 
@@ -103,18 +101,20 @@ def update_csv_project(project, headers=None, triplets=None):
 
 def update_text_project(project, terms=None, triplets=None):
     if triplets:
-        triplets_list = []
-        for tr in triplets:
-            triplet = Triplet(
-                subject=tr["subject"], object=tr['object'], predicate=tr['predicate'])
-            triplet.selected = True if tr["selected"] == True else False
-            triplets_list.append(triplet)
-        project.text_data = TextProject(triplets=triplets_list)
+        directory = "{}{}/{}/".format(settings.MEDIA_URL,
+                                      project.user_id, project.project_name)
+        filename = "{}_{}".format(project.project_name, "triplets_file")
+        file_path = directory+filename
+        triplets = File(path=file_path, filename=filename,
+                        file_type="csv", created_at=datetime.now())
+
+        project.text_data = TextProject(triplets=triplets)
     if terms:
-        triples = []
-        for triplet in terms:
-            trpl = Triplet(
-                subject=triplet["subject"], object=triplet['object'], predicate=triplet['predicate'])
-            triples.append(trpl)
-        project.text_data.terms = triples
+        directory = "{}{}/{}/".format(settings.MEDIA_URL,
+                                      project.user_id, project.project_name)
+        filename = "{}_{}".format(project.project_name, "triplets_file")
+        file_path = directory+filename
+        terms = File(path=file_path, filename=filename,
+                     file_type="csv", created_at=datetime.now())
+        project.text_data.terms = terms
     project.save()

@@ -152,8 +152,8 @@ def preprocess(request):
                 table['headers'] = preprocess_columns(table['headers'])
         for paragraph in paragrahps_selected:
             if paragraph['selected'] == True:
-                paragraph = preprocess_paragraph(
-                    paragraph)
+                paragraph = preprocess_paragraph(project,
+                                                 paragraph, id=paragraph["id"])
         t_end = time.time()
         exec_time = t_end - t_start
         update_project_tables(project, tables=tables_selected)
@@ -164,7 +164,7 @@ def preprocess(request):
     elif file_type == "text":
         paragraph = json.loads(request.POST.get('paragraph', 'nthg'))
         t_start = time.time()
-        paragraph = preprocess_paragraph(paragraph)
+        paragraph = preprocess_paragraph(project, paragraph)
         t_end = time.time()
         exec_time = t_end-t_start
         print("exec time {}".format(exec_time))
@@ -255,7 +255,6 @@ def convert(request):
         t_start = time.time()
         lines = convert_csv(project, file_name, delimiter,
                             terms, headers_id, row_class)
-        update_csv_project(project, triplets=lines)
         t_end = time.time()
         exec_time = t_end-t_start
         #update_csv_project(project, triplets=lines)
@@ -278,7 +277,7 @@ def convert(request):
         for table in tables:
             line = dict()
             line["id"] = table['id']
-            line['triplets'] = convert_html(table)
+            line['triplets'] = convert_html(table, project)
             tables_triplets.append(line)
             update_project_tables(
                 project, triplets=tables_triplets, headers=tables)
@@ -287,7 +286,8 @@ def convert(request):
             terms = paragraph['terms']
             line = dict()
             line['id'] = paragraph["id"]
-            line["triplets"] = convert_text(triplets, terms)
+            line["triplets"] = convert_text(
+                triplets, terms, project, id=paragraph["id"])
             paragraphs_triplets.append(line)
             update_project_paragraphs(project, terms=paragraphs_triplets)
         t_end = time.time()

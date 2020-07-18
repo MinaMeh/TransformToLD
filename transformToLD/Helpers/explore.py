@@ -81,7 +81,7 @@ def explore_column(column, vocabs_list):
     combinaisons = column["combinaison"]
     term["property"] = column['name']
     term["selected"] = ""
-
+    term["type"] = column["type"]
     term["result"] = []
     for comb in combinaisons:
         data = get_vocab(comb, vocabs_list, 'property')
