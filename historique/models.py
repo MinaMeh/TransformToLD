@@ -28,7 +28,7 @@ class AuthorForm(forms.ModelForm):
 
 class File(models.Model):
     path = models.TextField()
-    filename = models.CharField(max_length=100)
+    filename = models.CharField(max_length=255)
     file_type = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -57,6 +57,7 @@ class Triplet(models.Model):
     subject = models.CharField(max_length=255)
     predicate = models.CharField(max_length=255)
     object = models.CharField(max_length=255)
+    object_type = models.CharField(max_length=20)
     selected = models.BooleanField(default=True)
 
     def create(self, validated_data):
@@ -70,7 +71,7 @@ class Header(models.Model):
     name = models.CharField(max_length=50)
     term = models.CharField(max_length=255, null=True, blank=True)
     combinaison = models.ListField(null=True, blank=True, default=[])
-    translated = models.CharField(max_length=20, null=True, blank=True)
+    translated = models.CharField(max_length=50, null=True, blank=True)
     selected = models.BooleanField(default=False)
     objects = models.DjongoManager()
 
@@ -84,7 +85,7 @@ class Header(models.Model):
 class Vocabulary(models.Model):
     prefix = models.CharField(max_length=10)
     uri = models.CharField(max_length=255)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=255)
 
     def create(self, validated_data):
         """
@@ -108,8 +109,8 @@ class CsvProject(models.Model):
     lines = models.IntegerField()
     columns = models.IntegerField()
     headers = models.ArrayField(model_container=Header, null=True, blank=True)
-    triplets = models.ArrayField(
-        model_container=Triplet, null=True, blank=True)
+    triplets = models.EmbeddedField(
+        model_container=File, null=True, blank=True)
     filename = models.EmbeddedField(
         model_container=File, null=True, blank=True)
     headers_id = models.ArrayField(
@@ -128,9 +129,9 @@ class CsvProject(models.Model):
 class TextProject(models.Model):
     id = models.IntegerField(default=0, primary_key=True)
 
-    triplets = models.ArrayField(
-        model_container=Triplet, null=True, blank=True)
-    terms = models.ArrayField(model_container=Triplet, null=True, blank=True)
+    triplets = models.EmbeddedField(
+        model_container=File, null=True, blank=True)
+    terms = models.EmbeddedField(model_container=File, null=True, blank=True)
     p_file = models.EmbeddedField(model_container=File, null=True, blank=True)
 
     def create(self, validated_data):
@@ -155,13 +156,13 @@ class HtmlProject(models.Model):
 
 class Project(models.Model):
     project_name = models.CharField(
-        max_length=70, blank=False, default='')
+        max_length=255, blank=False, default='')
     user_id = models.IntegerField()
     description = models.TextField(null=True, blank=True)
     vocabularies = models.ArrayField(
         model_container=Vocabulary, null=True, blank=True)
     licence = models.CharField(
-        max_length=100, blank=False, null=True, default='')
+        max_length=255, blank=False, null=True, default='')
     author = models.EmbeddedField(
         model_container=Author,
         model_form_class=AuthorForm,

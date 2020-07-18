@@ -1,8 +1,8 @@
 import Home from "@/components/Home";
 import Login from "@/components/AuthComponents/Login";
 import Transform from "@/components/Transform";
-import Project from "@/components/Project";
-import ProjectsList from "@/components/ProjectsList";
+import Project from "@/components/projects/Project";
+import ProjectsList from "@/components/projects/ProjectsList";
 import VueRouter from "vue-router";
 import Vue from "vue";
 

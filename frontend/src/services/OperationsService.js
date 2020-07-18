@@ -91,7 +91,7 @@ export default {
             store.state.html.paragraphs = response.data.paragraphs_selected;
           }
           if (store.state.file_type == "text") {
-            store.state.text.paragraph = response.data;
+            store.state.text.paragraph = response.data.data;
           }
           resolve(response);
         })
@@ -138,7 +138,7 @@ export default {
             store.state.html.paragraphs = response.data.paragraphs;
           }
           if (store.state.file_type == "text") {
-            store.state.text.paragraph = response.data;
+            store.state.text.paragraph = response.data.data;
           }
 
           resolve(response);
@@ -151,6 +151,7 @@ export default {
   convert(store) {
     return new Promise((resolve, reject) => {
       var formData = new FormData();
+      console.log("here");
       formData.append("file_type", store.state.file_type);
       formData.append("project_id", store.state.project_id);
       formData.append("file_name", store.state.filename);
@@ -161,6 +162,7 @@ export default {
           terms.push({
             property: term.property,
             term: term.selected,
+            type: term.type,
           });
         });
         formData.append("rowClass", JSON.stringify(store.state.csv.rowClass));
@@ -183,6 +185,7 @@ export default {
           terms.push({
             property: term.property,
             term: term.selected,
+            type: term.type,
           });
         });
         formData.append("terms", JSON.stringify(terms));
@@ -199,6 +202,7 @@ export default {
               terms.push({
                 property: term.property,
                 term: term.selected,
+                type: term.type,
               });
             });
             tables.push({
@@ -244,10 +248,10 @@ export default {
         .then((response) => {
           console.log(response.data);
           if (store.state.file_type == "csv") {
-            store.state.csv.triplets = response.data;
+            store.state.csv.triplets = response.data.data;
           }
           if (store.state.file_type == "text") {
-            store.state.text.triplets = response.data;
+            store.state.text.triplets = response.data.data;
           }
           if (store.state.file_type == "html") {
             store.state.html.tables_triplets = response.data.tables;

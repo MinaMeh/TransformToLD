@@ -62,7 +62,7 @@
         </v-card>
       </v-tab-item>
       <v-tab-item>
-        <v-card>
+        <!-- <v-card>
           <v-card-title>
             <h2>Triplets</h2>
           </v-card-title>
@@ -77,7 +77,7 @@
               </template>
             </v-data-table>
           </v-card-text>
-        </v-card>
+        </v-card>-->
       </v-tab-item>
     </v-tabs-items>
   </v-container>

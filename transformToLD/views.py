@@ -1,32 +1,31 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from transformToLD.Helpers.extract import extract_text_data, extract_csv_data, extract_html_data
-from transformToLD.Helpers.explore import get_vocab_list, explore_csv, explore_column, get_vocab, explore_paragraph
-from transformToLD.Helpers.preprocess import preprocess_columns, preprocess_paragraph
-from transformToLD.Helpers.convert import convert_csv, convert_text, convert_html
-import pandas as pd
+import os
+import os
+import io
+import time
 import csv
 import json
-import io
-from rest_framework import viewsets, static, status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from .Serializers import VocabularySerializer, ProjectSerializer
+import pandas as pd
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from transformToLD.models import Project
-from rest_framework import serializers
+from django.conf import settings
+from rest_framework import viewsets, static, status, serializers
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from transformToLD.models import MyUser
-from .Helpers.document import document_project, translate_file
-# Create your views here.
 from rest_framework_jwt.settings import api_settings
+from wsgiref.util import FileWrapper
+from .Serializers import VocabularySerializer, ProjectSerializer
+from transformToLD.models import MyUser
 from historique.models import *
 from historique.serializers import ProjectSerializer, PropertySerializer, ClassSerializer
-import os
-from django.conf import settings
+from transformToLD.Controllers.extract import extract_text_data, extract_csv_data, extract_html_data
+from transformToLD.Controllers.explore import get_vocab_list, explore_csv, explore_column, get_vocab, explore_paragraph
+from transformToLD.Controllers.preprocess import preprocess_columns, preprocess_paragraph
+from transformToLD.Controllers.convert import convert_csv, convert_text, convert_html
+from .Controllers.document import document_project, translate_file
 from .db_operations import *
-from wsgiref.util import FileWrapper
 
 
 @api_view(['GET'])
@@ -81,16 +80,22 @@ def extract(request):
         return Response({"msg": project_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     project = Project.objects.get(pk=project_id)
     if file_type == 'text/csv' or file_type == "application/vnd.ms-excel":
+        t_start = time.time()
         results = extract_csv_data(upload_file, separator)
+        t_end = time.time()
+        exec_time = t_end-t_start
         resp = {'results': results, 'filename': filename,
-                'type': 'csv', 'size': file.size, 'project_id': project_id}
+                'type': 'csv', 'size': file.size, 'project_id': project_id, 'execution_time': exec_time}
         csv_data = CsvProject(separator=separator,
                               columns=results['columns'], lines=results['lines'])
         project.csv_data = csv_data
         project.save()
     elif file_type == "text/html":
+        t_start = time.time()
         results = extract_html_data(
             upload_file, extract_tables=tables, extract_paragraphs=paragraphs)
+        t_end = time.time()
+        exec_time = t_end-t_start
         tables_data = []
         for table in results['tables']:
             table_file = {
@@ -103,11 +108,14 @@ def extract(request):
         project.save()
         resp = {'results': results, 'filename': filename,
                 'type': 'html', 'size': file.size, "extract_tables": tables,
-                "extract_paragraphs": paragraphs, 'project_id': project_id}
+                "extract_paragraphs": paragraphs, 'project_id': project_id, 'execution_time': exec_time}
     elif file_type == "text/plain":
+        t_start = time.time()
         results = extract_text_data(upload_file)
+        t_end = time.time()
+        exec_time = t_end-t_start
         resp = {'results': results, 'filename': filename,
-                'type': 'text', 'size': file.size, 'project_id': project_id}
+                'type': 'text', 'size': file.size, 'project_id': project_id, 'execution_time': exec_time}
     else:
         pass
 
@@ -122,9 +130,13 @@ def preprocess(request):
 
     if file_type == "csv":
         columns_selected = json.loads(request.POST.get('columns', 'nthg'))
+        t_start = time.time()
         headers = preprocess_columns(columns_selected)
+        t_end = time.time()
+        exec_time = t_end-t_start
         update_csv_project(project, headers=headers)
-        resp = {'columns_selected': columns_selected, "headers": headers}
+        resp = {'columns_selected': columns_selected,
+                "headers": headers, 'execution_time': exec_time}
     elif file_type == 'html':
         tables_selected = json.loads(request.POST.get('tables', 'nthg'))
         paragrahps_selected = json.loads(
@@ -132,22 +144,29 @@ def preprocess(request):
         tables_data = []
         text_data = []
         test_data = []
+        t_start = time.time()
         for table in tables_selected:
             if (table['selected'] == True):
                 table['headers'] = preprocess_columns(table['headers'])
         for paragraph in paragrahps_selected:
             if paragraph['selected'] == True:
-                paragraph = preprocess_paragraph(
-                    paragraph)
+                paragraph = preprocess_paragraph(project,
+                                                 paragraph, id=paragraph["id"])
+        t_end = time.time()
+        exec_time = t_end - t_start
         update_project_tables(project, tables=tables_selected)
         test_data = update_project_paragraphs(
             project, paragraphs=paragrahps_selected)
         resp = {'tables_selected': tables_selected,
-                'paragraphs_selected': paragrahps_selected}
+                'paragraphs_selected': paragrahps_selected, 'execution_time': exec_time}
     elif file_type == "text":
         paragraph = json.loads(request.POST.get('paragraph', 'nthg'))
-        paragraph = preprocess_paragraph(paragraph)
-        resp = paragraph
+        t_start = time.time()
+        paragraph = preprocess_paragraph(project, paragraph)
+        t_end = time.time()
+        exec_time = t_end-t_start
+        print("exec time {}".format(exec_time))
+        resp = {"data": paragraph, 'execution_time': exec_time}
     return Response(resp)
 
 
@@ -175,14 +194,18 @@ def explore(request):
     if file_type == "csv":
         cols = json.loads(request.POST.get('columns'))
         terms = []
+        t_start = time.time()
         for col in cols:
             if col['selected'] == True:
                 terms.append(explore_column(col, list_vocabs))
-        resp = {"terms": terms}
+        t_end = time.time()
+        exec_time = t_end-t_start
+        resp = {"terms": terms, 'execution_time': exec_time}
         return Response(resp)
     elif file_type == "html":
         tables = json.loads(request.POST.get('tables'))
         paragraphs = json.loads(request.POST.get('paragraphs'))
+        t_start = time.time()
         for table in tables:
             if table['selected'] == True:
                 table['terms'] = []
@@ -193,11 +216,16 @@ def explore(request):
         for paragraph in paragraphs:
             if paragraph['selected']:
                 paragraph = explore_paragraph(paragraph, list_vocabs)
-        return Response({"tables": tables, "paragraphs": paragraphs})
+        t_end = time.time()
+        exec_time = t_end-t_start
+        return Response({"tables": tables, "paragraphs": paragraphs, 'execution_time': exec_time})
     elif file_type == "text":
         paragraph = json.loads(request.POST.get('paragraph'))
+        t_start = time.time()
         paragraph = explore_paragraph(paragraph, list_vocabs)
-        return Response(paragraph)
+        t_end = time.time()
+        exec_time = t_end-t_start
+        return Response({"data": paragraph, 'execution_time': exec_time})
 
 
 @ api_view(['POST'])
@@ -222,25 +250,32 @@ def convert(request):
                         head.term = term["term"]["uri"]
             project.save()
         delimiter = request.POST.get("delimiter")
+        t_start = time.time()
         lines = convert_csv(project, file_name, delimiter,
                             terms, headers_id, row_class)
-        update_csv_project(project, triplets=lines)
-        return Response(lines)
+        t_end = time.time()
+        exec_time = t_end-t_start
+        #update_csv_project(project, triplets=lines)
+        return Response({"data": lines, 'execution_time': exec_time})
     if file_type == "text":
         terms = json.loads(request.POST.get("terms"))
         triplets = json.loads(request.POST.get("triplets"))
+        t_start = time.time()
         lines = convert_text(triplets, terms, project)
+        t_end = time.time()
+        exec_time = t_end-t_start
         update_text_project(project, terms=lines, triplets=triplets)
-        return Response(lines)
+        return Response({"data": lines, 'execution_time': exec_time})
     if file_type == "html":
         tables = json.loads(request.POST.get("tables"))
         paragraphs = json.loads(request.POST.get("paragraphs"))
         tables_triplets = []
         paragraphs_triplets = []
+        t_start = time.time()
         for table in tables:
             line = dict()
             line["id"] = table['id']
-            line['triplets'] = convert_html(table)
+            line['triplets'] = convert_html(table, project)
             tables_triplets.append(line)
             update_project_tables(
                 project, triplets=tables_triplets, headers=tables)
@@ -249,10 +284,15 @@ def convert(request):
             terms = paragraph['terms']
             line = dict()
             line['id'] = paragraph["id"]
-            line["triplets"] = convert_text(triplets, terms)
+            line["triplets"] = convert_text(
+                triplets, terms, project, id=paragraph["id"])
             paragraphs_triplets.append(line)
             update_project_paragraphs(project, terms=paragraphs_triplets)
-        return Response({"tables": tables_triplets, 'paragraphs': paragraphs_triplets})
+        t_end = time.time()
+        exec_time = t_end-t_start
+        return Response({"tables": tables_triplets,
+                         'paragraphs': paragraphs_triplets,
+                         'execution_time': exec_time})
 
 
 @ api_view(["POST"])

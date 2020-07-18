@@ -7,6 +7,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import dj_database_url
+import django_heroku
 import os
 import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'transformToLD.MyUser'
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
     'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
@@ -83,6 +87,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'transformToLD',
+        'HOST': 'mongodb+srv://linkeddata:thisismypassw0rd@cluster0.2q1wu.mongodb.net/test?retryWrites=true&w=majority',
     }
 }
 
@@ -140,3 +145,19 @@ JWT_AUTH = {
     'transformToLD.utils.jwt_response_payload_handler',
 
 }
+# Configure Django App for Heroku.
+django_heroku.settings(locals())
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
+PROJECT_ROOT = os.path.join(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+
+# Extra lookup directories for collectstatic to find static files
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
+#  Add configuration for static files storage using whitenoise
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+prod_db = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(prod_db)
