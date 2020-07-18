@@ -129,8 +129,8 @@ export default {
       nameRules: [
         v => !!v || "Project Name is required",
         v =>
-          (v && v.length <= 10) ||
-          "Project Name must be less than 10 characters"
+          (v && v.length <= 255) ||
+          "Project Name must be less than 255 characters"
       ],
       fileRules: [v => !!v || "It is required to upload a file"],
       linkRules: [
