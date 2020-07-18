@@ -90,7 +90,7 @@
 
 <script>
 import Navbar from "@/components/Navbar";
-import ConfirmDeletion from "@/components/DeleteProjectComponent";
+import ConfirmDeletion from "@/components/projects/DeleteProjectComponent";
 import instance from "@/services/MainService";
 export default {
   components: {

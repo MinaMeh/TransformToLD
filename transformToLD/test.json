@@ -1,5 +1,0 @@
-[
-  { "name": "Bill Gates", "type": "person" },
-  { "name": "Microsoft Corporation", "type": "organisation" }
-]
-[{"name": "Bill Gates", "entity_type": "person"}, {"name": "Microsoft Corporation", "entity_type": "organisation"}]

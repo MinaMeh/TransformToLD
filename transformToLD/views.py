@@ -1,33 +1,31 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from transformToLD.Helpers.extract import extract_text_data, extract_csv_data, extract_html_data
-from transformToLD.Helpers.explore import get_vocab_list, explore_csv, explore_column, get_vocab, explore_paragraph
-from transformToLD.Helpers.preprocess import preprocess_columns, preprocess_paragraph
-from transformToLD.Helpers.convert import convert_csv, convert_text, convert_html
-import pandas as pd
+import os
+import os
+import io
+import time
 import csv
 import json
-import io
-from rest_framework import viewsets, static, status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from .Serializers import VocabularySerializer, ProjectSerializer
+import pandas as pd
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from transformToLD.models import Project
-from rest_framework import serializers
+from django.conf import settings
+from rest_framework import viewsets, static, status, serializers
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from transformToLD.models import MyUser
-from .Helpers.document import document_project, translate_file
-# Create your views here.
 from rest_framework_jwt.settings import api_settings
+from wsgiref.util import FileWrapper
+from .Serializers import VocabularySerializer, ProjectSerializer
+from transformToLD.models import MyUser
 from historique.models import *
 from historique.serializers import ProjectSerializer, PropertySerializer, ClassSerializer
-import os
-from django.conf import settings
+from transformToLD.Controllers.extract import extract_text_data, extract_csv_data, extract_html_data
+from transformToLD.Controllers.explore import get_vocab_list, explore_csv, explore_column, get_vocab, explore_paragraph
+from transformToLD.Controllers.preprocess import preprocess_columns, preprocess_paragraph
+from transformToLD.Controllers.convert import convert_csv, convert_text, convert_html
+from .Controllers.document import document_project, translate_file
 from .db_operations import *
-from wsgiref.util import FileWrapper
-import time
 
 
 @api_view(['GET'])

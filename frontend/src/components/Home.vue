@@ -20,13 +20,12 @@
           <v-icon medium class="mr-1">mdi-file-eye</v-icon>Show projects
         </v-btn>
       </v-card-actions>
-      
     </v-card>
   </v-container>
 </template>
 <script>
 import Navbar from "@/components/Navbar";
-import CreateProject from "./CreateProject";
+import CreateProject from "./projects/CreateProject";
 export default {
   data() {
     return {
