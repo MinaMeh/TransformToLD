@@ -50,7 +50,7 @@
               </v-col>
             </v-row>
           </v-card-title>
-          <v-data-table :headers="headers" :items="vocabs" :search="search">
+          <v-data-table class="vocabs" :headers="headers" :items="vocabs" :search="search">
             <template v-slot:item="row">
               <tr>
                 <td>{{row.item.prefix}}</td>
@@ -82,6 +82,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -103,7 +104,16 @@ export default {
         { text: "", value: "", align: "center" }
       ],
       vocabs: [],
-      selectedVocabs: []
+      selectedVocabs: [],
+      steps: [
+        {
+          target: ".vocabs", // We're using document.querySelector() under the hood
+          header: {
+            title: "Add Vocabularies"
+          },
+          content: `Add the vocabularies that you want to use in the mapping`
+        }
+      ]
     };
   },
   computed: {
@@ -164,6 +174,8 @@ export default {
   },
 
   mounted() {
+    this.$tours["myTour"].start();
+
     this.$store.state.vocabs = [];
     instance
       .get("vocabs/", {

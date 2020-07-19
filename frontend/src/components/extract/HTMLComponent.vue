@@ -28,8 +28,8 @@
       </v-col>
     </v-row>
     <v-tabs class="mt-8" v-model="tab">
-      <v-tab>Tables</v-tab>
-      <v-tab>Paragraphs</v-tab>
+      <v-tab id="tables">Tables</v-tab>
+      <v-tab id="paragraphs">Paragraphs</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
@@ -43,7 +43,7 @@
                 @change="toggleTable(table.id)"
                 class="mt-10"
               ></v-checkbox>
-              <h2>Table #{{ table.id }}</h2>
+              <h2 class="table_id">Table #{{ table.id }}</h2>
             </v-card-title>
             <v-card-text>
               <v-col cols="6">
@@ -60,7 +60,7 @@
                 </v-simple-table>
               </v-col>
               <v-col col="12">
-                <v-data-table :headers="headers" :items="table.headers">
+                <v-data-table class="table_cols" :headers="headers" :items="table.headers">
                   <template v-slot:item="header">
                     <tr>
                       <td>
@@ -120,7 +120,7 @@
               <v-card>
                 <v-card-title>
                   <v-checkbox
-                    class="mt-10"
+                    class="mt-10 paragraph_id"
                     v-model="paragraph.selected"
                     :id="String(paragraph.id)"
                     :value="paragraph.selected"
@@ -144,6 +144,7 @@
         </v-col>
       </v-tab-item>
     </v-tabs-items>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -177,6 +178,56 @@ export default {
         "xsd:string",
         "xsd:boolean",
         "xsd:date"
+      ],
+      steps: [
+        {
+          target: "#tables", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select tables"
+          },
+          content: `Select Tables that you want to include in the conversion`,
+          params: {
+            placement: "right"
+          }
+        },
+        {
+          target: ".table_id", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select table"
+          },
+          content: `Select Table `,
+          params: {
+            enableScrolling: false
+          }
+        },
+        {
+          target: ".table_cols", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select table columns"
+          },
+          content: `Select table columns that you want to include in the conversion `,
+          params: {
+            placement: "top"
+          }
+        },
+        {
+          target: "#paragraphs", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select Paragraphs"
+          },
+          content: `Select paragraphs that you want to include in the conversion `,
+          params: {
+            placement: "right"
+          }
+        },
+        {
+          target: ".paragraph_id", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select Paragraph"
+          },
+          content: `Select paragraph`,
+          params: {}
+        }
       ]
     };
   },
@@ -224,7 +275,7 @@ export default {
     }
   },
   mounted() {
-    this.content = this.$store.state.file_content;
+    this.$tours["myTour"].start();
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

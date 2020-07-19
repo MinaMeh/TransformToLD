@@ -4,7 +4,7 @@
       <v-col cols="12">
         <v-card>
           <v-card-title>
-            <h2>Table columns</h2>
+            <h2 id="preprocessing">Table columns</h2>
             <v-card-text>
               <v-simple-table>
                 <thead>
@@ -35,6 +35,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -42,7 +43,16 @@ export default {
   name: "CsvComponent",
   data() {
     return {
-      continue: true
+      continue: true,
+      steps: [
+        {
+          target: "#preprocessing", // We're using document.querySelector() under the hood
+          header: {
+            title: "Confirm preprocessing"
+          },
+          content: `Confirm column translation and combinaisons`
+        }
+      ]
     };
   },
   computed: {
@@ -68,7 +78,7 @@ export default {
   },
 
   mounted() {
-    this.content = this.$store.state.file_content;
+    this.$tours["myTour"].start();
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

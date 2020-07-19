@@ -8,6 +8,7 @@
               <div class="headline">{{prop.property}}</div>
               <v-col cols="8" class="ml-5">
                 <v-select
+                  class="property"
                   v-model="prop.selected"
                   label="Select a term"
                   :value="prop.selected.uri"
@@ -44,6 +45,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -57,7 +59,19 @@ export default {
     return {
       tab: null,
       modalVisible: false,
-      modalData: null
+      modalData: null,
+      steps: [
+        {
+          target: ".property", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map predicate"
+          },
+          content: `Map every predicate to its LOV term`,
+          params: {
+            enableScrolling: false
+          }
+        }
+      ]
     };
   },
   methods: {
@@ -82,6 +96,8 @@ export default {
     }
   },
   mounted() {
+    this.$tours["myTour"].start();
+
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

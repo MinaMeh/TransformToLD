@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-tabs class="mt-8" v-model="tab">
-      <v-tab>Tables</v-tab>
-      <v-tab>Paragraphs</v-tab>
+      <v-tab id="tables">Tables</v-tab>
+      <v-tab id="paragraphs">Paragraphs</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
@@ -56,7 +56,7 @@
                             <v-btn
                               color="blue"
                               dark
-                              class="mx-2"
+                              class="mx-2 row-class"
                               fab
                               v-bind="attrs"
                               v-on="on"
@@ -96,6 +96,7 @@
                       </v-col>
                       <v-col cols="4">
                         <v-select
+                          class="row-id"
                           v-model="table.rowId"
                           :items="table.terms"
                           label="Select a term"
@@ -109,7 +110,7 @@
                   </v-card-text>
                 </v-card>
                 <v-row>
-                  <v-col cols="12" v-for="prop in table.terms" :key="prop.uri">
+                  <v-col class="headers" cols="12" v-for="prop in table.terms" :key="prop.uri">
                     <v-card>
                       <v-card-text>
                         <v-row align="center" justify="center">
@@ -198,6 +199,7 @@
                           <div class="headline">{{prop.property}}</div>
                           <v-col cols="8" class="ml-5">
                             <v-select
+                              class="predicate"
                               v-model="prop.selected"
                               label="Select a term"
                               :value="prop.selected.uri"
@@ -240,6 +242,7 @@
         </v-row>
       </v-tab-item>
     </v-tabs-items>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -262,7 +265,68 @@ export default {
       modalData: null,
       modalCreate: false,
       modalSearchClass: false,
-      modalCreateClass: false
+      modalCreateClass: false,
+      steps: [
+        {
+          target: "#tables", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map table elements"
+          },
+          content: `Map table elements to LOV terms`,
+          params: {
+            placement: "right"
+          }
+        },
+        {
+          target: ".row-class", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select row class"
+          },
+          content: `Select a class for table rows`,
+          params: {
+            enableScrolling: false
+          }
+        },
+        {
+          target: ".row-id", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select row ID"
+          },
+          content: `Select The ID of each row of the table`,
+          params: {
+            enableScrolling: false
+          }
+        },
+        {
+          target: ".headers", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map headers"
+          },
+          content: `Map each header to its LOV term`,
+          params: {
+            enableScrolling: false
+          }
+        },
+
+        {
+          target: "#paragraphs", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map paragraphs relations"
+          },
+          content: `Map paragraphs relations to LOV terms `,
+          params: {
+            placement: "right"
+          }
+        },
+        {
+          target: ".predicate", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map predicate"
+          },
+          content: `Map each predicate to LOV terms`,
+          params: {}
+        }
+      ]
     };
   },
   computed: {
@@ -339,6 +403,8 @@ export default {
     }
   },
   mounted() {
+    this.$tours["myTour"].start();
+
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
