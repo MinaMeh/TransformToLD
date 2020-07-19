@@ -122,9 +122,9 @@ def preprocess_paragraph(project, paragraph, id=None):
     client.set_entity_dbpedia_type_filters(dbpedia_types)
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
-    if id:
+    if id is not None:
         filename = "{}_{}_{}_{}".format(
-            project.project_name, "realtions_file", 'paragraph', id)
+            project.project_name, "relations_file", 'paragraph', id)
     else:
         filename = "{}_{}".format(project.project_name, "triplets_file")
     file_path = directory+filename

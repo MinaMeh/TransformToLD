@@ -148,10 +148,10 @@ def preprocess(request):
         for table in tables_selected:
             if (table['selected'] == True):
                 table['headers'] = preprocess_columns(table['headers'])
-        for i, paragraph in enumerate(paragrahps_selected):
+        for id, paragraph in enumerate(paragrahps_selected):
             if paragraph['selected'] == True:
                 paragraph = preprocess_paragraph(project,
-                                                 paragraph, id=i)
+                                                 paragraph, id=id)
         t_end = time.time()
         exec_time = t_end - t_start
         update_project_tables(project, tables=tables_selected)
