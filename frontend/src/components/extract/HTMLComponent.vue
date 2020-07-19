@@ -36,13 +36,7 @@
         <v-col cols="12">
           <v-card v-for="table in $store.state.html.tables" :key="table.id" class="mt-3">
             <v-card-title>
-              <v-checkbox
-                v-model="table.selected"
-                :id="String(table.id)"
-                :value="table.id"
-                @change="toggleTable(table.id)"
-                class="mt-10"
-              ></v-checkbox>
+              <v-checkbox v-model="table.selected" :id="String(table.id)" class="mt-10"></v-checkbox>
               <h2 class="table_id">Table #{{ table.id }}</h2>
             </v-card-title>
             <v-card-text>
@@ -255,17 +249,6 @@ export default {
     }
   },
   methods: {
-    toggleTable: function(table_id) {
-      var tables = this.$store.state.html.tables.filter(table => {
-        if (table.id == table_id) return table;
-      });
-      for (var header in tables[0].headers) {
-        tables[0].headers[header].selected = false;
-      }
-
-      console.log(tables[0]);
-    },
-
     save() {
       this.snack = true;
       this.snackColor = "success";
