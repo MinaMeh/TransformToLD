@@ -8,8 +8,11 @@ import "@fortawesome/fontawesome-free/js/all.js";
 import vuetify from "./plugins/vuetify";
 
 import router from "@/router";
-
 import moment from "moment";
+import VueTour from "vue-tour";
+
+require("vue-tour/dist/vue-tour.css");
+Vue.use(VueTour);
 
 Vue.filter("formatDate", function(value) {
   if (value) {

@@ -1,3 +1,4 @@
+
 <template>
   <v-container class="mt-10">
     <v-row>
@@ -35,14 +36,14 @@
                   <tr>
                     <td>
                       <v-checkbox
-                        class="mt-3"
+                        class="columns mt-3"
                         v-model="header.item.selected"
                         :id="String(header.item.name)"
                         :value="header.item.selected"
                       ></v-checkbox>
                     </td>
                     <td>
-                      <div class="mt-5 headline">
+                      <div class="mt-5">
                         <v-edit-dialog
                           :return-value.sync="header.item.name"
                           lazy
@@ -64,7 +65,7 @@
                       </div>
                     </td>
                     <td>
-                      <v-select :items="datatypes" v-model="header.item.type"></v-select>
+                      <v-select class="type" :items="datatypes" v-model="header.item.type"></v-select>
                     </td>
                   </tr>
                 </template>
@@ -78,6 +79,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -100,10 +102,32 @@ export default {
         "xsd:string",
         "xsd:boolean",
         "xsd:date"
+      ],
+      steps: [
+        {
+          target: ".columns", // We're using document.querySelector() under the hood
+          header: {
+            title: "Select columns"
+          },
+          content: `Select columns that you want to include in the conversion`
+        },
+        {
+          target: ".type",
+          content: "Select column type!"
+        }
       ]
     };
   },
+  computed: {
+    guide() {
+      return this.$store.state.guide;
+    }
+  },
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
     $v: {
       handler: function() {
         if (this.continue) {
@@ -136,7 +160,8 @@ export default {
     }
   },
   mounted() {
-    this.content = this.$store.state.file_content;
+    if (this.$store.state.guide) this.$tours["myTour"].start();
+
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

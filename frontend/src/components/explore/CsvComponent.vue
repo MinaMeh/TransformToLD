@@ -21,7 +21,7 @@
                   <v-btn
                     color="blue"
                     dark
-                    class="mx-2"
+                    class="mx-2 search-class"
                     fab
                     v-bind="attrs"
                     v-on="on"
@@ -60,6 +60,7 @@
             </v-col>
             <v-col cols="4">
               <v-select
+                id="row-id"
                 v-model="$store.state.csv.headersId"
                 :items="$store.state.csv.terms"
                 label="Select a term"
@@ -86,7 +87,7 @@
       @closeClass="updateRowClass"
       :active="modalCreateClass"
     ></CreateClass>
-    <h2>Headers</h2>
+    <h2 id="headers">Headers</h2>
     <v-row>
       <v-col cols="12" v-for="prop in $store.state.csv.terms" :key="prop.uri">
         <v-card>
@@ -163,6 +164,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 
@@ -194,10 +196,46 @@ export default {
       modalData: null,
       modalCreate: false,
       modalSearchClass: false,
-      modalCreateClass: false
+      modalCreateClass: false,
+      steps: [
+        {
+          target: ".search-class", // We're using document.querySelector() under the hood
+          header: {
+            title: "Row Class"
+          },
+          content: `Define the class of table rows`,
+          params: {
+            enableScrolling: false
+          }
+        },
+        {
+          target: "#row-id", // We're using document.querySelector() under the hood
+          header: {
+            title: "Row ID"
+          },
+          content: `Select table rows ID `,
+          params: {
+            enableScrolling: false
+          }
+        },
+        {
+          target: "#headers", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map headers"
+          },
+          content: `Map each headers to its LOV term`,
+          params: {
+            enableScrolling: false
+          }
+        }
+      ]
     };
   },
-  computed: {},
+  computed: {
+    guide() {
+      return this.$store.state.guide;
+    }
+  },
   methods: {
     openModal(data) {
       console.log(data);
@@ -227,6 +265,11 @@ export default {
     }
   },
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     count(newCount, oldCount) {
       console.log("old " + oldCount + " new count " + newCount);
       this.properties = this.$store.state.properties;
@@ -244,6 +287,8 @@ export default {
     }
   },
   mounted() {
+    if (this.$store.state.guide) this.$tours["myTour"].start();
+
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

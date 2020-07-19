@@ -5,6 +5,8 @@
       <v-toolbar-title class="white--text">Data Linked</v-toolbar-title>
       <v-divider class="mx-4" inset vertical></v-divider>
       <v-spacer></v-spacer>
+      <v-switch class="mt-6" dark v-model="$store.state.guide" :label="`Enable guide`"></v-switch>
+
       <v-btn text color="white" @click.prevent="logout">Logout</v-btn>
       <v-icon class="white--text">mdi-account</v-icon>
     </v-app-bar>

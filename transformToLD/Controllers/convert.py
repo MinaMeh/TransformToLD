@@ -63,7 +63,7 @@ def convert_text(triplets, terms, project, id=None):
     terms_dict = dict()
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
-    if id:
+    if id is not None:
         filename = "{}_{}_{}_{}".format(
             project.project_name, "triplets_file", 'paragraph', id)
     else:

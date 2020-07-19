@@ -148,10 +148,10 @@ def preprocess(request):
         for table in tables_selected:
             if (table['selected'] == True):
                 table['headers'] = preprocess_columns(table['headers'])
-        for paragraph in paragrahps_selected:
+        for id, paragraph in enumerate(paragrahps_selected):
             if paragraph['selected'] == True:
                 paragraph = preprocess_paragraph(project,
-                                                 paragraph, id=paragraph["id"])
+                                                 paragraph, id=id)
         t_end = time.time()
         exec_time = t_end - t_start
         update_project_tables(project, tables=tables_selected)
@@ -279,13 +279,13 @@ def convert(request):
             tables_triplets.append(line)
             update_project_tables(
                 project, triplets=tables_triplets, headers=tables)
-        for paragraph in paragraphs:
+        for id, paragraph in enumerate(paragraphs):
             triplets = paragraph['triplets']
             terms = paragraph['terms']
             line = dict()
             line['id'] = paragraph["id"]
             line["triplets"] = convert_text(
-                triplets, terms, project, id=paragraph["id"])
+                triplets, terms, project, id)
             paragraphs_triplets.append(line)
             update_project_paragraphs(project, terms=paragraphs_triplets)
         t_end = time.time()

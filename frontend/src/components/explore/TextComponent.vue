@@ -5,9 +5,10 @@
         <v-card>
           <v-card-text>
             <v-row align="center" justify="center">
-              <div class="headline">{{prop.property}}</div>
+              <div cols="3" class="headline">{{prop.property}}</div>
               <v-col cols="8" class="ml-5">
                 <v-select
+                  class="property"
                   v-model="prop.selected"
                   label="Select a term"
                   :value="prop.selected.uri"
@@ -28,6 +29,7 @@
                 :active="modalVisible"
               ></Modal>
               <v-btn
+                cols="1"
                 color="blue"
                 dark
                 class="mx-2"
@@ -44,6 +46,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -57,8 +60,25 @@ export default {
     return {
       tab: null,
       modalVisible: false,
-      modalData: null
+      modalData: null,
+      steps: [
+        {
+          target: ".property", // We're using document.querySelector() under the hood
+          header: {
+            title: "Map predicate"
+          },
+          content: `Map every predicate to its LOV term`,
+          params: {
+            enableScrolling: false
+          }
+        }
+      ]
     };
+  },
+  computed: {
+    guide() {
+      return this.$store.state.guide;
+    }
   },
   methods: {
     openModal(data) {
@@ -70,6 +90,11 @@ export default {
   },
 
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     $v: {
       handler: function() {
         if (this.continue) {
@@ -82,6 +107,8 @@ export default {
     }
   },
   mounted() {
+    if (this.$store.state.guide) this.$tours["myTour"].start();
+
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

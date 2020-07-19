@@ -45,7 +45,7 @@
                   label="Search"
                   single-line
                   hide-details
-                  class="mb-5"
+                  class="mb-5 vocabs"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -82,6 +82,7 @@
         </v-card>
       </v-col>
     </v-row>
+    <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
 </template>
 <script>
@@ -103,7 +104,19 @@ export default {
         { text: "", value: "", align: "center" }
       ],
       vocabs: [],
-      selectedVocabs: []
+      selectedVocabs: [],
+      steps: [
+        {
+          target: ".vocabs", // We're using document.querySelector() under the hood
+          header: {
+            title: "Add Vocabularies"
+          },
+          content: `Add the vocabularies that you want to use in the mapping`,
+          params: {
+            enableScrolling: false
+          }
+        }
+      ]
     };
   },
   computed: {
@@ -111,6 +124,9 @@ export default {
       return this.vocabs.filter(vocab => {
         return vocab.prefix.toLowerCase().includes(this.search.toLowerCase());
       });
+    },
+    guide() {
+      return this.$store.state.guide;
     }
   },
   methods: {
@@ -142,6 +158,11 @@ export default {
     }
   },
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     $v: {
       handler: function(val) {
         if (!val.$invalid) {
@@ -164,6 +185,8 @@ export default {
   },
 
   mounted() {
+    if (this.$store.state.guide) this.$tours["myTour"].start();
+
     this.$store.state.vocabs = [];
     instance
       .get("vocabs/", {
