@@ -1,3 +1,4 @@
+
 <template>
   <v-container class="mt-10">
     <v-row>
@@ -42,7 +43,7 @@
                       ></v-checkbox>
                     </td>
                     <td>
-                      <div class="mt-5 headline">
+                      <div class="mt-5">
                         <v-edit-dialog
                           :return-value.sync="header.item.name"
                           lazy

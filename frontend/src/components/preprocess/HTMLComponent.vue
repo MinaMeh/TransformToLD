@@ -58,7 +58,77 @@
                           <template v-slot:item.selected="{ item }">
                             <v-simple-checkbox v-model="item.selected" :value="item.selected"></v-simple-checkbox>
                           </template>
+                          <template v-slot:item.subject="{ item }">
+                            <div>
+                              <v-edit-dialog
+                                :return-value.sync="item.subject"
+                                lazy
+                                @save="save"
+                                @cancel="cancel"
+                                @open="open"
+                                @close="close"
+                              >
+                                {{ item.subject }}
+                                <template v-slot:input>
+                                  <v-text-field
+                                    v-model="item.subject"
+                                    label="Edit"
+                                    single-line
+                                    counter
+                                  ></v-text-field>
+                                </template>
+                              </v-edit-dialog>
+                            </div>
+                          </template>
+                          <template v-slot:item.predicate="{ item }">
+                            <div>
+                              <v-edit-dialog
+                                :return-value.sync="item.predicate"
+                                lazy
+                                @save="save"
+                                @cancel="cancel"
+                                @open="open"
+                                @close="close"
+                              >
+                                {{ item.predicate }}
+                                <template v-slot:input>
+                                  <v-text-field
+                                    v-model="item.predicate"
+                                    label="Edit"
+                                    single-line
+                                    counter
+                                  ></v-text-field>
+                                </template>
+                              </v-edit-dialog>
+                            </div>
+                          </template>
+                          <template v-slot:item.object="{ item }">
+                            <div>
+                              <v-edit-dialog
+                                :return-value.sync="item.object"
+                                lazy
+                                @save="save"
+                                @cancel="cancel"
+                                @open="open"
+                                @close="close"
+                              >
+                                {{ item.object }}
+                                <template v-slot:input>
+                                  <v-text-field
+                                    v-model="item.object"
+                                    label="Edit"
+                                    single-line
+                                    counter
+                                  ></v-text-field>
+                                </template>
+                              </v-edit-dialog>
+                            </div>
+                          </template>
                         </v-data-table>
+                        <v-snackbar v-model="snack" :timeout="3000" :color="snackColor">
+                          {{ snackText }}
+                          <v-btn text @click="snack = false">Close</v-btn>
+                        </v-snackbar>
                       </v-card-text>
                     </v-card>
                   </v-col>
@@ -144,6 +214,24 @@ export default {
         if (header.selected == true) headers_selected.push(header);
       });
       return headers_selected;
+    },
+    save() {
+      this.snack = true;
+      this.snackColor = "success";
+      this.snackText = "Data saved";
+    },
+    cancel() {
+      this.snack = true;
+      this.snackColor = "error";
+      this.snackText = "Canceled";
+    },
+    open() {
+      this.snack = true;
+      this.snackColor = "info";
+      this.snackText = "Edit header name";
+    },
+    close() {
+      console.log("Dialog closed");
     }
   },
 
