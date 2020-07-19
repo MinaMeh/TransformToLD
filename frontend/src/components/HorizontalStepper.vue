@@ -118,6 +118,8 @@ export default {
     beforeNextStep({ currentStep }, next) {
       console.log("progress", this.$store.state.progress);
       if (currentStep.name == "first") {
+        this.$store.state.progress = true;
+
         operations
           .preprocess(this.$store)
           .then(response => {
