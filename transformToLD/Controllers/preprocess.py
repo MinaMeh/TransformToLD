@@ -4,7 +4,7 @@ import textrazor
 from django.conf import settings
 import csv
 from datetime import datetime
-
+from transformToLD.Classes.dbpedia import MY_LIST as dbpedia_types
 import inflection
 TYPE_MAPPING = {
     "PER": "person",
@@ -119,7 +119,7 @@ def preprocess_paragraph(project, paragraph, id=None):
     textrazor.api_key = "4599791ae63e2fb4f39d911a2145db56469b306ba8fbd6eda53e65ce"
     client = textrazor.TextRazor(extractors=['entities', 'relations'])
     # client.set_entity_freebase_type_filters(["/organization/organization"])
-    client.set_entity_dbpedia_type_filters(["Company", "Person"])
+    client.set_entity_dbpedia_type_filters(dbpedia_types)
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     if id:
