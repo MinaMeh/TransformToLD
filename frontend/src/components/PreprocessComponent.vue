@@ -23,7 +23,9 @@ export default {
   components: { CsvComponent, HTMLComponent, TexteComponent },
   props: ["clickedNext", "currentStep"],
   data() {
-    return {};
+    return {
+      continue: true
+    };
   },
   watch: {
     $v: {
@@ -41,7 +43,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.continue) {
+    if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
       this.$emit("can-continue", { value: false });

@@ -25,7 +25,8 @@ export default {
   props: ["clickedNext", "currentStep"],
   data() {
     return {
-      progress: true
+      progress: true,
+      continue: true
     };
   },
   computed: {},
@@ -42,7 +43,7 @@ export default {
     }
   },
   mounted() {
-    if (!this.continue) {
+    if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
       this.$emit("can-continue", { value: false });
