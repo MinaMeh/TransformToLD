@@ -35,7 +35,7 @@ def extract_csv_data(csv_file, separator=";"):
         head = {}
         head['name'] = col
         head["type"] = Datatypes[str(file.dtypes[col])]
-        head['selected'] = False
+        head['selected'] = True
         headers.append(head)
     lines = file.shape[0]
     columns = file.shape[1]
@@ -87,13 +87,13 @@ def get_tables_content(tables, file):
         file_content = pd.read_html(filename)[0]
         headers = []
         tables_content["id"] = i
-        tables_content["selected"] = False
+        tables_content["selected"] = True
         tables_content["filename"] = filename
         for header in file_content.columns:
             head = dict()
             name = header
             h_type = Datatypes[str(file_content.dtypes[header])]
-            head = {"name": name, "selected": False, "type": h_type}
+            head = {"name": name, "selected": True, "type": h_type}
             headers.append(head)
         tables_content['headers'] = headers
         tables_content['columns'] = len(headers)
