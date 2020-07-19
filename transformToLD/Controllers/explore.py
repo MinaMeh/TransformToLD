@@ -80,13 +80,16 @@ def explore_column(column, vocabs_list):
     transated = column["translated"]
     combinaisons = column["combinaison"]
     term["property"] = column['name']
-    term["selected"] = ""
     term["type"] = column["type"]
     term["result"] = []
     for comb in combinaisons:
         data = get_vocab(comb, vocabs_list, 'property')
         term["result"] += data
     term['result'].sort(key=lambda term: term.get('score'), reverse=True)
+    try:
+        term["selected"] = term['result'][0]
+    except IndexError:
+        term["selected"] = ""
     return term
 
 
@@ -101,6 +104,10 @@ def explore_paragraph(paragraph, vocab_list):
                 term["result"] = get_vocab(triplet['predicate'], vocab_list)
                 term['result'].sort(
                     key=lambda term: term.get('score'), reverse=True)
+                try:
+                    term["selected"] = term['result'][0]
+                except IndexError:
+                    term["selected"] = ""
                 terms.append(term)
     paragraph['terms'] = terms
     return paragraph

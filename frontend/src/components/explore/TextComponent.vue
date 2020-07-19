@@ -5,7 +5,7 @@
         <v-card>
           <v-card-text>
             <v-row align="center" justify="center">
-              <div class="headline">{{prop.property}}</div>
+              <div cols="3" class="headline">{{prop.property}}</div>
               <v-col cols="8" class="ml-5">
                 <v-select
                   class="property"
@@ -29,6 +29,7 @@
                 :active="modalVisible"
               ></Modal>
               <v-btn
+                cols="1"
                 color="blue"
                 dark
                 class="mx-2"
@@ -74,6 +75,11 @@ export default {
       ]
     };
   },
+  computed: {
+    guide() {
+      return this.$store.state.guide;
+    }
+  },
   methods: {
     openModal(data) {
       console.log(data);
@@ -84,6 +90,11 @@ export default {
   },
 
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     $v: {
       handler: function() {
         if (this.continue) {
@@ -96,7 +107,7 @@ export default {
     }
   },
   mounted() {
-    this.$tours["myTour"].start();
+    if (this.$store.state.guide) this.$tours["myTour"].start();
 
     if (this.continue) {
       this.$emit("can-continue", { value: true });

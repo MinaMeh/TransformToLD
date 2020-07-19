@@ -62,9 +62,17 @@ export default {
         if (header.selected) selected.push(header);
       });
       return selected;
+    },
+    guide() {
+      return this.$store.state.guide;
     }
   },
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     $v: {
       handler: function() {
         if (this.continue) {
@@ -78,7 +86,7 @@ export default {
   },
 
   mounted() {
-    this.$tours["myTour"].start();
+    if (this.$store.state.guide) this.$tours["myTour"].start();
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {

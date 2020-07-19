@@ -231,7 +231,11 @@ export default {
       ]
     };
   },
-  computed: {},
+  computed: {
+    guide() {
+      return this.$store.state.guide;
+    }
+  },
   methods: {
     openModal(data) {
       console.log(data);
@@ -261,6 +265,11 @@ export default {
     }
   },
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     count(newCount, oldCount) {
       console.log("old " + oldCount + " new count " + newCount);
       this.properties = this.$store.state.properties;
@@ -278,7 +287,7 @@ export default {
     }
   },
   mounted() {
-    this.$tours["myTour"].start();
+    if (this.$store.state.guide) this.$tours["myTour"].start();
 
     if (this.continue) {
       this.$emit("can-continue", { value: true });

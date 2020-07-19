@@ -35,7 +35,7 @@ export default new Vuex.Store({
     project_name: "",
     description: "",
     licence: "",
-    //projects: [],
+    guide: true,
     text: {
       paragraph: {
         paragraph: "",

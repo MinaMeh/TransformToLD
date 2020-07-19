@@ -45,12 +45,12 @@
                   label="Search"
                   single-line
                   hide-details
-                  class="mb-5"
+                  class="mb-5 vocabs"
                 ></v-text-field>
               </v-col>
             </v-row>
           </v-card-title>
-          <v-data-table class="vocabs" :headers="headers" :items="vocabs" :search="search">
+          <v-data-table :headers="headers" :items="vocabs" :search="search">
             <template v-slot:item="row">
               <tr>
                 <td>{{row.item.prefix}}</td>
@@ -111,7 +111,10 @@ export default {
           header: {
             title: "Add Vocabularies"
           },
-          content: `Add the vocabularies that you want to use in the mapping`
+          content: `Add the vocabularies that you want to use in the mapping`,
+          params: {
+            enableScrolling: false
+          }
         }
       ]
     };
@@ -121,6 +124,9 @@ export default {
       return this.vocabs.filter(vocab => {
         return vocab.prefix.toLowerCase().includes(this.search.toLowerCase());
       });
+    },
+    guide() {
+      return this.$store.state.guide;
     }
   },
   methods: {
@@ -152,6 +158,11 @@ export default {
     }
   },
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     $v: {
       handler: function(val) {
         if (!val.$invalid) {
@@ -174,7 +185,7 @@ export default {
   },
 
   mounted() {
-    this.$tours["myTour"].start();
+    if (this.$store.state.guide) this.$tours["myTour"].start();
 
     this.$store.state.vocabs = [];
     instance

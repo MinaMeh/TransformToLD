@@ -196,8 +196,8 @@
                     <v-card>
                       <v-card-text>
                         <v-row align="center" justify="center">
-                          <div class="headline">{{prop.property}}</div>
-                          <v-col cols="8" class="ml-5">
+                          <div cols="3" class="headline">{{prop.property}}</div>
+                          <v-col cols="7" class="ml-5">
                             <v-select
                               class="predicate"
                               v-model="prop.selected"
@@ -220,6 +220,7 @@
                             :active="modalVisible"
                           ></Modal>
                           <v-btn
+                            cols="1"
                             color="blue"
                             dark
                             class="mx-2"
@@ -343,6 +344,9 @@ export default {
         if (paragraph.selected) selected.push(paragraph);
       });
       return selected;
+    },
+    guide() {
+      return this.$store.state.guide;
     }
   },
   methods: {
@@ -386,6 +390,11 @@ export default {
   },
 
   watch: {
+    guide(newValue) {
+      if (newValue == true) this.$tours["myTour"].start();
+      else this.$tours["myTour"].stop();
+    },
+
     count(newCount, oldCount) {
       console.log("old " + oldCount + " new count " + newCount);
       this.results = this.$store.state.properties;
@@ -403,7 +412,7 @@ export default {
     }
   },
   mounted() {
-    this.$tours["myTour"].start();
+    if (this.$store.state.guide) this.$tours["myTour"].start();
 
     if (this.continue) {
       this.$emit("can-continue", { value: true });
