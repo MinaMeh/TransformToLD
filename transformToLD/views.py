@@ -260,8 +260,9 @@ def convert(request):
     if file_type == "text":
         terms = json.loads(request.POST.get("terms"))
         triplets = json.loads(request.POST.get("triplets"))
+        entities = json.loads(request.POST.get("entities"))
         t_start = time.time()
-        lines = convert_text(triplets, terms, project)
+        lines = convert_text(triplets, terms, entities, project)
         t_end = time.time()
         exec_time = t_end-t_start
         update_text_project(project, terms=lines, triplets=triplets)
@@ -282,10 +283,11 @@ def convert(request):
         for id, paragraph in enumerate(paragraphs):
             triplets = paragraph['triplets']
             terms = paragraph['terms']
+            entities = paragraph['entities']
             line = dict()
             line['id'] = paragraph["id"]
             line["triplets"] = convert_text(
-                triplets, terms, project, id)
+                triplets, terms, entities, project, id)
             paragraphs_triplets.append(line)
             update_project_paragraphs(project, terms=paragraphs_triplets)
         t_end = time.time()

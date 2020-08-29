@@ -5,6 +5,7 @@ from django.conf import settings
 import csv
 from datetime import datetime
 from transformToLD.Classes.dbpedia import MY_LIST as dbpedia_types
+from transformToLD.Controllers.explore import get_term
 import inflection
 TYPE_MAPPING = {
     "PER": "person",
@@ -46,7 +47,8 @@ def get_combinaisons(word):
         underscore = "_".join(words_list)
         camel_case = ''.join(x.capitalize() for x in words_list)
         attached = ''.join(words_list)
-        words_list = [separated, underscore, camel_case, attached]
+        tiret= '-'.join(words_list)
+        words_list = [separated, underscore, camel_case, attached, tiret]
     else:  # one word
         word = words_list[0]
         if "_" in words_list[0]:  # the word is with underscore
@@ -54,13 +56,15 @@ def get_combinaisons(word):
             attached = ''.join(word)
             separated = ' '.join(word)
             camelcase = ''.join(x.capitalize() for x in word)
-            words_list.extend([attached, camelcase, separated])
+            tiret= '-'.join(word)
+            words_list.extend([attached, camelcase, separated,tiret])
         else:  #
             if is_camel_case(words_list[0]):  # word is camel case
                 underscore = inflection.underscore(word)
                 attached = "".join(underscore.split('_'))
                 separated = " ".join(underscore.split('_'))
-                words_list.extend([underscore, attached, separated])
+                tiret= '-'.join(underscore)
+                words_list.extend([underscore, attached, separated, tiret])
             else:
                 pass
     return list(set(words_list))
@@ -147,6 +151,13 @@ def preprocess_paragraph(project, paragraph, id=None):
             relations.append(rel)
             writer.writerow(rel)
         sentence['triplets'] = relations
+        entities=[]
+        for entity in response.entities():
+            ent= {}
+            ent["text"]=concatenate(entity.matched_words)
+            ent ['selected']= True
+            entities.append(ent)
+        sentence['entities']= entities
     return paragraph
 
 

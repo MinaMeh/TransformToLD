@@ -1,6 +1,7 @@
 <template>
   <v-container>
     <v-row class="mt-9">
+      <h2 class="ml-5">Terms</h2>
       <v-col cols="12" v-for="prop in $store.state.text.paragraph.terms" :key="prop.uri">
         <v-card>
           <v-card-text>
@@ -45,6 +46,18 @@
           <v-divider></v-divider>
         </v-card>
       </v-col>
+      <h2 class="ml-5">Entities</h2>
+      <v-col cols="12">
+        <v-data-table :headers="headers" :items="$store.state.text.paragraph.entities">
+          <template v-slot:item.uris="{ item }">
+            <v-select label="select a term" v-model="item.selected" :items="item.uris">
+              <template v-slot:selection="{ item }">
+                <a v-bind:href="item" target="__">{{item}}</a>
+              </template>
+            </v-select>
+          </template>
+        </v-data-table>
+      </v-col>
     </v-row>
     <v-tour name="myTour" :steps="steps"></v-tour>
   </v-container>
@@ -61,6 +74,10 @@ export default {
       tab: null,
       modalVisible: false,
       modalData: null,
+      headers: [
+        { text: "Entity", value: "text" },
+        { text: "URI", value: "uris" }
+      ],
       steps: [
         {
           target: ".property", // We're using document.querySelector() under the hood

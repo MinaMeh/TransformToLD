@@ -23,14 +23,14 @@ Vue.filter("formatDate", function(value) {
 Vue.config.productionTip = false;
 Vue.component("text-highlight", TextHighlight);
 
-store
-  .dispatch("inspectToken")
-  .then(() => {
-    console.log(store.accessToken);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// store
+//   .dispatch("inspectToken")
+//   .then(() => {
+//     console.log(store.accessToken);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 
 new Vue({
   router,

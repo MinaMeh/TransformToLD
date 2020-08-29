@@ -181,6 +181,7 @@ export default {
           });
         });
         terms = [];
+
         store.state.text.paragraph.terms.forEach(function(term) {
           terms.push({
             property: term.property,
@@ -190,6 +191,10 @@ export default {
         });
         formData.append("terms", JSON.stringify(terms));
         formData.append("triplets", JSON.stringify(triplets));
+        formData.append(
+          "entities",
+          JSON.stringify(store.state.text.paragraph.entities)
+        );
       }
       if (store.state.file_type == "html") {
         var tables = [];
@@ -220,6 +225,7 @@ export default {
             var id = paragraph.id;
             var terms = [];
             var triplets = [];
+            var entities = [];
             paragraph.terms.forEach(function(term) {
               terms.push({
                 property: term.property,
@@ -230,12 +236,17 @@ export default {
               sentence.triplets.forEach(function(triplet) {
                 if (triplet.selected) triplets.push(triplet);
               });
+              paragraph.entities.forEach(function(entity) {
+                console.log(entity);
+                if (entity.selected) entities.push(entity);
+              });
             });
 
             paragraphs.push({
               id: id,
               terms: terms,
               triplets: triplets,
+              entities: entities,
             });
           }
         });

@@ -7,6 +7,10 @@
           <v-card v-if="sentence.triplets.length!=0">
             <v-card-text>
               <h6>{{sentence.text}}</h6>
+              <v-row>
+              <v-col cols="12">
+                <h3>Relations</h3>
+
               <v-data-table id="relations" dense :headers="headers" :items="sentence.triplets">
                 <template v-slot:item.selected="{ item }">
                   <v-simple-checkbox data-v-step="1" v-model="item.selected" :value="item.selected"></v-simple-checkbox>
@@ -67,6 +71,18 @@
                 {{ snackText }}
                 <v-btn text @click="snack = false">Close</v-btn>
               </v-snackbar>
+              </v-col>
+              <v-divider inset ></v-divider>
+              <v-col cols="12">
+                <h3>Entities</h3>
+                <v-data-table :headers="headersEnt" :items="sentence.entities">
+                 <template v-slot:item.selected="{ item }">
+                  <v-simple-checkbox v-model="item.selected" :value="item.selected"></v-simple-checkbox>
+                </template>
+
+                </v-data-table>
+              </v-col>
+              </v-row>
             </v-card-text>
           </v-card>
         </v-col>
@@ -91,6 +107,11 @@ export default {
         { text: "Predicate", value: "predicate" },
         { text: "Object", value: "object" }
       ],
+            headersEnt: [
+        { text: "", value: "selected" },
+        { text: "Entity", value: "text" },
+      ],
+
       steps: [
         {
           target: "[data-v-step='1']", // We're using document.querySelector() under the hood

@@ -172,6 +172,7 @@
                           >
                             <v-icon dark>mdi-magnify</v-icon>
                           </v-btn>
+
                         </v-row>
                       </v-card-text>
                       <v-divider></v-divider>
@@ -191,6 +192,7 @@
                 <h2>Paragraph #{{paragraph.id}}</h2>
               </v-card-title>
               <v-card-text>
+                <h2 class="ml-2">Terms</h2>
                 <v-row>
                   <v-col cols="12" v-for="prop in paragraph.terms" :key="prop.uri">
                     <v-card>
@@ -231,12 +233,44 @@
                           >
                             <v-icon dark>mdi-magnify</v-icon>
                           </v-btn>
+                                                  <v-tooltip bottom>
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="success"
+                              dark
+                              class="mx-2"
+                              fab
+                              v-bind="attrs"
+                              v-on="on"
+                              small
+                              @click.stop="modalCreate = true"
+                              @click="openCreateModal(prop)"
+                              :table="modalData"
+                            >
+                              <v-icon dark>mdi-plus</v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Create a class</span>
+                        </v-tooltip>
+
                         </v-row>
                       </v-card-text>
                       <v-divider></v-divider>
                     </v-card>
                   </v-col>
                 </v-row>
+                <h2 class="ml-2">Entitites</h2>
+                <v-col cols="12">
+                  <v-data-table :headers="headers" :items="paragraph.entities">
+                    <template v-slot:item.uris="{ item }">
+                      <v-select label="select a term" v-model="item.selected" :items="item.uris">
+                        <template v-slot:selection="{ item }">
+                          <a v-bind:href="item" target="__">{{item}}</a>
+                        </template>
+                      </v-select>
+                    </template>
+                  </v-data-table>
+                </v-col>
               </v-card-text>
             </v-card>
           </v-col>
@@ -267,6 +301,11 @@ export default {
       modalCreate: false,
       modalSearchClass: false,
       modalCreateClass: false,
+      headers: [
+        { text: "Entity", value: "text" },
+        { text: "URI", value: "uris" }
+      ],
+
       steps: [
         {
           target: "#tables", // We're using document.querySelector() under the hood

@@ -166,7 +166,8 @@ class Project(models.Model):
     author = models.EmbeddedField(
         model_container=Author,
         model_form_class=AuthorForm,
-        null=False
+        blank=True,
+        null=True
     )
     input_file = models.EmbeddedField(
         model_container=File,

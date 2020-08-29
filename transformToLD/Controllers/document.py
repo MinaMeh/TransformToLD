@@ -1,4 +1,4 @@
-from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS, XSD
+from rdflib import Graph, Literal, RDF, RDFS, URIRef, Namespace, DCTERMS, XSD, OWL
 from datetime import datetime
 from django.conf import settings
 from historique.models import File, MetaData, Triplet
@@ -88,6 +88,17 @@ def create_triplets(triplets, project, output_file, format, g):
     ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
     for _, triple in triplets_df.iterrows():
         s = URIRef(triple['subject'].replace(" ", ''))
+        print(triple)
+        if hasattr(triple, 'subject_uri') and 'http' in str(triple['subject_uri']):
+            p = URIRef(RDFS.seeAlso)
+            o = URIRef(triple['subject_uri'])
+            triplets_list.append((s, p, o))
+        if hasattr(triple, 'object_uri') and triple["object_type"] == 'url':
+            s_s = URIRef(triple['object'])
+            s_p = URIRef(RDFS.seeAlso)
+            s_o = URIRef(triple['object_uri'])
+            triplets_list.append((s_s, s_p, s_o))
+
         if "http" not in triple['predicate']:
             triple['predicate'] = ns+triple['predicate'].split(":")[-1]
         p = URIRef(triple['predicate'].replace(" ", ""))
@@ -148,7 +159,7 @@ def create_html_classes(project, g):
 def create_metadata(project, metadata, output_file, format, g):
     triplets = []
     s = URIRef(
-        "https://localhost/{}".format(project.project_name.replace(" ", "_")))
+        "http://localhost/{}/".format(project.project_name.replace(" ", "_")))
     p = DCTERMS.created
     o = Literal(str(datetime.now().date()), datatype=XSD.date)
     triplets.append((s, p, o))
@@ -192,9 +203,9 @@ def create_graph(vocabularies, namespace="http://localhost/"):
     n = Namespace(namespace)
     g.bind("dataset", n)
     g.bind("dcterms", DCTERMS)
-
-    for vocab in vocabularies:
-        g.bind(vocab.prefix, vocab.uri)
+    if vocabularies is not None:
+        for vocab in vocabularies:
+            g.bind(vocab.prefix, vocab.uri)
     return g
 
 

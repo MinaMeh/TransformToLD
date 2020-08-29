@@ -41,7 +41,7 @@
                     sm="6"
                     cols="6"
                     class="text-left text--primary subtitle-1 py-0"
-                  >{{ this.project.description }}</v-col>
+                  >{{ this.project.metadata.description }}</v-col>
                 </v-row>
                 <v-row class="mb-5 pb-2" align-center>
                   <v-col sm="6" cols="6" class="py-0">
@@ -49,11 +49,11 @@
                       <v-icon class="text--primary title font-weight-bold">mdi-account-box</v-icon>Created by :
                     </h4>
                   </v-col>
-                  <v-col sm="6" cols="6" class="text-left text--primary subtitle-1 py-0">
-                    {{ this.project.author.first_name }}
-                    {{ this.project.author.last_name }} ,
-                    {{ this.project.author.email }}
-                  </v-col>
+                  <v-col
+                    sm="6"
+                    cols="6"
+                    class="text-left text--primary subtitle-1 py-0"
+                  >{{ this.project.metadata.creator }}</v-col>
                 </v-row>
                 <v-row class="mb-5 pb-2" align-center>
                   <v-col sm="6" cols="6" class="py-0">
