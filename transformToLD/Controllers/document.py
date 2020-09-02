@@ -38,7 +38,7 @@ def document_project(project, metadata, format):
                             project, output_file, format, g)
             create_class(project, g)
         if project.text_data:
-            create_triplets(project.text_data.terms,
+            create_triplets(project.text_data.triplets,
                             project, output_file, format, g)
         output_file.write(g.serialize(format=format).decode("utf-8"))
 
@@ -82,7 +82,7 @@ def create_properties(project, output_file, format, g):
 def create_triplets(triplets, project, output_file, format, g):
     triplets_list = []
     try:
-        print("path", triplets.path)
+        print("", triplets.path)
         triplets_df = pd.read_csv(triplets.path)
     except FileNotFoundError:
         return

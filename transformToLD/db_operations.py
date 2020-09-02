@@ -112,7 +112,7 @@ def update_text_project(project, terms=None, triplets=None):
     if terms:
         directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                       project.user_id, project.project_name)
-        filename = "{}_{}".format(project.project_name, "triplets_file")
+        filename = "{}_{}".format(project.project_name, "relations_file")
         file_path = directory+filename
         terms = File(path=file_path, filename=filename,
                      file_type="csv", created_at=datetime.now())

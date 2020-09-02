@@ -168,7 +168,6 @@ def convert_html(table, project):
             line['object_type'] = term["type"]
             lines.append(line)
             writer.writerow(line)
-            print(writer)
     triplet_file.close()
     return lines
 

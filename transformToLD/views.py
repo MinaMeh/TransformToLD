@@ -330,7 +330,6 @@ def convert(request):
     if file_type in ["html", 'pdf', 'image']:
         tables = json.loads(request.POST.get("tables"))
         paragraphs = json.loads(request.POST.get("paragraphs"))
-        print('tables', tables)
         tables_triplets = []
         paragraphs_triplets = []
         t_start = time.time()

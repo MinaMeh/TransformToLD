@@ -195,14 +195,14 @@
               v-if="this.project.csv_data!=null"
               :vocabularies="this.project.vocabularies"
               :headers="this.project.csv_data.headers"
-              :triplets="this.project.csv_data.triplets"
+              :triplets="this.project.triplets"
               @editTerm="editCsvTerm"
             ></CsvComponent>
             <TextComponent
               v-if="this.project.text_data!=null"
               :vocabularies="this.project.vocabularies"
-              :terms="this.project.text_data.terms"
-              :triplets="this.project.text_data.triplets"
+              :terms="this.project.terms"
+              :triplets="this.project.triplets"
             ></TextComponent>
             <HtmlComponent :v-if="this.project.html_data!=null" :project="this.project"></HtmlComponent>
           </v-tab-item>
@@ -225,7 +225,7 @@ export default {
     CsvComponent,
     TextComponent,
     HtmlComponent,
-    ChooseFormat
+    ChooseFormat,
   },
   data: () => {
     return {
@@ -236,12 +236,12 @@ export default {
         { name: "Details", icon: "  mdi-file-document" },
         { name: "Source File", icon: " mdi-file-download" },
         { name: "Resulted Files", icon: " mdi-file-move " },
-        { name: "Project Parameters", icon: "mdi-file-cog" }
+        { name: "Project Parameters", icon: "mdi-file-cog" },
       ],
       headers: [
         { text: "File", value: "filename" },
         { text: "Format", value: "file_type" },
-        { text: "Creation date", value: "created_at" }
+        { text: "Creation date", value: "created_at" },
       ],
 
       converted: false,
@@ -251,9 +251,9 @@ export default {
         author: {
           first_name: "",
           last_name: "",
-          email: ""
-        }
-      }
+          email: "",
+        },
+      },
     };
   },
   methods: {
@@ -268,13 +268,13 @@ export default {
       instance
         .get("getFile", {
           params: {
-            file_path: file.path
-          }
+            file_path: file.path,
+          },
         })
-        .then(response => {
+        .then((response) => {
           var data = [];
           if (Array.isArray(response.data)) {
-            response.data.forEach(element => {
+            response.data.forEach((element) => {
               data.push(element);
             });
             data = JSON.stringify(data);
@@ -297,15 +297,20 @@ export default {
         .get("api/projects/" + id, {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `JWT ${this.$store.state.jwt}`
-          }
+            Authorization: `JWT ${this.$store.state.jwt}`,
+          },
         })
-        .then(response => {
-          this.project = response.data;
+        .then((response) => {
+          this.project = response.data.project;
+          this.project.triplets = response.data.triplets;
+          this.project.terms = response.data.terms;
+          if (this.project.vocabularies.length == 0) {
+            this.project.vocabularies = response.data.vocabularies;
+          }
           console.log(this.project.input_file.filename);
           console.log(this.project.converted);
         })
-        .catch(error => console.log(error));
+        .catch((error) => console.log(error));
     },
     convert(value) {
       var formdata = new FormData();
@@ -313,12 +318,12 @@ export default {
       formdata.append("format", value);
       instance
         .post("translate/", formdata)
-        .then(response => {
+        .then((response) => {
           console.log(response.data);
           this.close();
           this.getProject(this.$route.params.id);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
         });
       console.log(value);
@@ -327,15 +332,15 @@ export default {
       this.chooseOutput = false;
     },
     editCsvTerm(value) {
-      this.project.csv_data.headers.forEach(term => {
+      this.project.csv_data.headers.forEach((term) => {
         if (term.name == value.name) {
           term.term = value.term;
         }
       });
-    }
+    },
   },
   mounted() {
     this.getProject(this.$route.params.id);
-  }
+  },
 };
 </script>

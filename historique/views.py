@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from historique.models import Project, Author, Header
 from historique.serializers import ProjectSerializer, AuthorSerializer
+import csv
+from transformToLD.Controllers.explore import get_vocab_list
+from transformToLD.Serializers import VocabularySerializer
 
 
 @api_view(['POST'])
@@ -52,8 +55,50 @@ def project_details(request, pk):
         return JsonResponse({'message': 'The project does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
+        triplets = []
+        terms = []
+        if project.csv_data:
+            triplets_file = project.csv_data.triplets.path
+            with open(triplets_file, 'r') as f:
+                triplets_writer = csv.DictReader(f)
+                for triplet in triplets_writer:
+                    triplets.append(triplet)
+
+        if project.text_data:
+            triplets_file = project.text_data.triplets.path
+            with open(triplets_file, 'r') as f:
+                triplets_writer = csv.DictReader(f)
+                for triplet in triplets_writer:
+                    triplets.append(triplet)
+            terms_file = project.text_data.terms.path
+            with open(terms_file, 'r') as f:
+                terms_reader = csv.DictReader(f)
+                for term in terms_reader:
+                    terms.append(term)
+
+        if project.html_data:
+            for table in project.html_data.tables:
+                triplets_file = table.triplets.path
+                with open(triplets_file, 'r') as f:
+                    triplets_writer = csv.DictReader(f)
+                    for triplet in triplets_writer:
+                        triplets.append(triplet)
+            for paragprah in project.html_data.paragraphs:
+                triplets_file = paragprah.terms.path
+                with open(triplets_file) as f:
+                    triplets_writer = csv.DictReader(f)
+                    for triplet in triplets_writer:
+                        triplets.append(triplet)
+                terms_file = paragprah.triplets.path
+                with open(terms_file, 'r') as f:
+                    terms_reader = csv.DictReader(f)
+                    for term in terms_reader:
+                        terms.append(term)
+
+        vocabs = get_vocab_list()
+        results = VocabularySerializer(vocabs, many=True).data
         project_serializer = ProjectSerializer(project)
-        return JsonResponse(project_serializer.data)
+        return Response({"project": project_serializer.data, "triplets": triplets, 'terms': terms, "vocabularies": results})
 
     elif request.method == 'PUT':
         project_data = JSONParser().parse(request)

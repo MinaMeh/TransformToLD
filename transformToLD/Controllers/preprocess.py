@@ -132,7 +132,7 @@ def preprocess_paragraph(project, paragraph, id=None):
         filename = "{}_{}_{}_{}".format(
             project.project_name, "relations_file", 'paragraph', id)
     else:
-        filename = "{}_{}".format(project.project_name, "triplets_file")
+        filename = "{}_{}".format(project.project_name, "relations_file")
     file_path = directory+filename
     triplet_file = open(file_path, "w")
     writer = csv.DictWriter(triplet_file, fieldnames=[
