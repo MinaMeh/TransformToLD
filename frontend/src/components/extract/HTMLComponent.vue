@@ -54,7 +54,7 @@
                 </v-simple-table>
               </v-col>
               <v-col col="12">
-                <v-data-table class="table_cols" :headers="headers" :items="table.headers">
+                <v-data-table dense class="table_cols" :headers="headers" :items="table.headers">
                   <template v-slot:item="header">
                     <tr>
                       <td>

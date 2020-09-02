@@ -10,7 +10,7 @@
       striped
     ></v-progress-linear>
     <CsvComponent v-if="$store.state.file_type=='csv'"></CsvComponent>
-    <HTMLComponent v-if="$store.state.file_type=='html'"></HTMLComponent>
+    <HTMLComponent v-if="complexFile"></HTMLComponent>
     <TexteComponent v-if="$store.state.file_type=='text'"></TexteComponent>
   </v-container>
 </template>
@@ -26,13 +26,20 @@ export default {
   data() {
     return {
       progress: true,
-      continue: true
+      continue: true,
     };
   },
   computed: {
+    complexFile() {
+      return (
+        this.$store.state.file_type == "html" ||
+        this.$store.state.file_type == "pdf" ||
+        this.$store.state.file_type == "image"
+      );
+    },
     filename() {
       return this.$store.state.filename;
-    }
+    },
   },
   watch: {
     filename(oldName, newName) {
@@ -40,15 +47,15 @@ export default {
       this.progress = false;
     },
     $v: {
-      handler: function(val) {
+      handler: function (val) {
         if (!val.$invalid) {
           this.$emit("can-continue", { value: true });
         } else {
           this.$emit("can-continue", { value: false });
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   mounted() {
     if (this.continue) {
@@ -56,6 +63,6 @@ export default {
     } else {
       this.$emit("can-continue", { value: false });
     }
-  }
+  },
 };
 </script>

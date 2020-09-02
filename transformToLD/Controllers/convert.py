@@ -5,6 +5,7 @@ from django.conf import settings
 from historique.models import RdfClass, File
 import csv
 from datetime import datetime
+from transformToLD.Controllers.explore import get_vocab
 
 
 def convert_csv(project, file_name, delimiter, terms, headers_id=None, row_class=None):
@@ -58,9 +59,10 @@ def convert_csv(project, file_name, delimiter, terms, headers_id=None, row_class
     return lines
 
 
-def convert_text(triplets, terms, project, id=None):
+def convert_text(triplets, terms, entities, project, id=None):
     lines = []
     terms_dict = dict()
+    entities_dict = dict()
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     if id is not None:
@@ -71,29 +73,63 @@ def convert_text(triplets, terms, project, id=None):
     file_path = directory+filename
     triplet_file = open(file_path, "w")
     writer = csv.DictWriter(triplet_file, fieldnames=[
-                            "subject", "predicate", "object", "object_type"])
+                            "subject", 'subject_uri', "predicate", "object", 'object_uri', "object_type"])
 
     writer.writeheader()
+
     domaine_name = "http://localhost/{}/".format(
         project.project_name.replace(" ", "_"))
+    for entity in entities:
+        entities_dict[entity['text'].strip()] = entity['selected'].strip()
     for term in terms:
         terms_dict[term['property']] = term['term']['uri']
     for triplet in triplets:
         if triplet["selected"]:
             line = dict()
-            line["subject"] = domaine_name + triplet["subject"].strip()
+            line["subject"] = domaine_name + \
+                triplet["subject"].strip().replace(' ', '_')
+            try:
+                line["subject_uri"] = entities_dict[triplet["subject"].strip()]
+                see_also = {}
+                see_also['subject'] = line["subject"]
+                see_also['predicate'] = get_vocab(
+                    "seeAlso", ["rdfs"])[0]['uri']
+                see_also['object_type'] = "url"
+
+                see_also['object'] = line["subject_uri"]
+                lines.append(see_also)
+            except KeyError:
+                pass
             line["predicate"] = terms_dict[triplet["predicate"]]
-            line["object"] = triplet['object']
-            line['object_type'] = "xsd:string"
+            try:
+                line["object_uri"] = entities_dict[triplet["object"].strip()]
+                see_also_o = {}
+                see_also_o['subject'] = domaine_name + \
+                    triplet["object"].strip().replace(' ', '_')
+                see_also_o['predicate'] = get_vocab(
+                    "seeAlso", ["rdfs"])[0]['uri']
+                see_also_o['object_type'] = "url"
+                see_also_o['object'] = line["object_uri"]
+                line['object_type'] = "url"
+                line['object'] = domaine_name + \
+                    triplet['object'].strip().replace(' ', '_')
+                lines.append(see_also_o)
+            except KeyError:
+                line["object"] = triplet['object']
+                line['object_type'] = "xsd:string"
             lines.append(line)
             writer.writerow(line)
     return lines
 
 
 def convert_html(table, project):
-    file = pd.read_html(table['filename'])[0]
+    try:
+        file = pd.read_html(table['filename'])[0]
+    except BaseException:
+        file = pd.read_csv(table['filename'])
     lines = []
-    domain_name = "localhost/dataset/#"
+    domain_name = "http://localhost/{}/".format(
+        project.project_name.replace(' ', "_"))
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
                                   project.user_id, project.project_name)
     filename = "{}_{}_{}".format(
@@ -103,7 +139,6 @@ def convert_html(table, project):
     writer = csv.DictWriter(triplet_file, fieldnames=[
                             "subject", "predicate", "object", "object_type"])
     writer.writeheader()
-
     for index, row in file.iterrows():
         line = dict()
         headers_id = table.get("rowId", None)
@@ -133,6 +168,7 @@ def convert_html(table, project):
             line['object_type'] = term["type"]
             lines.append(line)
             writer.writerow(line)
+    triplet_file.close()
     return lines
 
 

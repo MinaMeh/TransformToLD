@@ -38,7 +38,11 @@ export default {
             store.state.csv.columns = response.data.results.columns;
             store.state.csv.lines = response.data.results.lines;
           }
-          if (response.data.type == "html") {
+          if (
+            response.data.type == "html" ||
+            response.data.type == "pdf" ||
+            response.data.type == "image"
+          ) {
             store.state.html.tables = response.data.results.tables;
             store.state.html.paragraphs = response.data.results.paragraphs;
             store.state.html.num_paragraphs =
@@ -67,7 +71,11 @@ export default {
         formData.append("columns", JSON.stringify(store.state.csv.headers));
       }
 
-      if (store.state.file_type == "html") {
+      if (
+        store.state.file_type == "html" ||
+        store.state.file_type == "pdf" ||
+        store.state.file_type == "image"
+      ) {
         formData.append("tables", JSON.stringify(store.state.html.tables));
         formData.append(
           "paragraphs",
@@ -86,7 +94,11 @@ export default {
           if (store.state.file_type == "csv") {
             store.state.csv.headers = response.data.headers;
           }
-          if (store.state.file_type == "html") {
+          if (
+            store.state.file_type == "html" ||
+            store.state.file_type == "pdf" ||
+            store.state.file_type == "image"
+          ) {
             store.state.html.tables = response.data.tables_selected;
             store.state.html.paragraphs = response.data.paragraphs_selected;
           }
@@ -111,7 +123,11 @@ export default {
       if (store.state.file_type == "csv") {
         formData.append("columns", JSON.stringify(store.state.csv.headers));
       }
-      if (store.state.file_type == "html") {
+      if (
+        store.state.file_type == "html" ||
+        store.state.file_type == "pdf" ||
+        store.state.file_type == "image"
+      ) {
         formData.append("tables", JSON.stringify(store.state.html.tables));
         formData.append(
           "paragraphs",
@@ -133,7 +149,11 @@ export default {
             store.state.csv.terms = response.data.terms;
             console.log(response.data);
           }
-          if (store.state.file_type == "html") {
+          if (
+            store.state.file_type == "html" ||
+            store.state.file_type == "pdf" ||
+            store.state.file_type == "image"
+          ) {
             store.state.html.tables = response.data.tables;
             store.state.html.paragraphs = response.data.paragraphs;
           }
@@ -181,6 +201,7 @@ export default {
           });
         });
         terms = [];
+
         store.state.text.paragraph.terms.forEach(function(term) {
           terms.push({
             property: term.property,
@@ -190,8 +211,16 @@ export default {
         });
         formData.append("terms", JSON.stringify(terms));
         formData.append("triplets", JSON.stringify(triplets));
+        formData.append(
+          "entities",
+          JSON.stringify(store.state.text.paragraph.entities)
+        );
       }
-      if (store.state.file_type == "html") {
+      if (
+        store.state.file_type == "html" ||
+        store.state.file_type == "pdf" ||
+        store.state.file_type == "image"
+      ) {
         var tables = [];
         store.state.html.tables.forEach(function(table) {
           if (table.selected) {
@@ -220,6 +249,7 @@ export default {
             var id = paragraph.id;
             var terms = [];
             var triplets = [];
+            var entities = [];
             paragraph.terms.forEach(function(term) {
               terms.push({
                 property: term.property,
@@ -230,12 +260,17 @@ export default {
               sentence.triplets.forEach(function(triplet) {
                 if (triplet.selected) triplets.push(triplet);
               });
+              paragraph.entities.forEach(function(entity) {
+                console.log(entity);
+                if (entity.selected) entities.push(entity);
+              });
             });
 
             paragraphs.push({
               id: id,
               terms: terms,
               triplets: triplets,
+              entities: entities,
             });
           }
         });
@@ -253,7 +288,11 @@ export default {
           if (store.state.file_type == "text") {
             store.state.text.triplets = response.data.data;
           }
-          if (store.state.file_type == "html") {
+          if (
+            store.state.file_type == "html" ||
+            store.state.file_type == "pdf" ||
+            store.state.file_type == "image"
+          ) {
             store.state.html.tables_triplets = response.data.tables;
             store.state.html.paragraphs_triplets = response.data.paragraphs;
           }

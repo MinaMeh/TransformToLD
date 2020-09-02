@@ -65,17 +65,17 @@ export default {
         {
           title: "Historical",
           route: "/projects-list",
-          icon: "mdi-palette-swatch"
-        }
-      ]
+          icon: "mdi-palette-swatch",
+        },
+      ],
     };
   },
   methods: {
     logout() {
       this.$store
         .dispatch("userLogout")
-        .then(this.$router.push({ name: "login" }));
-    }
+        .then(this.$router.push({ name: "homePage" }));
+    },
   },
   computed: {
     mini() {
@@ -84,8 +84,8 @@ export default {
     user: {
       get() {
         return this.$store.user.first_name;
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>

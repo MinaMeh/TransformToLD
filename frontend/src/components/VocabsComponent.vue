@@ -101,7 +101,7 @@ export default {
         { text: "Prefix", value: "prefix" },
         { text: "Title", value: "title" },
         { text: "URI", value: "uri" },
-        { text: "", value: "", align: "center" }
+        { text: "", value: "", align: "center" },
       ],
       vocabs: [],
       selectedVocabs: [],
@@ -109,28 +109,28 @@ export default {
         {
           target: ".vocabs", // We're using document.querySelector() under the hood
           header: {
-            title: "Add Vocabularies"
+            title: "Add Vocabularies",
           },
           content: `Add the vocabularies that you want to use in the mapping`,
           params: {
-            enableScrolling: false
-          }
-        }
-      ]
+            enableScrolling: false,
+          },
+        },
+      ],
     };
   },
   computed: {
     filtered_list() {
-      return this.vocabs.filter(vocab => {
+      return this.vocabs.filter((vocab) => {
         return vocab.prefix.toLowerCase().includes(this.search.toLowerCase());
       });
     },
     guide() {
       return this.$store.state.guide;
-    }
+    },
   },
   methods: {
-    addVocab: function(vocab) {
+    addVocab: function (vocab) {
       var exist = false;
       for (var voc in this.selectedVocabs) {
         if (this.selectedVocabs[voc].prefix == vocab.prefix) {
@@ -152,10 +152,10 @@ export default {
       this.$store.state.vocabs = [];
     },
 
-    deleteVocab: function(vocab) {
+    deleteVocab: function (vocab) {
       this.selectedVocabs.splice(vocab, 1);
       this.$store.state.vocabs.splice(vocab, 1);
-    }
+    },
   },
   watch: {
     guide(newValue) {
@@ -164,14 +164,14 @@ export default {
     },
 
     $v: {
-      handler: function(val) {
+      handler: function (val) {
         if (!val.$invalid) {
           this.$emit("can-continue", { value: true });
         } else {
           this.$emit("can-continue", { value: false });
         }
       },
-      deep: true
+      deep: true,
     },
     clickedNext(val) {
       if (val === true) {
@@ -181,7 +181,7 @@ export default {
 
         this.$v.form.$touch();
       }
-    }
+    },
   },
 
   mounted() {
@@ -192,21 +192,21 @@ export default {
       .get("vocabs/", {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `JWT ${this.$store.state.jwt}`
-        }
+          Authorization: `JWT ${this.$store.state.jwt}`,
+        },
       })
-      .then(response => {
+      .then((response) => {
         this.vocabs = response.data;
         console.log(this.vocabs.length);
         this.loading = false;
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
 
     if (this.continue) {
       this.$emit("can-continue", { value: true });
     } else {
       this.$emit("can-continue", { value: false });
     }
-  }
+  },
 };
 </script>

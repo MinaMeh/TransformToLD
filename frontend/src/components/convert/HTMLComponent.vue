@@ -24,6 +24,7 @@
 
                     <span v-else>{{item.object}}</span>
                   </template>
+
                 </v-data-table>
               </v-card-text>
             </v-card>
@@ -48,6 +49,13 @@
                   <template v-slot:item.predicate="{ item }">
                     <a v-bind:href="item.predicate">{{item.predicate}}</a>
                   </template>
+                                    <template v-slot:item.object="{ item }">
+                    <a v-bind:href="item.object" v-if="item.object_type=='url'">{{item.object}}</a>
+
+                    <span v-else>{{item.object}}</span>
+                  </template>
+
+
                 </v-data-table>
               </v-card-text>
             </v-card>

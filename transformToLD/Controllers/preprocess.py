@@ -5,6 +5,7 @@ from django.conf import settings
 import csv
 from datetime import datetime
 from transformToLD.Classes.dbpedia import MY_LIST as dbpedia_types
+from transformToLD.Controllers.explore import get_term
 import inflection
 TYPE_MAPPING = {
     "PER": "person",
@@ -46,7 +47,8 @@ def get_combinaisons(word):
         underscore = "_".join(words_list)
         camel_case = ''.join(x.capitalize() for x in words_list)
         attached = ''.join(words_list)
-        words_list = [separated, underscore, camel_case, attached]
+        tiret = '-'.join(words_list)
+        words_list = [separated, underscore, camel_case, attached, tiret]
     else:  # one word
         word = words_list[0]
         if "_" in words_list[0]:  # the word is with underscore
@@ -54,13 +56,15 @@ def get_combinaisons(word):
             attached = ''.join(word)
             separated = ' '.join(word)
             camelcase = ''.join(x.capitalize() for x in word)
-            words_list.extend([attached, camelcase, separated])
+            tiret = '-'.join(word)
+            words_list.extend([attached, camelcase, separated, tiret])
         else:  #
             if is_camel_case(words_list[0]):  # word is camel case
                 underscore = inflection.underscore(word)
                 attached = "".join(underscore.split('_'))
                 separated = " ".join(underscore.split('_'))
-                words_list.extend([underscore, attached, separated])
+                tiret = '-'.join(underscore.split('_'))
+                words_list.extend([underscore, attached, separated, tiret])
             else:
                 pass
     return list(set(words_list))
@@ -117,7 +121,9 @@ def get_class(entity):
 
 def preprocess_paragraph(project, paragraph, id=None):
     textrazor.api_key = "4599791ae63e2fb4f39d911a2145db56469b306ba8fbd6eda53e65ce"
-    client = textrazor.TextRazor(extractors=['entities', 'relations'])
+    client = textrazor.TextRazor(
+        extractors=['entities', 'relations'])
+    client.set_language_override('eng')
     # client.set_entity_freebase_type_filters(["/organization/organization"])
     client.set_entity_dbpedia_type_filters(dbpedia_types)
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
@@ -126,7 +132,7 @@ def preprocess_paragraph(project, paragraph, id=None):
         filename = "{}_{}_{}_{}".format(
             project.project_name, "relations_file", 'paragraph', id)
     else:
-        filename = "{}_{}".format(project.project_name, "triplets_file")
+        filename = "{}_{}".format(project.project_name, "relations_file")
     file_path = directory+filename
     triplet_file = open(file_path, "w")
     writer = csv.DictWriter(triplet_file, fieldnames=[
@@ -147,6 +153,13 @@ def preprocess_paragraph(project, paragraph, id=None):
             relations.append(rel)
             writer.writerow(rel)
         sentence['triplets'] = relations
+        entities = []
+        for entity in response.entities():
+            ent = {}
+            ent["text"] = concatenate(entity.matched_words)
+            ent['selected'] = True
+            entities.append(ent)
+        sentence['entities'] = entities
     return paragraph
 
 

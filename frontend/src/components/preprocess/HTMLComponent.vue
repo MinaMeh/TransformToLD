@@ -54,6 +54,7 @@
                     <v-card v-if="sentence.triplets.length!=0">
                       <v-card-text>
                         <h6>{{sentence.text}}</h6>
+                        <h2 class="ml-2"> Relations</h2>
                         <v-data-table dense :headers="headers" :items="sentence.triplets">
                           <template v-slot:item.selected="{ item }">
                             <v-simple-checkbox v-model="item.selected" :value="item.selected"></v-simple-checkbox>
@@ -129,10 +130,21 @@
                           {{ snackText }}
                           <v-btn text @click="snack = false">Close</v-btn>
                         </v-snackbar>
+                                        <v-col cols="12">
+                      <h2 class="ml-2">Entities</h2>
+                      <v-data-table :headers="headersEnt" :items="sentence.entities">
+                      <template v-slot:item.selected="{ item }">
+                        <v-simple-checkbox v-model="item.selected" :value="item.selected"></v-simple-checkbox>
+                      </template>
+
+                </v-data-table>
+              </v-col>
+
                       </v-card-text>
                     </v-card>
                   </v-col>
                 </v-col>
+
               </v-row>
             </v-card-text>
           </v-card>
@@ -151,6 +163,10 @@ export default {
       tab: null,
       continue: true,
       selected: "",
+      headersEnt: [
+        { text: "", value: "selected" },
+        { text: "Entity", value: "text" },
+      ],
       headers: [
         { text: "", value: "selected" },
         { text: "Subject", value: "subject" },

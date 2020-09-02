@@ -45,7 +45,7 @@ export default new Vuex.Store({
       },
     },
     csv: {
-      separator: ";",
+      separator: ",",
       headers: [],
       lines: 0,
       columns: 0,
@@ -79,7 +79,7 @@ export default new Vuex.Store({
       state.user.last_name = last_name;
       state.user.email = email;
       state.user_id = user_id;
-      state.creator = first_name + " " + last_name;
+      state.metadata.creator = first_name + " " + last_name;
       localStorage.setItem("first_name", first_name);
       localStorage.setItem("last_name", last_name);
       localStorage.setItem("email", email);
@@ -91,7 +91,7 @@ export default new Vuex.Store({
       localStorage.removeItem("last_name");
       localStorage.removeItem("email");
       localStorage.removeItem("user_id");
-
+      state.metadata.creator = "";
       state.jwt = null;
     },
   },

@@ -14,7 +14,7 @@
             outlined
             label="Project Name"
             :rules="nameRules"
-            :counter="10"
+            :counter="50"
             required
             v-model="$store.state.project_name"
             placeholder="Enter the name of your project"
@@ -84,9 +84,11 @@
             </v-col>
           </v-row>
           <v-spacer></v-spacer>
-          <v-btn text class="font-weight-bold success" @click="saveProject()" :loading="loading">
-            <v-icon>mdi-plus</v-icon>Create
-          </v-btn>
+          <v-col class="text-right">
+            <v-btn text class="font-weight-bold success" @click="saveProject()" :loading="loading">
+              <v-icon>mdi-plus</v-icon>Create
+            </v-btn>
+          </v-col>
         </v-form>
       </v-card-text>
     </v-card>

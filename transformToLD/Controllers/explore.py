@@ -15,7 +15,7 @@ def get_vocab(term, list_vocabs=None, term_type="property"):
     r = requests.get(URL)
     data = r.json()
     for element in data["results"]:
-        if (list_vocabs == None):
+        if (list_vocabs == [] or list_vocabs == None):
             if element["type"] == term_type:
                 vocab = Property(term, element["prefixedName"][0], element['vocabulary.prefix']
                                  [0], element['uri'][0], element['type'], element['score'])
@@ -39,8 +39,7 @@ def get_term(term):
     data = file.findall(
         "./{http://lookup.dbpedia.org/}Result/{http://lookup.dbpedia.org/}URI")
     for element in data:
-        uri = {}
-        uri["uri"] = element.text
+        uri = element.text
         uri_list.append(uri)
     return uri_list
 
@@ -93,8 +92,9 @@ def explore_column(column, vocabs_list):
     return term
 
 
-def explore_paragraph(paragraph, vocab_list):
+def explore_paragraph(paragraph, vocab_list=None):
     terms = []
+    entities=[]
     for sentence in paragraph['sentences']:
         for triplet in sentence['triplets']:
             if triplet["selected"] == True:
@@ -109,5 +109,16 @@ def explore_paragraph(paragraph, vocab_list):
                 except IndexError:
                     term["selected"] = ""
                 terms.append(term)
+        for entity in sentence['entities']:
+            if entity['selected']== True:
+                ent= {}
+                ent['text']=entity['text']
+                ent['uris']=get_term(ent['text'])
+                try:
+                    ent['selected']=ent['uris'][0]
+                except IndexError:
+                    ent['selected']=""
+                entities.append(ent)
     paragraph['terms'] = terms
+    paragraph['entities'] =entities
     return paragraph

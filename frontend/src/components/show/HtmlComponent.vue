@@ -2,8 +2,9 @@
   <v-container>
     <v-tabs class="mt-8" v-model="tab">
       <v-tab>Vocabularies</v-tab>
-      <v-tab>Tables</v-tab>
-      <v-tab>Paragraphs</v-tab>
+      <v-tab>Headers</v-tab>
+      <v-tab>Relations</v-tab>
+      <v-tab>Triplets</v-tab>
     </v-tabs>
     <v-tabs-items v-model="tab">
       <v-tab-item>
@@ -27,17 +28,65 @@
           <v-card>
             <v-card-title>Table #{{index}}</v-card-title>
             <v-card-text>
-              <CsvComponent :headers="table.headers" :triplets="table.triplets"></CsvComponent>
+              <v-data-table :headers="headersHeaders" :items="table.headers">
+                <template v-slot:item.selected="{ item }">
+                  <v-simple-checkbox v-model="item.selected"></v-simple-checkbox>
+                </template>
+                <template v-slot:item.term="{ item }">
+                  <a v-bind:href="item.term">{{item.term}}</a>
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <v-btn
+                    color="primary"
+                    dark
+                    class="mx-2"
+                    text
+                    @click.stop="modalVisible = true"
+                    @click="openModal(item)"
+                  >
+                    <v-icon dark>mdi-pencil-box</v-icon>
+                  </v-btn>
+                </template>
+              </v-data-table>
+              <EditTerm
+                v-if="modal"
+                :modal="modal"
+                :term="selectedTerm"
+                @edit="edit"
+                @close="modal=false"
+              ></EditTerm>
             </v-card-text>
           </v-card>
         </v-col>
       </v-tab-item>
       <v-tab-item>
-        <v-col cols="12" v-for="(paragraph,index) in project.html_data.paragraphs" :key="index">
+        <v-col cols="12">
           <v-card>
-            <v-card-title>Paragraph #{{index}}</v-card-title>
             <v-card-text>
-              <TextComponent :triplets="paragraph.triplets" :terms="paragraph.terms"></TextComponent>
+              <v-data-table :headers="termsHeaders" :items="project.terms"></v-data-table>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-tab-item>
+      <v-tab-item>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text>
+              <v-data-table :headers="tripletsHeaders" :items="project.triplets">
+                <template v-slot:item.subject="{ item }">
+                  <a v-bind:href="item.subject">{{item.subject}}</a>
+                </template>
+
+                <template v-slot:item.predicate="{ item }">
+                  <a v-bind:href="item.predicate">{{item.predicate}}</a>
+                </template>
+
+                <template v-slot:item.object="{ item }">
+                  <a v-bind:href="item.object" v-if="item.object_type=='url'">{{item.object}}</a>
+
+                  <span v-else>{{item.object}}</span>
+                </template>
+              </v-data-table>
             </v-card-text>
           </v-card>
         </v-col>
@@ -47,27 +96,55 @@
 </template>
 
 <script>
-import CsvComponent from "@/components/show/CsvComponent";
-import TextComponent from "@/components/show/TextComponent";
+import EditTerm from "@/components/modals/EditTerm";
 
 export default {
   components: {
-    CsvComponent,
-    TextComponent
+    EditTerm,
   },
   props: {
-    project: Object
+    project: Object,
   },
 
   data() {
     return {
       tab: null,
+      termsHeaders: [
+        { text: "Subject", value: "subject" },
+        { text: "Predicate", value: "predicate" },
+        { text: "Object", value: "object" },
+      ],
+
+      tripletsHeaders: [
+        { text: "Subject", value: "subject" },
+        { text: "Predicate", value: "predicate" },
+        { text: "Object", value: "object" },
+      ],
+
+      headersHeaders: [
+        { text: "", value: "selected" },
+        { text: "Name", value: "name" },
+        { text: "Term", value: "term" },
+        { text: "Actions", value: "actions" },
+      ],
+
       vocabsHeaders: [
         { text: "Prefix", value: "prefix" },
         { text: "Title", value: "title" },
-        { text: "URI", value: "uri" }
-      ]
+        { text: "URI", value: "uri" },
+      ],
     };
-  }
+  },
+  methods: {
+    openModal(data) {
+      this.selectedTerm = data;
+      this.modal = true;
+    },
+    edit(value) {
+      console.log(value);
+      this.modal = false;
+      this.$emit("editTerm", value);
+    },
+  },
 };
 </script>

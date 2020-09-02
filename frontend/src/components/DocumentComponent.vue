@@ -32,7 +32,7 @@
         counter
         outlined
         label="Description of your dataset"
-        v-model="$store.state.description"
+        v-model="$store.state.metadata.description"
         placeholder="Describe your data set"
         prepend-icon="mdi-file-document-edit"
       ></v-textarea>

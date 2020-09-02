@@ -5,10 +5,15 @@ import Project from "@/components/projects/Project";
 import ProjectsList from "@/components/projects/ProjectsList";
 import VueRouter from "vue-router";
 import Vue from "vue";
-
+import HomePage from "@/components/HomePage";
 const routes = [
   {
     path: "/",
+    component: HomePage,
+    name: "homePage",
+  },
+  {
+    path: "/home",
     component: Home,
     name: "home",
     meta: {
@@ -45,11 +50,17 @@ const router = new VueRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  const publicPages = ["/login", "/signup"];
+  const publicPages = ["/login", "/signup", "/"];
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem("t");
   // trying to access a restricted page + not logged in
   // redirect to login page
+  if (to.path == "/" && loggedIn) {
+    next("/home");
+  } else {
+    next();
+  }
+
   if (authRequired && !loggedIn) {
     next("/login");
   } else {
