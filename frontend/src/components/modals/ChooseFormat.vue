@@ -5,6 +5,7 @@
       <v-card-text>
         <v-form>
           <v-select
+            outlined
             v-model="selectedFormat"
             label="Select an output format"
             :items="outputFormat"
@@ -31,10 +32,10 @@ export default {
         { text: "NT", value: "nt" },
         { text: "NQUADS", value: "nquads" },
         { text: "Trix", value: "trix" },
-        { text: "Trig", value: "trig" }
+        { text: "Trig", value: "trig" },
       ],
-      selectedFormat: ""
+      selectedFormat: "",
     };
-  }
+  },
 };
 </script>

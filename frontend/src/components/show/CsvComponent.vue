@@ -62,7 +62,7 @@
         </v-card>
       </v-tab-item>
       <v-tab-item>
-        <!-- <v-card>
+        <v-card>
           <v-card-title>
             <h2>Triplets</h2>
           </v-card-title>
@@ -77,7 +77,7 @@
               </template>
             </v-data-table>
           </v-card-text>
-        </v-card>-->
+        </v-card>
       </v-tab-item>
     </v-tabs-items>
   </v-container>
@@ -89,7 +89,7 @@ export default {
   props: {
     vocabularies: Array,
     triplets: Array,
-    headers: Array
+    headers: Array,
   },
   components: { EditTerm },
 
@@ -101,19 +101,19 @@ export default {
       vocabsHeaders: [
         { text: "Prefix", value: "prefix" },
         { text: "Title", value: "title" },
-        { text: "URI", value: "uri" }
+        { text: "URI", value: "uri" },
       ],
       headersHeaders: [
         { text: "", value: "selected" },
         { text: "Name", value: "name" },
         { text: "Term", value: "term" },
-        { text: "Actions", value: "actions" }
+        { text: "Actions", value: "actions" },
       ],
       tripletsHeaders: [
         { text: "Subject", value: "subject" },
         { text: "Predicate", value: "predicate" },
-        { text: "Object", value: "object" }
-      ]
+        { text: "Object", value: "object" },
+      ],
     };
   },
   methods: {
@@ -125,7 +125,7 @@ export default {
       console.log(value);
       this.modal = false;
       this.$emit("editTerm", value);
-    }
-  }
+    },
+  },
 };
 </script>

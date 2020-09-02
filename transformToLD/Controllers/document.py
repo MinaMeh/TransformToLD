@@ -82,13 +82,13 @@ def create_properties(project, output_file, format, g):
 def create_triplets(triplets, project, output_file, format, g):
     triplets_list = []
     try:
+        print("path", triplets.path)
         triplets_df = pd.read_csv(triplets.path)
     except FileNotFoundError:
         return
     ns = "http://localhost/{}/".format(project.project_name.replace(" ", "_"))
     for _, triple in triplets_df.iterrows():
         s = URIRef(triple['subject'].replace(" ", ''))
-        print(triple)
         if hasattr(triple, 'subject_uri') and 'http' in str(triple['subject_uri']):
             p = URIRef(RDFS.seeAlso)
             o = URIRef(triple['subject_uri'])

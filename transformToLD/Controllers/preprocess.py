@@ -47,7 +47,7 @@ def get_combinaisons(word):
         underscore = "_".join(words_list)
         camel_case = ''.join(x.capitalize() for x in words_list)
         attached = ''.join(words_list)
-        tiret= '-'.join(words_list)
+        tiret = '-'.join(words_list)
         words_list = [separated, underscore, camel_case, attached, tiret]
     else:  # one word
         word = words_list[0]
@@ -56,14 +56,14 @@ def get_combinaisons(word):
             attached = ''.join(word)
             separated = ' '.join(word)
             camelcase = ''.join(x.capitalize() for x in word)
-            tiret= '-'.join(word)
-            words_list.extend([attached, camelcase, separated,tiret])
+            tiret = '-'.join(word)
+            words_list.extend([attached, camelcase, separated, tiret])
         else:  #
             if is_camel_case(words_list[0]):  # word is camel case
                 underscore = inflection.underscore(word)
                 attached = "".join(underscore.split('_'))
                 separated = " ".join(underscore.split('_'))
-                tiret= '-'.join(underscore)
+                tiret = '-'.join(underscore.split('_'))
                 words_list.extend([underscore, attached, separated, tiret])
             else:
                 pass
@@ -121,7 +121,9 @@ def get_class(entity):
 
 def preprocess_paragraph(project, paragraph, id=None):
     textrazor.api_key = "4599791ae63e2fb4f39d911a2145db56469b306ba8fbd6eda53e65ce"
-    client = textrazor.TextRazor(extractors=['entities', 'relations'])
+    client = textrazor.TextRazor(
+        extractors=['entities', 'relations'])
+    client.set_language_override('eng')
     # client.set_entity_freebase_type_filters(["/organization/organization"])
     client.set_entity_dbpedia_type_filters(dbpedia_types)
     directory = "{}{}/{}/".format(settings.MEDIA_URL,
@@ -151,13 +153,13 @@ def preprocess_paragraph(project, paragraph, id=None):
             relations.append(rel)
             writer.writerow(rel)
         sentence['triplets'] = relations
-        entities=[]
+        entities = []
         for entity in response.entities():
-            ent= {}
-            ent["text"]=concatenate(entity.matched_words)
-            ent ['selected']= True
+            ent = {}
+            ent["text"] = concatenate(entity.matched_words)
+            ent['selected'] = True
             entities.append(ent)
-        sentence['entities']= entities
+        sentence['entities'] = entities
     return paragraph
 
 

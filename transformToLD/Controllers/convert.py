@@ -115,8 +115,6 @@ def convert_text(triplets, terms, entities, project, id=None):
                     triplet['object'].strip().replace(' ', '_')
                 lines.append(see_also_o)
             except KeyError:
-                print (entities_dict)
-                print (triplet['object'])
                 line["object"] = triplet['object']
                 line['object_type'] = "xsd:string"
             lines.append(line)
@@ -125,7 +123,10 @@ def convert_text(triplets, terms, entities, project, id=None):
 
 
 def convert_html(table, project):
-    file = pd.read_html(table['filename'])[0]
+    try:
+        file = pd.read_html(table['filename'])[0]
+    except BaseException:
+        file = pd.read_csv(table['filename'])
     lines = []
     domain_name = "http://localhost/{}/".format(
         project.project_name.replace(' ', "_"))
@@ -138,7 +139,6 @@ def convert_html(table, project):
     writer = csv.DictWriter(triplet_file, fieldnames=[
                             "subject", "predicate", "object", "object_type"])
     writer.writeheader()
-
     for index, row in file.iterrows():
         line = dict()
         headers_id = table.get("rowId", None)
@@ -168,6 +168,8 @@ def convert_html(table, project):
             line['object_type'] = term["type"]
             lines.append(line)
             writer.writerow(line)
+            print(writer)
+    triplet_file.close()
     return lines
 
 

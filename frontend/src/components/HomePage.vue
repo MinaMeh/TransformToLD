@@ -19,13 +19,23 @@
         <v-btn color="success" class="font-weight-bold" to="/projects-list">
           <v-icon medium class="mr-1">mdi-account-star</v-icon>Login As Expert
         </v-btn>
-        <v-btn color="primary" class="font-weight-bold" to="/projects-list">
+        <v-btn color="primary" class="font-weight-bold" @click="dialog=true">
           <v-icon medium class="mr-1">mdi-swap-horizontal</v-icon>Convert Dataset
         </v-btn>
       </v-card-actions>
     </v-card>
+    <Automatic :dialog="dialog" @close="dialog=false"></Automatic>
   </v-container>
 </template>
 <script>
-export default {};
+import Automatic from "./projects/Automatic";
+
+export default {
+  components: { Automatic },
+  data() {
+    return {
+      dialog: false,
+    };
+  },
+};
 </script>
